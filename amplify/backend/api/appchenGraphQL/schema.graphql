@@ -1,0 +1,31 @@
+type User @model @auth(rules: [{ allow: private, provider: iam }]) {
+  id: ID!
+  name: String!
+  email: String!
+  userType: UserType!
+  courses: [Course] @manyToMany(relationName: "CoursesUsers")
+}
+
+type Course @model @auth(rules: [{ allow: private, provider: iam }]) {
+  id: ID!
+  name: String!
+  level: Level!
+  users: [User] @manyToMany(relationName: "CoursesUsers")
+}
+
+enum Level {
+  A11
+  A12
+  A21
+  A22
+  B11
+  B12
+  B21
+  B22
+  C1
+}
+
+enum UserType {
+  STUDENT
+  TEACHER
+}
