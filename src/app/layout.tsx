@@ -1,7 +1,12 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
+"use client"
 
-const inter = Inter({ subsets: ['latin'] })
+import { Amplify } from 'aws-amplify';
+import '@aws-amplify/ui-react/styles.css';
+import { AmplifyProvider } from '@aws-amplify/ui-react'
+
+import awsExports from '../aws-exports';
+
+Amplify.configure(awsExports);
 
 export const metadata = {
   title: 'Create Next App',
@@ -15,7 +20,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body>
+        <AmplifyProvider>
+          {children}
+        </AmplifyProvider>
+      </body>
     </html>
   )
 }

@@ -1,24 +1,60 @@
 {
-  "dev": {
+  "sampledev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-appchen-dev-190420-authRole",
-      "UnauthRoleArn": "arn:aws:iam::513568703881:role/amplify-appchen-dev-190420-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::513568703881:role/amplify-appchen-dev-190420-authRole",
+      "AuthRoleName": "amplify-appchen-sampledev-223338-authRole",
+      "UnauthRoleArn": "arn:aws:iam::513568703881:role/amplify-appchen-sampledev-223338-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::513568703881:role/amplify-appchen-sampledev-223338-authRole",
       "Region": "eu-central-1",
-      "DeploymentBucketName": "amplify-appchen-dev-190420-deployment",
-      "UnauthRoleName": "amplify-appchen-dev-190420-unauthRole",
-      "StackName": "amplify-appchen-dev-190420",
-      "StackId": "arn:aws:cloudformation:eu-central-1:513568703881:stack/amplify-appchen-dev-190420/60b757a0-edc2-11ed-b19e-02f59e00bc30",
-      "AmplifyAppId": "d2tt8gq8nozmkl"
+      "DeploymentBucketName": "amplify-appchen-sampledev-223338-deployment",
+      "UnauthRoleName": "amplify-appchen-sampledev-223338-unauthRole",
+      "StackName": "amplify-appchen-sampledev-223338",
+      "StackId": "arn:aws:cloudformation:eu-central-1:513568703881:stack/amplify-appchen-sampledev-223338/9dcc1140-eddf-11ed-97a4-0220f3eb3cc8",
+      "AmplifyAppId": "d2kvkjmm2936ir",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-appchen-sampledev-223338-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
-        "appchenAuth": {}
+        "appchenAuth": {},
+        "userPoolGroups": {}
       },
       "function": {
         "appchenAuthPostConfirmation": {
-          "GROUP": "default"
+          "deploymentBucketName": "amplify-appchen-sampledev-223338-deployment",
+          "s3Key": "amplify-builds/appchenAuthPostConfirmation-6857774a482f50614856-build.zip"
         }
+      },
+      "api": {
+        "appchenGraphQL": {}
+      }
+    }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-appchen-dev-224755-authRole",
+      "UnauthRoleArn": "arn:aws:iam::513568703881:role/amplify-appchen-dev-224755-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::513568703881:role/amplify-appchen-dev-224755-authRole",
+      "Region": "eu-central-1",
+      "DeploymentBucketName": "amplify-appchen-dev-224755-deployment",
+      "UnauthRoleName": "amplify-appchen-dev-224755-unauthRole",
+      "StackName": "amplify-appchen-dev-224755",
+      "StackId": "arn:aws:cloudformation:eu-central-1:513568703881:stack/amplify-appchen-dev-224755/9cb251f0-ede1-11ed-bebd-02ac06a23a16",
+      "AmplifyAppId": "d2kvkjmm2936ir",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-appchen-dev-224755-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "appchenAuth": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "appchenAuthPostConfirmation": {
+          "GROUP": "default",
+          "deploymentBucketName": "amplify-appchen-dev-224755-deployment",
+          "s3Key": "amplify-builds/appchenAuthPostConfirmation-6857774a482f50614856-build.zip"
+        }
+      },
+      "api": {
+        "appchenGraphQL": {}
       }
     }
   }

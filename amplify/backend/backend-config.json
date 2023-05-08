@@ -99,6 +99,22 @@
           "resourceName": "appchenAuthPostConfirmation"
         }
       ]
+    },
+    "AMPLIFY_function_appchenAuthPostConfirmation_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "appchenAuthPostConfirmation"
+        }
+      ]
+    },
+    "AMPLIFY_function_appchenAuthPostConfirmation_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "appchenAuthPostConfirmation"
+        }
+      ]
     }
   }
 }
