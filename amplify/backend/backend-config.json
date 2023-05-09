@@ -87,12 +87,30 @@
   "function": {
     "appchenAuthPostConfirmation": {
       "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "appchenGraphQL"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
   },
   "parameters": {
     "AMPLIFY_function_appchenAuthPostConfirmation_GROUP": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "appchenAuthPostConfirmation"
+        }
+      ]
+    },
+    "AMPLIFY_function_appchenAuthPostConfirmation_VARIABLE": {
       "usedBy": [
         {
           "category": "function",

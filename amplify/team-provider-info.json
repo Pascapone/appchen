@@ -49,8 +49,9 @@
       "function": {
         "appchenAuthPostConfirmation": {
           "GROUP": "default",
+          "VARIABLE": "my variable",
           "deploymentBucketName": "amplify-appchen-dev-224755-deployment",
-          "s3Key": "amplify-builds/appchenAuthPostConfirmation-6857774a482f50614856-build.zip"
+          "s3Key": "amplify-builds/appchenAuthPostConfirmation-7766786c356356396662-build.zip"
         }
       },
       "api": {

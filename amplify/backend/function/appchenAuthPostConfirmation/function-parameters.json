@@ -12,5 +12,14 @@
   "triggerTemplate": "PostConfirmation.json.ejs",
   "triggerEventPath": "PostConfirmation.event.json",
   "roleName": "appchenAuthPostConfirmation",
-  "skipEdit": true
+  "skipEdit": true,
+  "permissions": {
+    "api": {
+      "appchenGraphQL": [
+        "Query",
+        "Mutation",
+        "Subscription"
+      ]
+    }
+  }
 }

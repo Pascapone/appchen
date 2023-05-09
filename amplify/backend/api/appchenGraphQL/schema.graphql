@@ -1,4 +1,8 @@
-type User @model @auth(rules: [{ allow: private, provider: iam }]) {
+type User @model @auth(rules: [
+    { allow: private, provider: iam, operations: [create, update, delete, read] },
+    { allow: private, provider: userPools, operations: [read]},
+    { allow: groups, groups: ["admin", "superAdmin"], operations: [create, update, delete, read] }
+  ]) {
   id: ID!
   name: String!
   email: String!
@@ -6,7 +10,11 @@ type User @model @auth(rules: [{ allow: private, provider: iam }]) {
   courses: [Course] @manyToMany(relationName: "CoursesUsers")
 }
 
-type Course @model @auth(rules: [{ allow: private, provider: iam }]) {
+type Course @model @auth(rules: [
+    { allow: private, provider: iam, operations: [create, update, delete, read] },
+    { allow: private, provider: userPools, operations: [read]},
+    { allow: groups, groups: ["admin", "superAdmin"], operations: [create, update, delete, read] }
+  ]) {
   id: ID!
   name: String!
   level: Level!

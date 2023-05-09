@@ -41,10 +41,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 var add_to_group_1 = __importDefault(require("./add-to-group"));
+var create_user_model_1 = __importDefault(require("./create-user-model"));
 var handler = function (event, context) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, Promise.all([add_to_group_1.default].map(function (func) { return func(event, context); }))];
+            case 0: return [4 /*yield*/, Promise.all([add_to_group_1.default, create_user_model_1.default].map(function (func) { return func(event, context); }))];
             case 1:
                 _a.sent();
                 return [2 /*return*/, event];
