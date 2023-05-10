@@ -55,7 +55,7 @@
         },
         "appchenRESTLambda": {
           "deploymentBucketName": "amplify-appchen-dev-224755-deployment",
-          "s3Key": "amplify-builds/appchenRESTLambda-374f6b5751412b587268-build.zip"
+          "s3Key": "amplify-builds/appchenRESTLambda-45693775423950306159-build.zip"
         }
       },
       "api": {

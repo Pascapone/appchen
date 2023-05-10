@@ -23,6 +23,18 @@ var middleware_1 = __importDefault(require("aws-serverless-express/middleware"))
 var app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
 app.use(middleware_1.default.eventContext());
+// Creates a group permissions middleware
+var groupPermissions = function (allowedGroups) {
+    return function (req, res, next) {
+        var userGroups = req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'].split(',');
+        if (userGroups && userGroups.some(function (group) { return allowedGroups.includes(group); })) {
+            next();
+        }
+        else {
+            res.status(403).send('Forbidden');
+        }
+    };
+};
 // Enable CORS for all methods
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -32,9 +44,16 @@ app.use(function (req, res, next) {
 /**********************
  * Example get method *
  **********************/
-app.get('/', function (req, res) {
+app.get('/', groupPermissions(['admin']), function (req, res) {
+    console.log(req);
+    console.log(req.apiGateway.event.requestContext.authorizer.claims['cognito:groups']);
     // Add your code here
     res.json({ success: 'get call succeed!', url: req.url });
+});
+app.get('/route/test', function (req, res) {
+    console.log(req);
+    // Add your code here
+    res.json({ success: 'get call on route test succeed!', url: req.url });
 });
 app.get('//*', function (req, res) {
     // Add your code here
@@ -72,6 +91,13 @@ app.delete('/', function (req, res) {
 app.delete('//*', function (req, res) {
     // Add your code here
     res.json({ success: 'delete call succeed!', url: req.url });
+});
+// Error middleware must be defined last
+app.use(function (err, req, res, next) {
+    console.error(err.message);
+    if (!err.statusCode)
+        err.statusCode = 500; // If err has no specified error code, set error code to 'Internal Server Error (500)'
+    res.status(err.statusCode).json({ message: err.message }).end();
 });
 app.listen(3000, function () {
     console.log("App started");
