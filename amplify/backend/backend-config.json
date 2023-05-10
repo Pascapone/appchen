@@ -27,6 +27,48 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "AppSync"
+    },
+    "appchenREST": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "appchenRESTLambda"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "appchenAuth"
+        },
+        {
+          "attributes": [
+            "superAdminGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        },
+        {
+          "attributes": [
+            "adminGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        },
+        {
+          "attributes": [
+            "defaultGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {
@@ -99,6 +141,21 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
+    },
+    "appchenRESTLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "appchenGraphQL"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
     }
   },
   "parameters": {
@@ -131,6 +188,22 @@
         {
           "category": "function",
           "resourceName": "appchenAuthPostConfirmation"
+        }
+      ]
+    },
+    "AMPLIFY_function_appchenRESTLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "appchenRESTLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_appchenRESTLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "appchenRESTLambda"
         }
       ]
     }

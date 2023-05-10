@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "amplify:appchenAuthPostConfirmation": "pushd . && cd amplify/backend/function/appchenAuthPostConfirmation && xcopy /y package.json src && cd src && npm install && cd .. && tsc -p ./tsconfig.json && popd",
+    "amplify:appchenRESTLambda": "pushd . && cd amplify/backend/function/appchenRESTLambda && xcopy /y package.json src && cd src && npm install && cd .. && tsc -p ./tsconfig.json && popd",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

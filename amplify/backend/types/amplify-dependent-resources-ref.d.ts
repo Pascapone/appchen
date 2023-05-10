@@ -3,6 +3,11 @@ export type AmplifyDependentResourcesAttributes = {
     "appchenGraphQL": {
       "GraphQLAPIEndpointOutput": "string",
       "GraphQLAPIIdOutput": "string"
+    },
+    "appchenREST": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
     }
   },
   "auth": {
@@ -23,6 +28,13 @@ export type AmplifyDependentResourcesAttributes = {
   },
   "function": {
     "appchenAuthPostConfirmation": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "appchenRESTLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

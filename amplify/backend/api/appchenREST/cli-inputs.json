@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "paths": {
+    "/": {
+      "name": "/",
+      "lambdaFunction": "appchenRESTLambda",
+      "permissions": {
+        "groups": {
+          "superAdmin": [
+            "create",
+            "read",
+            "update",
+            "delete"
+          ],
+          "admin": [
+            "create",
+            "read",
+            "update",
+            "delete"
+          ],
+          "default": [
+            "create",
+            "read",
+            "update",
+            "delete"
+          ]
+        },
+        "setting": "private"
+      }
+    }
+  }
+}

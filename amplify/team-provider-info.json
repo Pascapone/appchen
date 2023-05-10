@@ -52,10 +52,15 @@
           "VARIABLE": "my variable",
           "deploymentBucketName": "amplify-appchen-dev-224755-deployment",
           "s3Key": "amplify-builds/appchenAuthPostConfirmation-7766786c356356396662-build.zip"
+        },
+        "appchenRESTLambda": {
+          "deploymentBucketName": "amplify-appchen-dev-224755-deployment",
+          "s3Key": "amplify-builds/appchenRESTLambda-374f6b5751412b587268-build.zip"
         }
       },
       "api": {
-        "appchenGraphQL": {}
+        "appchenGraphQL": {},
+        "appchenREST": {}
       }
     }
   }
