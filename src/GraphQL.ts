@@ -101,6 +101,7 @@ export type Course = {
   __typename: "Course",
   id: string,
   name: string,
+  value: string,
   level: Level,
   users?: ModelCoursesUsersConnection | null,
   createdAt: string,
@@ -134,11 +135,13 @@ export type DeleteUserInput = {
 export type CreateCourseInput = {
   id?: string | null,
   name: string,
+  value: string,
   level: Level,
 };
 
 export type ModelCourseConditionInput = {
   name?: ModelStringInput | null,
+  value?: ModelStringInput | null,
   level?: ModelLevelInput | null,
   and?: Array< ModelCourseConditionInput | null > | null,
   or?: Array< ModelCourseConditionInput | null > | null,
@@ -153,6 +156,7 @@ export type ModelLevelInput = {
 export type UpdateCourseInput = {
   id: string,
   name?: string | null,
+  value?: string | null,
   level?: Level | null,
 };
 
@@ -219,6 +223,7 @@ export type ModelUserConnection = {
 export type ModelCourseFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
+  value?: ModelStringInput | null,
   level?: ModelLevelInput | null,
   and?: Array< ModelCourseFilterInput | null > | null,
   or?: Array< ModelCourseFilterInput | null > | null,
@@ -288,6 +293,7 @@ export type ModelSubscriptionStringInput = {
 export type ModelSubscriptionCourseFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
+  value?: ModelSubscriptionStringInput | null,
   level?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionCourseFilterInput | null > | null,
   or?: Array< ModelSubscriptionCourseFilterInput | null > | null,
@@ -398,6 +404,7 @@ export type CreateCourseMutation = {
     __typename: "Course",
     id: string,
     name: string,
+    value: string,
     level: Level,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
@@ -426,6 +433,7 @@ export type UpdateCourseMutation = {
     __typename: "Course",
     id: string,
     name: string,
+    value: string,
     level: Level,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
@@ -454,6 +462,7 @@ export type DeleteCourseMutation = {
     __typename: "Course",
     id: string,
     name: string,
+    value: string,
     level: Level,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
@@ -500,6 +509,7 @@ export type CreateCoursesUsersMutation = {
       __typename: "Course",
       id: string,
       name: string,
+      value: string,
       level: Level,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
@@ -541,6 +551,7 @@ export type UpdateCoursesUsersMutation = {
       __typename: "Course",
       id: string,
       name: string,
+      value: string,
       level: Level,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
@@ -582,6 +593,7 @@ export type DeleteCoursesUsersMutation = {
       __typename: "Course",
       id: string,
       name: string,
+      value: string,
       level: Level,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
@@ -658,6 +670,7 @@ export type GetCourseQuery = {
     __typename: "Course",
     id: string,
     name: string,
+    value: string,
     level: Level,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
@@ -689,6 +702,7 @@ export type ListCoursesQuery = {
       __typename: "Course",
       id: string,
       name: string,
+      value: string,
       level: Level,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
@@ -728,6 +742,7 @@ export type GetCoursesUsersQuery = {
       __typename: "Course",
       id: string,
       name: string,
+      value: string,
       level: Level,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
@@ -768,6 +783,7 @@ export type ListCoursesUsersQuery = {
         __typename: "Course",
         id: string,
         name: string,
+        value: string,
         level: Level,
         createdAt: string,
         updatedAt: string,
@@ -808,6 +824,7 @@ export type CoursesUsersByUserIdQuery = {
         __typename: "Course",
         id: string,
         name: string,
+        value: string,
         level: Level,
         createdAt: string,
         updatedAt: string,
@@ -848,6 +865,7 @@ export type CoursesUsersByCourseIdQuery = {
         __typename: "Course",
         id: string,
         name: string,
+        value: string,
         level: Level,
         createdAt: string,
         updatedAt: string,
@@ -952,6 +970,7 @@ export type OnCreateCourseSubscription = {
     __typename: "Course",
     id: string,
     name: string,
+    value: string,
     level: Level,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
@@ -979,6 +998,7 @@ export type OnUpdateCourseSubscription = {
     __typename: "Course",
     id: string,
     name: string,
+    value: string,
     level: Level,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
@@ -1006,6 +1026,7 @@ export type OnDeleteCourseSubscription = {
     __typename: "Course",
     id: string,
     name: string,
+    value: string,
     level: Level,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
@@ -1051,6 +1072,7 @@ export type OnCreateCoursesUsersSubscription = {
       __typename: "Course",
       id: string,
       name: string,
+      value: string,
       level: Level,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
@@ -1091,6 +1113,7 @@ export type OnUpdateCoursesUsersSubscription = {
       __typename: "Course",
       id: string,
       name: string,
+      value: string,
       level: Level,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
@@ -1131,6 +1154,7 @@ export type OnDeleteCoursesUsersSubscription = {
       __typename: "Course",
       id: string,
       name: string,
+      value: string,
       level: Level,
       users?:  {
         __typename: "ModelCoursesUsersConnection",

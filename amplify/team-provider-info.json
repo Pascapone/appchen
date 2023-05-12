@@ -51,11 +51,11 @@
           "GROUP": "default",
           "VARIABLE": "my variable",
           "deploymentBucketName": "amplify-appchen-dev-224755-deployment",
-          "s3Key": "amplify-builds/appchenAuthPostConfirmation-7766786c356356396662-build.zip"
+          "s3Key": "amplify-builds/appchenAuthPostConfirmation-68304631576f6c6a6362-build.zip"
         },
         "appchenRESTLambda": {
           "deploymentBucketName": "amplify-appchen-dev-224755-deployment",
-          "s3Key": "amplify-builds/appchenRESTLambda-45693775423950306159-build.zip"
+          "s3Key": "amplify-builds/appchenRESTLambda-52633870615166487556-build.zip"
         }
       },
       "api": {

@@ -18,11 +18,12 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
+import { createCourse } from './graphql/mutations';
+
 // declare a new express app
 const app = express()
 app.use(bodyParser.json())
 app.use(awsServerlessExpressMiddleware.eventContext())
-
 
 type Groups = 'admin' | 'superAdmin' | 'default'
 
@@ -52,61 +53,24 @@ app.use(function(req, res, next) {
 app.get('/', groupPermissions(['admin']), function(req, res) {
   console.log(req)
   console.log(req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'])
+  console.log(createCourse)
   // Add your code here
   res.json({success: 'get call succeed!', url: req.url});
 });
 
-app.get('/route/test', function(req, res) {
-  console.log(req)
+app.post('/course/create', groupPermissions(['admin']), function(req, res) {
   // Add your code here
-  res.json({success: 'get call on route test succeed!', url: req.url});
+  res.json({success: 'Create Course', url: req.url, body: req.body})
 });
 
-app.get('//*', function(req, res) {
+app.delete('/course/delete', groupPermissions(['admin']), function(req, res) {
   // Add your code here
-  res.json({success: 'get call succeed!', url: req.url});
+  res.json({success: `Delete Course: ${req.body.courseId}`, url: req.url, body: req.body})
 });
 
-/****************************
-* Example post method *
-****************************/
-
-app.post('/', function(req, res) {
+app.post('/course/:courseId', function(req, res) {
   // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
-});
-
-app.post('//*', function(req, res) {
-  // Add your code here
-  res.json({success: 'post call succeed!', url: req.url, body: req.body})
-});
-
-/****************************
-* Example put method *
-****************************/
-
-app.put('/', function(req, res) {
-  // Add your code here
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
-});
-
-app.put('//*', function(req, res) {
-  // Add your code here
-  res.json({success: 'put call succeed!', url: req.url, body: req.body})
-});
-
-/****************************
-* Example delete method *
-****************************/
-
-app.delete('/', function(req, res) {
-  // Add your code here
-  res.json({success: 'delete call succeed!', url: req.url});
-});
-
-app.delete('//*', function(req, res) {
-  // Add your code here
-  res.json({success: 'delete call succeed!', url: req.url});
+  res.json({success: `Course Id: ${req.params.courseId}`, url: req.url, body: req.body})
 });
 
 // Error middleware must be defined last

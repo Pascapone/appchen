@@ -12,7 +12,7 @@ import { withAuthenticator, WithAuthenticatorProps } from '@aws-amplify/ui-react
         headers: {
           'Content-Type' : 'application/json',
           Authorization: `${(await Auth.currentSession()).getIdToken().getJwtToken()}`
-        } 
+        },
     }
     return await API.get(apiName, path, myInit);
   }
