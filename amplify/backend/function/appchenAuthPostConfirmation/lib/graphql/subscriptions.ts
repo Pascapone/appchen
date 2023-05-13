@@ -73,7 +73,6 @@ export const onCreateCourse = /* GraphQL */ `
     onCreateCourse(filter: $filter) {
       id
       name
-      value
       level
       users {
         items {
@@ -95,7 +94,6 @@ export const onUpdateCourse = /* GraphQL */ `
     onUpdateCourse(filter: $filter) {
       id
       name
-      value
       level
       users {
         items {
@@ -117,7 +115,6 @@ export const onDeleteCourse = /* GraphQL */ `
     onDeleteCourse(filter: $filter) {
       id
       name
-      value
       level
       users {
         items {
@@ -156,7 +153,6 @@ export const onCreateCoursesUsers = /* GraphQL */ `
       course {
         id
         name
-        value
         level
         users {
           nextToken
@@ -191,7 +187,6 @@ export const onUpdateCoursesUsers = /* GraphQL */ `
       course {
         id
         name
-        value
         level
         users {
           nextToken
@@ -226,7 +221,6 @@ export const onDeleteCoursesUsers = /* GraphQL */ `
       course {
         id
         name
-        value
         level
         users {
           nextToken

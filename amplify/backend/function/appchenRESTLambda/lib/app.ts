@@ -18,7 +18,10 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
-import { createCourse } from './graphql/mutations';
+import { createCourse } from './course-actions';
+
+const GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
+const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 
 // declare a new express app
 const app = express()
@@ -52,15 +55,26 @@ app.use(function(req, res, next) {
 
 app.get('/', groupPermissions(['admin']), function(req, res) {
   console.log(req)
-  console.log(req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'])
-  console.log(createCourse)
+  console.log(req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'])  
   // Add your code here
   res.json({success: 'get call succeed!', url: req.url});
 });
 
-app.post('/course/create', groupPermissions(['admin']), function(req, res) {
-  // Add your code here
-  res.json({success: 'Create Course', url: req.url, body: req.body})
+
+app.post('/course/create', groupPermissions(['admin']), async  (req, res, next) => {  
+  const level = req.body.level
+  const name = req.body.name
+
+  console.log(`EVENT: ${JSON.stringify(req.body)}`);
+  console.log("Endpoint:", GRAPHQL_ENDPOINT)
+
+  try {
+    await createCourse(name, level)
+    res.json({success: 'Create Course', url: req.url, body: req.body})     
+  } catch (err) {
+    console.log(`Error in Promise: ${err}`)
+    next(err)
+  }
 });
 
 app.delete('/course/delete', groupPermissions(['admin']), function(req, res) {
@@ -77,6 +91,9 @@ app.post('/course/:courseId', function(req, res) {
 app.use((err, req, res, next) => {
   console.error(err.message);
   if (!err.statusCode) err.statusCode = 500; // If err has no specified error code, set error code to 'Internal Server Error (500)'
+  console.log("Response:", res)
+  console.log(err.statusCode)
+  console.log(err.message)
   res.status(err.statusCode).json({ message: err.message }).end();
 });
 

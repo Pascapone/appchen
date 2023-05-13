@@ -85,7 +85,6 @@ export const createCourse = /* GraphQL */ `
     createCourse(input: $input, condition: $condition) {
       id
       name
-      value
       level
       users {
         items {
@@ -110,7 +109,6 @@ export const updateCourse = /* GraphQL */ `
     updateCourse(input: $input, condition: $condition) {
       id
       name
-      value
       level
       users {
         items {
@@ -135,7 +133,6 @@ export const deleteCourse = /* GraphQL */ `
     deleteCourse(input: $input, condition: $condition) {
       id
       name
-      value
       level
       users {
         items {
@@ -175,7 +172,6 @@ export const createCoursesUsers = /* GraphQL */ `
       course {
         id
         name
-        value
         level
         users {
           nextToken
@@ -211,7 +207,6 @@ export const updateCoursesUsers = /* GraphQL */ `
       course {
         id
         name
-        value
         level
         users {
           nextToken
@@ -247,7 +242,6 @@ export const deleteCoursesUsers = /* GraphQL */ `
       course {
         id
         name
-        value
         level
         users {
           nextToken

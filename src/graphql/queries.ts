@@ -51,7 +51,6 @@ export const getCourse = /* GraphQL */ `
     getCourse(id: $id) {
       id
       name
-      value
       level
       users {
         items {
@@ -78,7 +77,6 @@ export const listCourses = /* GraphQL */ `
       items {
         id
         name
-        value
         level
         users {
           nextToken
@@ -110,7 +108,6 @@ export const getCoursesUsers = /* GraphQL */ `
       course {
         id
         name
-        value
         level
         users {
           nextToken
@@ -145,7 +142,6 @@ export const listCoursesUsers = /* GraphQL */ `
         course {
           id
           name
-          value
           level
           createdAt
           updatedAt
@@ -187,7 +183,6 @@ export const coursesUsersByUserId = /* GraphQL */ `
         course {
           id
           name
-          value
           level
           createdAt
           updatedAt
@@ -229,7 +224,6 @@ export const coursesUsersByCourseId = /* GraphQL */ `
         course {
           id
           name
-          value
           level
           createdAt
           updatedAt

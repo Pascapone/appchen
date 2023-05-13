@@ -16,7 +16,6 @@ type Course @model @auth(rules: [
   ]) {
   id: ID!
   name: String!
-  value: String!
   level: Level!
   users: [User] @manyToMany(relationName: "CoursesUsers")
 }
