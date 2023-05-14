@@ -4,7 +4,6 @@ const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider({
   apiVersion: '2016-04-18',
 });
 
-
 export default async (event, context) => {
   const groupParams = {
     GroupName: process.env.GROUP,

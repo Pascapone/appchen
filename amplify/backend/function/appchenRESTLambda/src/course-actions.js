@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCourse = void 0;
+exports.joinUserToGroup = exports.createCourse = void 0;
 var sha256_js_1 = require("@aws-crypto/sha256-js");
 var credential_provider_node_1 = require("@aws-sdk/credential-provider-node");
 var signature_v4_1 = require("@aws-sdk/signature-v4");
@@ -47,6 +47,7 @@ var protocol_http_1 = require("@aws-sdk/protocol-http");
 var node_fetch_1 = __importDefault(require("node-fetch"));
 var node_fetch_2 = require("node-fetch");
 var mutations_1 = require("./graphql/mutations");
+var mutations_2 = require("./graphql/mutations");
 var GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
 var AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 var createCourse = function (name, level) { return __awaiter(void 0, void 0, void 0, function () {
@@ -106,3 +107,58 @@ var createCourse = function (name, level) { return __awaiter(void 0, void 0, voi
     });
 }); };
 exports.createCourse = createCourse;
+var joinUserToGroup = function (userId, courseId) { return __awaiter(void 0, void 0, void 0, function () {
+    var endpoint, signer, variables, requestToBeSigned, signed, request, body, response, error_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                endpoint = new URL(GRAPHQL_ENDPOINT);
+                signer = new signature_v4_1.SignatureV4({
+                    credentials: (0, credential_provider_node_1.defaultProvider)(),
+                    region: AWS_REGION,
+                    service: 'appsync',
+                    sha256: sha256_js_1.Sha256
+                });
+                console.log("Join user", userId, "to group", courseId);
+                variables = {
+                    input: {
+                        userId: userId,
+                        courseId: courseId
+                    }
+                };
+                requestToBeSigned = new protocol_http_1.HttpRequest({
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        host: endpoint.host
+                    },
+                    hostname: endpoint.host,
+                    body: JSON.stringify({ query: mutations_2.createCoursesUsers, variables: variables }),
+                    path: endpoint.pathname
+                });
+                return [4 /*yield*/, signer.sign(requestToBeSigned)];
+            case 1:
+                signed = _a.sent();
+                request = new node_fetch_2.Request(endpoint, signed);
+                _a.label = 2;
+            case 2:
+                _a.trys.push([2, 5, , 6]);
+                return [4 /*yield*/, (0, node_fetch_1.default)(request)];
+            case 3:
+                response = _a.sent();
+                return [4 /*yield*/, response.json()];
+            case 4:
+                body = _a.sent();
+                if (body.errors) {
+                    throw new Error(body.errors[0].message);
+                }
+                return [3 /*break*/, 6];
+            case 5:
+                error_2 = _a.sent();
+                console.log("App Error:", error_2);
+                throw error_2;
+            case 6: return [2 /*return*/];
+        }
+    });
+}); };
+exports.joinUserToGroup = joinUserToGroup;

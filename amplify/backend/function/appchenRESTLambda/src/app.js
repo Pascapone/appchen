@@ -115,6 +115,32 @@ app.post('/course/create', groupPermissions(['admin']), function (req, res, next
         }
     });
 }); });
+app.post('/course/join', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, courseId, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userId = req.body.userId;
+                courseId = req.body.courseId;
+                console.log("EVENT: ".concat(JSON.stringify(req.body)));
+                console.log("Endpoint:", GRAPHQL_ENDPOINT);
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, course_actions_1.joinUserToGroup)(userId, courseId)];
+            case 2:
+                _a.sent();
+                res.json({ success: 'User joined course', url: req.url, body: req.body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_2 = _a.sent();
+                console.log("Error in Promise: ".concat(err_2));
+                next(err_2);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 app.delete('/course/delete', groupPermissions(['admin']), function (req, res) {
     // Add your code here
     res.json({ success: "Delete Course: ".concat(req.body.courseId), url: req.url, body: req.body });

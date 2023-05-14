@@ -18,7 +18,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
-import { createCourse } from './course-actions';
+import { createCourse, joinUserToGroup } from './course-actions';
 
 const GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
@@ -71,6 +71,22 @@ app.post('/course/create', groupPermissions(['admin']), async  (req, res, next) 
   try {
     await createCourse(name, level)
     res.json({success: 'Create Course', url: req.url, body: req.body})     
+  } catch (err) {
+    console.log(`Error in Promise: ${err}`)
+    next(err)
+  }
+});
+
+app.post('/course/join', groupPermissions(['admin']), async  (req, res, next) => {  
+  const userId = req.body.userId
+  const courseId = req.body.courseId
+
+  console.log(`EVENT: ${JSON.stringify(req.body)}`);
+  console.log("Endpoint:", GRAPHQL_ENDPOINT)
+
+  try {
+    await joinUserToGroup(userId, courseId)
+    res.json({success: 'User joined course', url: req.url, body: req.body})     
   } catch (err) {
     console.log(`Error in Promise: ${err}`)
     next(err)
