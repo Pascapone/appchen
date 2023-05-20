@@ -58,11 +58,13 @@ export const createCourse = async (name, level) => {
     body = await response.json();
     if(body.errors) {
       throw new Error(body.errors[0].message)
-    }
+    }     
   } catch (error) {
     console.log("App Error:", error)   
     throw error
   }
+
+  return body
 }
 
 export const joinUserToGroup = async (userId, courseId) => {

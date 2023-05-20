@@ -102,7 +102,7 @@ var createCourse = function (name, level) { return __awaiter(void 0, void 0, voi
                 error_1 = _a.sent();
                 console.log("App Error:", error_1);
                 throw error_1;
-            case 6: return [2 /*return*/];
+            case 6: return [2 /*return*/, body];
         }
     });
 }); };

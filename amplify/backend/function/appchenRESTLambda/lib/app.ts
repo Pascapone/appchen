@@ -69,8 +69,8 @@ app.post('/course/create', groupPermissions(['admin']), async  (req, res, next) 
   console.log("Endpoint:", GRAPHQL_ENDPOINT)
 
   try {
-    await createCourse(name, level)
-    res.json({success: 'Create Course', url: req.url, body: req.body})     
+    const body = await createCourse(name, level)
+    res.json({success: 'Create Course', url: req.url, body: body.data.createCourse})     
   } catch (err) {
     console.log(`Error in Promise: ${err}`)
     next(err)
@@ -87,6 +87,34 @@ app.post('/course/join', groupPermissions(['admin']), async  (req, res, next) =>
   try {
     await joinUserToGroup(userId, courseId)
     res.json({success: 'User joined course', url: req.url, body: req.body})     
+  } catch (err) {
+    console.log(`Error in Promise: ${err}`)
+    next(err)
+  }
+});
+
+app.post('/course/create-and-join', groupPermissions(['admin']), async  (req, res, next) => {    
+  const level = req.body.level
+  const name = req.body.name
+  const userId = req.body.userId
+  
+  console.log(`EVENT: ${JSON.stringify(req.body)}`);
+  console.log("Endpoint:", GRAPHQL_ENDPOINT)
+
+  console.log("Create and Join Course")
+
+  let body
+  try {
+    body = await createCourse(name, level)        
+  } catch (err) {
+    console.log(`Error in Promise: ${err}`)
+    next(err)
+  }
+
+  const courseId = body.data.createCourse.id
+  try {
+    await joinUserToGroup(userId, courseId)
+    res.json({success: 'Course Created and User Joined', url: req.url, body: { createCourse: body.data.createCourse, joinedCourseId: courseId }})     
   } catch (err) {
     console.log(`Error in Promise: ${err}`)
     next(err)

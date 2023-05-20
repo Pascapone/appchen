@@ -90,7 +90,7 @@ app.get('/', groupPermissions(['admin']), function (req, res) {
     res.json({ success: 'get call succeed!', url: req.url });
 });
 app.post('/course/create', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var level, name, err_1;
+    var level, name, body, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -103,8 +103,8 @@ app.post('/course/create', groupPermissions(['admin']), function (req, res, next
                 _a.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, (0, course_actions_1.createCourse)(name, level)];
             case 2:
-                _a.sent();
-                res.json({ success: 'Create Course', url: req.url, body: req.body });
+                body = _a.sent();
+                res.json({ success: 'Create Course', url: req.url, body: body.data.createCourse });
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();
@@ -138,6 +138,48 @@ app.post('/course/join', groupPermissions(['admin']), function (req, res, next) 
                 next(err_2);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post('/course/create-and-join', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var level, name, userId, body, err_3, courseId, err_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                level = req.body.level;
+                name = req.body.name;
+                userId = req.body.userId;
+                console.log("EVENT: ".concat(JSON.stringify(req.body)));
+                console.log("Endpoint:", GRAPHQL_ENDPOINT);
+                console.log("Create and Join Course");
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, course_actions_1.createCourse)(name, level)];
+            case 2:
+                body = _a.sent();
+                return [3 /*break*/, 4];
+            case 3:
+                err_3 = _a.sent();
+                console.log("Error in Promise: ".concat(err_3));
+                next(err_3);
+                return [3 /*break*/, 4];
+            case 4:
+                courseId = body.data.createCourse.id;
+                _a.label = 5;
+            case 5:
+                _a.trys.push([5, 7, , 8]);
+                return [4 /*yield*/, (0, course_actions_1.joinUserToGroup)(userId, courseId)];
+            case 6:
+                _a.sent();
+                res.json({ success: 'Course Created and User Joined', url: req.url, body: { createCourse: body.data.createCourse, joinedCourseId: courseId } });
+                return [3 /*break*/, 8];
+            case 7:
+                err_4 = _a.sent();
+                console.log("Error in Promise: ".concat(err_4));
+                next(err_4);
+                return [3 /*break*/, 8];
+            case 8: return [2 /*return*/];
         }
     });
 }); });
