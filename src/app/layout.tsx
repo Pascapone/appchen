@@ -1,5 +1,7 @@
 "use client"
 
+import 'antd/dist/reset.css';
+import './globals.css'
 import { useEffect } from 'react'
 
 import { Amplify } from 'aws-amplify';
@@ -11,9 +13,13 @@ import awsExports from '../aws-exports';
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Layout from '@/components/shared/Layout';
 
+import { ConfigProvider, theme } from 'antd';
+
 import { Auth, Hub } from 'aws-amplify'
 
 import { useUserStore } from '@/store/userStore';
+
+import { ToastContainer } from 'react-toastify';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -62,6 +68,20 @@ const darkTheme = createTheme({
     },
   }
 });
+
+const darkThemeAntd = {
+  algorithm: theme.darkAlgorithm,
+  token: {
+    colorError: darkTheme.palette.error.main,
+  },
+}
+
+const lightThemeAntd = {
+  algorithm: theme.defaultAlgorithm,
+  token: {
+    colorError: lightTheme.palette.error.main,
+  },
+}
 
 export const metadata = {
   title: 'Appchen',
@@ -116,12 +136,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider theme={lightTheme}>
-          <AmplifyProvider>
-            <Layout>
-              {children}
-            </Layout>
-          </AmplifyProvider>
+        <ThemeProvider theme={darkTheme}>
+          <ConfigProvider theme={darkThemeAntd}>
+            <AmplifyProvider>    
+              <ToastContainer 
+                position="bottom-left"
+              />        
+              <Layout>
+                {children}
+              </Layout>
+            </AmplifyProvider>
+          </ConfigProvider>
         </ThemeProvider>
       </body>
     </html>

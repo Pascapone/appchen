@@ -1,119 +1,145 @@
-import { Sha256 } from '@aws-crypto/sha256-js';
-import { defaultProvider } from '@aws-sdk/credential-provider-node';
-import { SignatureV4 } from '@aws-sdk/signature-v4';
-import { HttpRequest } from '@aws-sdk/protocol-http';
-import fetch from 'node-fetch';
-import { Request } from 'node-fetch';
-
-import { createCourse as createCourseQuery } from './graphql/mutations';
+import { createCourse as createCourseQuery, deleteCourse as deleteCourseQuery } from './graphql/mutations';
 import { createCoursesUsers as createCoursesUsersQuery } from './graphql/mutations';
+import { getCourse as getCourseQuery } from './graphql/queries';
+import { getUser as getUserQuery } from './graphql/queries';
+import { deleteCoursesUsers as deleteCoursesUsersQuery } from './graphql/mutations';
+import { getCourseOwnerIdQuery } from './graphql/customQueries';
 
-const GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
-const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
+import { graphQlRequest } from './utils';
 
-export const createCourse = async (name, level) => {
-  const endpoint = new URL(GRAPHQL_ENDPOINT);
-	
-	// We create a signer, that we will use to sign our request
-  const signer = new SignatureV4({
-    credentials: defaultProvider(),
-    region: AWS_REGION,
-    service: 'appsync',
-    sha256: Sha256
-  });
-
-	// These are the input parameters for creating our user model
-  console.log("ENUM:", level)
+export const createCourse = async (name: string, level: string, ownerId: string, startDate: string, endDate: string) => {
+  
   const variables = {
     input: {
       name: name,
-      level: level
+      level: level,
+      ownerId: ownerId,
+      startDate: startDate,
+      endDate: endDate
     }
   };
 
-  const query = createCourseQuery;
-
-	// create our request
-  const requestToBeSigned = new HttpRequest({
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      host: endpoint.host
-    },
-    hostname: endpoint.host,
-    body: JSON.stringify({ query, variables }),
-    path: endpoint.pathname
-  });
-
-	// sign the request with the created signer
-  const signed = await signer.sign(requestToBeSigned);
-  const request = new Request(endpoint, signed);
-
-  let body;
-  let response;
-
-	// post our request and fetch the respone
-  try {
-    response = await fetch(request);
-    body = await response.json();
-    if(body.errors) {
-      throw new Error(body.errors[0].message)
-    }     
-  } catch (error) {
-    console.log("App Error:", error)   
+	const body = await graphQlRequest(createCourseQuery, variables).catch((error) => {
+    console.log("Create Course Promise Error:", error)
     throw error
-  }
+  });  
 
   return body
 }
 
-export const joinUserToGroup = async (userId, courseId) => {
-  const endpoint = new URL(GRAPHQL_ENDPOINT);
-	
-	// We create a signer, that we will use to sign our request
-  const signer = new SignatureV4({
-    credentials: defaultProvider(),
-    region: AWS_REGION,
-    service: 'appsync',
-    sha256: Sha256
+export const getUser = async (userId: string) => {
+  const variables = {
+    id: userId
+  };
+
+  const body = await graphQlRequest(getUserQuery, variables).catch((error) => {
+    console.log("Get Course Promise Error:", error)
+    throw error
+  });  
+
+  return body.data.getUser
+}
+
+export const getCourseOwnerId = async (courseId: string) => {
+  const course = await graphQlRequest(getCourseOwnerIdQuery, { id: courseId }).catch((error) => {
+    console.log("Get Course Owner Id Promise Error:", error)
+    throw error
   });
 
-  console.log("Join user", userId, "to group", courseId)
+  return course.data.getCourse.ownerId
+}
+
+export const leaveCourse = async (userId: string, courseId: string) => {
+
+  console.group("Get Course Owner Id")
+  const ownerId = await getCourseOwnerId(courseId).catch((error) => {
+    console.log("Get Course Owner Id Promise Error:", error)
+    throw error
+  });
+
+  console.log("Owner Id:", ownerId)
+  if(ownerId === userId) {
+    throw new Error("Course owner cannot leave course")
+  }
+
   const variables = {
     input: {
+      id: `${userId}_${courseId}`,
+    }
+  };
+
+  const body = await graphQlRequest(deleteCoursesUsersQuery, variables).catch((error) => {
+    console.log("Delete Course User Relation Promise Error:", error)
+    throw error
+  });  
+
+  return body
+}
+
+export const joinUserToCourse = async (userId: string, courseId: string) => {  
+
+  // Combining the user id and course id to prevent duplicate relational entries (user can only join a course once)
+  const variables = {
+    input: {
+      id: `${userId}_${courseId}`,
       userId,
       courseId
     }
   };
 
-	// create our request
-  const requestToBeSigned = new HttpRequest({
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      host: endpoint.host
-    },
-    hostname: endpoint.host,
-    body: JSON.stringify({ query: createCoursesUsersQuery, variables }),
-    path: endpoint.pathname
-  });
-
-	// sign the request with the created signer
-  const signed = await signer.sign(requestToBeSigned);
-  const request = new Request(endpoint, signed);
-
-  let body;
-  let response;
-
-	// post our request and fetch the respone
-  try {
-    response = await fetch(request);
-    body = await response.json();
-    if(body.errors) {
-      throw new Error(body.errors[0].message)
-    }
-  } catch (error) {
-    console.log("App Error:", error)   
+  const body = await graphQlRequest(createCoursesUsersQuery, variables).catch((error) => {
+    console.log("Create Course Promise Error:", error)
     throw error
-  }
+  }); 
+
+  return body	
+}
+
+export const getCourse = async (courseId: string) => {
+  const courseQueryVariables = { id: courseId }
+	
+  const getCourseBody = await graphQlRequest(getCourseQuery, courseQueryVariables).catch((error) => {
+    console.log("Get Course Promise Error:", error)
+    throw error
+  })
+
+  return getCourseBody.data.getCourse
+}
+
+export const deleteCourse = async (courseId: string, userId: string) => {
+
+  const course = await getCourse(courseId).catch((error) => { 
+    console.log("Get Course Promise Error:", error)
+    throw error
+  })
+
+  console.log("Course:", course)
+  console.log("Course Users:", course.users.items)
+
+  await Promise.all(course.users.items .map(async (element) => {
+    const deleteCoursesUsersVariables = {
+      input: {
+        id: element.id,
+      }
+    };
+    await graphQlRequest(deleteCoursesUsersQuery, deleteCoursesUsersVariables)
+  })).catch((error) => {
+    console.log("Delete Course Promise Error:", error)
+    throw error
+  })  
+
+  console.log("Course Id:", course.id)
+
+  const deleteCourseVariables = {
+    input: {
+      id: courseId,
+    }
+  };  
+
+  await graphQlRequest(deleteCourseQuery, deleteCourseVariables).catch((error) => {
+    console.log("Delete Course Promise Error:", error)
+    throw error
+  })
+
+  return { success: "Deleted Course", courseId: courseId}
 }

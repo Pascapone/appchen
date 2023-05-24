@@ -35,130 +35,194 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.joinUserToGroup = exports.createCourse = void 0;
-var sha256_js_1 = require("@aws-crypto/sha256-js");
-var credential_provider_node_1 = require("@aws-sdk/credential-provider-node");
-var signature_v4_1 = require("@aws-sdk/signature-v4");
-var protocol_http_1 = require("@aws-sdk/protocol-http");
-var node_fetch_1 = __importDefault(require("node-fetch"));
-var node_fetch_2 = require("node-fetch");
+exports.deleteCourse = exports.getCourse = exports.joinUserToCourse = exports.leaveCourse = exports.getCourseOwnerId = exports.getUser = exports.createCourse = void 0;
 var mutations_1 = require("./graphql/mutations");
 var mutations_2 = require("./graphql/mutations");
-var GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
-var AWS_REGION = process.env.AWS_REGION || 'us-east-1';
-var createCourse = function (name, level) { return __awaiter(void 0, void 0, void 0, function () {
-    var endpoint, signer, variables, query, requestToBeSigned, signed, request, body, response, error_1;
+var queries_1 = require("./graphql/queries");
+var queries_2 = require("./graphql/queries");
+var mutations_3 = require("./graphql/mutations");
+var customQueries_1 = require("./graphql/customQueries");
+var utils_1 = require("./utils");
+var createCourse = function (name, level, ownerId, startDate, endDate) { return __awaiter(void 0, void 0, void 0, function () {
+    var variables, body;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                endpoint = new URL(GRAPHQL_ENDPOINT);
-                signer = new signature_v4_1.SignatureV4({
-                    credentials: (0, credential_provider_node_1.defaultProvider)(),
-                    region: AWS_REGION,
-                    service: 'appsync',
-                    sha256: sha256_js_1.Sha256
-                });
-                // These are the input parameters for creating our user model
-                console.log("ENUM:", level);
                 variables = {
                     input: {
                         name: name,
-                        level: level
+                        level: level,
+                        ownerId: ownerId,
+                        startDate: startDate,
+                        endDate: endDate
                     }
                 };
-                query = mutations_1.createCourse;
-                requestToBeSigned = new protocol_http_1.HttpRequest({
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        host: endpoint.host
-                    },
-                    hostname: endpoint.host,
-                    body: JSON.stringify({ query: query, variables: variables }),
-                    path: endpoint.pathname
-                });
-                return [4 /*yield*/, signer.sign(requestToBeSigned)];
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_1.createCourse, variables).catch(function (error) {
+                        console.log("Create Course Promise Error:", error);
+                        throw error;
+                    })];
             case 1:
-                signed = _a.sent();
-                request = new node_fetch_2.Request(endpoint, signed);
-                _a.label = 2;
-            case 2:
-                _a.trys.push([2, 5, , 6]);
-                return [4 /*yield*/, (0, node_fetch_1.default)(request)];
-            case 3:
-                response = _a.sent();
-                return [4 /*yield*/, response.json()];
-            case 4:
                 body = _a.sent();
-                if (body.errors) {
-                    throw new Error(body.errors[0].message);
-                }
-                return [3 /*break*/, 6];
-            case 5:
-                error_1 = _a.sent();
-                console.log("App Error:", error_1);
-                throw error_1;
-            case 6: return [2 /*return*/, body];
+                return [2 /*return*/, body];
         }
     });
 }); };
 exports.createCourse = createCourse;
-var joinUserToGroup = function (userId, courseId) { return __awaiter(void 0, void 0, void 0, function () {
-    var endpoint, signer, variables, requestToBeSigned, signed, request, body, response, error_2;
+var getUser = function (userId) { return __awaiter(void 0, void 0, void 0, function () {
+    var variables, body;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                endpoint = new URL(GRAPHQL_ENDPOINT);
-                signer = new signature_v4_1.SignatureV4({
-                    credentials: (0, credential_provider_node_1.defaultProvider)(),
-                    region: AWS_REGION,
-                    service: 'appsync',
-                    sha256: sha256_js_1.Sha256
-                });
-                console.log("Join user", userId, "to group", courseId);
+                variables = {
+                    id: userId
+                };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(queries_2.getUser, variables).catch(function (error) {
+                        console.log("Get Course Promise Error:", error);
+                        throw error;
+                    })];
+            case 1:
+                body = _a.sent();
+                return [2 /*return*/, body.data.getUser];
+        }
+    });
+}); };
+exports.getUser = getUser;
+var getCourseOwnerId = function (courseId) { return __awaiter(void 0, void 0, void 0, function () {
+    var course;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, (0, utils_1.graphQlRequest)(customQueries_1.getCourseOwnerIdQuery, { id: courseId }).catch(function (error) {
+                    console.log("Get Course Owner Id Promise Error:", error);
+                    throw error;
+                })];
+            case 1:
+                course = _a.sent();
+                return [2 /*return*/, course.data.getCourse.ownerId];
+        }
+    });
+}); };
+exports.getCourseOwnerId = getCourseOwnerId;
+var leaveCourse = function (userId, courseId) { return __awaiter(void 0, void 0, void 0, function () {
+    var ownerId, variables, body;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.group("Get Course Owner Id");
+                return [4 /*yield*/, (0, exports.getCourseOwnerId)(courseId).catch(function (error) {
+                        console.log("Get Course Owner Id Promise Error:", error);
+                        throw error;
+                    })];
+            case 1:
+                ownerId = _a.sent();
+                console.log("Owner Id:", ownerId);
+                if (ownerId === userId) {
+                    throw new Error("Course owner cannot leave course");
+                }
                 variables = {
                     input: {
+                        id: "".concat(userId, "_").concat(courseId),
+                    }
+                };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_3.deleteCoursesUsers, variables).catch(function (error) {
+                        console.log("Delete Course User Relation Promise Error:", error);
+                        throw error;
+                    })];
+            case 2:
+                body = _a.sent();
+                return [2 /*return*/, body];
+        }
+    });
+}); };
+exports.leaveCourse = leaveCourse;
+var joinUserToCourse = function (userId, courseId) { return __awaiter(void 0, void 0, void 0, function () {
+    var variables, body;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                variables = {
+                    input: {
+                        id: "".concat(userId, "_").concat(courseId),
                         userId: userId,
                         courseId: courseId
                     }
                 };
-                requestToBeSigned = new protocol_http_1.HttpRequest({
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        host: endpoint.host
-                    },
-                    hostname: endpoint.host,
-                    body: JSON.stringify({ query: mutations_2.createCoursesUsers, variables: variables }),
-                    path: endpoint.pathname
-                });
-                return [4 /*yield*/, signer.sign(requestToBeSigned)];
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_2.createCoursesUsers, variables).catch(function (error) {
+                        console.log("Create Course Promise Error:", error);
+                        throw error;
+                    })];
             case 1:
-                signed = _a.sent();
-                request = new node_fetch_2.Request(endpoint, signed);
-                _a.label = 2;
-            case 2:
-                _a.trys.push([2, 5, , 6]);
-                return [4 /*yield*/, (0, node_fetch_1.default)(request)];
-            case 3:
-                response = _a.sent();
-                return [4 /*yield*/, response.json()];
-            case 4:
                 body = _a.sent();
-                if (body.errors) {
-                    throw new Error(body.errors[0].message);
-                }
-                return [3 /*break*/, 6];
-            case 5:
-                error_2 = _a.sent();
-                console.log("App Error:", error_2);
-                throw error_2;
-            case 6: return [2 /*return*/];
+                return [2 /*return*/, body];
         }
     });
 }); };
-exports.joinUserToGroup = joinUserToGroup;
+exports.joinUserToCourse = joinUserToCourse;
+var getCourse = function (courseId) { return __awaiter(void 0, void 0, void 0, function () {
+    var courseQueryVariables, getCourseBody;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                courseQueryVariables = { id: courseId };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(queries_1.getCourse, courseQueryVariables).catch(function (error) {
+                        console.log("Get Course Promise Error:", error);
+                        throw error;
+                    })];
+            case 1:
+                getCourseBody = _a.sent();
+                return [2 /*return*/, getCourseBody.data.getCourse];
+        }
+    });
+}); };
+exports.getCourse = getCourse;
+var deleteCourse = function (courseId, userId) { return __awaiter(void 0, void 0, void 0, function () {
+    var course, deleteCourseVariables;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, (0, exports.getCourse)(courseId).catch(function (error) {
+                    console.log("Get Course Promise Error:", error);
+                    throw error;
+                })];
+            case 1:
+                course = _a.sent();
+                console.log("Course:", course);
+                console.log("Course Users:", course.users.items);
+                return [4 /*yield*/, Promise.all(course.users.items.map(function (element) { return __awaiter(void 0, void 0, void 0, function () {
+                        var deleteCoursesUsersVariables;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    deleteCoursesUsersVariables = {
+                                        input: {
+                                            id: element.id,
+                                        }
+                                    };
+                                    return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_3.deleteCoursesUsers, deleteCoursesUsersVariables)];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })).catch(function (error) {
+                        console.log("Delete Course Promise Error:", error);
+                        throw error;
+                    })];
+            case 2:
+                _a.sent();
+                console.log("Course Id:", course.id);
+                deleteCourseVariables = {
+                    input: {
+                        id: courseId,
+                    }
+                };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_1.deleteCourse, deleteCourseVariables).catch(function (error) {
+                        console.log("Delete Course Promise Error:", error);
+                        throw error;
+                    })];
+            case 3:
+                _a.sent();
+                return [2 /*return*/, { success: "Deleted Course", courseId: courseId }];
+        }
+    });
+}); };
+exports.deleteCourse = deleteCourse;

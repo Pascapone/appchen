@@ -1,22 +1,28 @@
 type User @model @auth(rules: [
     { allow: private, provider: iam, operations: [create, update, delete, read] },
     { allow: groups, groups: ["admin", "superAdmin"], operations: [create, update, delete, read] }
+    { allow: groups, groups: ["default"], operations: [read] },
   ]) {
   id: ID!
   name: String!
   email: String!
   userType: UserType!
   courses: [Course] @manyToMany(relationName: "CoursesUsers")
+  ownedCourses: [Course] @hasMany(indexName: "byUser", fields: ["id"])
 }
 
 type Course @model @auth(rules: [
     { allow: private, provider: iam, operations: [create, update, delete, read] },
     { allow: groups, groups: ["admin", "superAdmin"], operations: [create, update, delete, read] },
-    { allow: groups, groupsField: "users", operations: [read] }
+    { allow: groups, groups: ["default"], operations: [read] },
   ]) {
   id: ID!
   name: String!
   level: Level!
+  ownerId: ID! @index(name: "byUser")
+  owner: User! @belongsTo(fields: ["ownerId"])
+  startDate: AWSDateTime!
+  endDate: AWSDateTime!
   users: [User] @manyToMany(relationName: "CoursesUsers")
 }
 

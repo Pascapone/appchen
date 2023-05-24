@@ -22,6 +22,19 @@ export const createUser = /* GraphQL */ `
         }
         nextToken
       }
+      ownedCourses {
+        items {
+          id
+          name
+          level
+          ownerId
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -42,6 +55,19 @@ export const updateUser = /* GraphQL */ `
           id
           userId
           courseId
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      ownedCourses {
+        items {
+          id
+          name
+          level
+          ownerId
+          startDate
+          endDate
           createdAt
           updatedAt
         }
@@ -72,6 +98,19 @@ export const deleteUser = /* GraphQL */ `
         }
         nextToken
       }
+      ownedCourses {
+        items {
+          id
+          name
+          level
+          ownerId
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -86,6 +125,23 @@ export const createCourse = /* GraphQL */ `
       id
       name
       level
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      startDate
+      endDate
       users {
         items {
           id
@@ -110,6 +166,23 @@ export const updateCourse = /* GraphQL */ `
       id
       name
       level
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      startDate
+      endDate
       users {
         items {
           id
@@ -134,6 +207,23 @@ export const deleteCourse = /* GraphQL */ `
       id
       name
       level
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      startDate
+      endDate
       users {
         items {
           id
@@ -166,6 +256,9 @@ export const createCoursesUsers = /* GraphQL */ `
         courses {
           nextToken
         }
+        ownedCourses {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -173,6 +266,17 @@ export const createCoursesUsers = /* GraphQL */ `
         id
         name
         level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
         users {
           nextToken
         }
@@ -201,6 +305,9 @@ export const updateCoursesUsers = /* GraphQL */ `
         courses {
           nextToken
         }
+        ownedCourses {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -208,6 +315,17 @@ export const updateCoursesUsers = /* GraphQL */ `
         id
         name
         level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
         users {
           nextToken
         }
@@ -236,6 +354,9 @@ export const deleteCoursesUsers = /* GraphQL */ `
         courses {
           nextToken
         }
+        ownedCourses {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -243,6 +364,17 @@ export const deleteCoursesUsers = /* GraphQL */ `
         id
         name
         level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
         users {
           nextToken
         }

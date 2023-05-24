@@ -19,6 +19,19 @@ export const onCreateUser = /* GraphQL */ `
         }
         nextToken
       }
+      ownedCourses {
+        items {
+          id
+          name
+          level
+          ownerId
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -36,6 +49,19 @@ export const onUpdateUser = /* GraphQL */ `
           id
           userId
           courseId
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      ownedCourses {
+        items {
+          id
+          name
+          level
+          ownerId
+          startDate
+          endDate
           createdAt
           updatedAt
         }
@@ -63,6 +89,19 @@ export const onDeleteUser = /* GraphQL */ `
         }
         nextToken
       }
+      ownedCourses {
+        items {
+          id
+          name
+          level
+          ownerId
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -74,6 +113,23 @@ export const onCreateCourse = /* GraphQL */ `
       id
       name
       level
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      startDate
+      endDate
       users {
         items {
           id
@@ -95,6 +151,23 @@ export const onUpdateCourse = /* GraphQL */ `
       id
       name
       level
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      startDate
+      endDate
       users {
         items {
           id
@@ -116,6 +189,23 @@ export const onDeleteCourse = /* GraphQL */ `
       id
       name
       level
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      startDate
+      endDate
       users {
         items {
           id
@@ -147,6 +237,9 @@ export const onCreateCoursesUsers = /* GraphQL */ `
         courses {
           nextToken
         }
+        ownedCourses {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -154,6 +247,17 @@ export const onCreateCoursesUsers = /* GraphQL */ `
         id
         name
         level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
         users {
           nextToken
         }
@@ -181,6 +285,9 @@ export const onUpdateCoursesUsers = /* GraphQL */ `
         courses {
           nextToken
         }
+        ownedCourses {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -188,6 +295,17 @@ export const onUpdateCoursesUsers = /* GraphQL */ `
         id
         name
         level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
         users {
           nextToken
         }
@@ -215,6 +333,9 @@ export const onDeleteCoursesUsers = /* GraphQL */ `
         courses {
           nextToken
         }
+        ownedCourses {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -222,6 +343,17 @@ export const onDeleteCoursesUsers = /* GraphQL */ `
         id
         name
         level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
         users {
           nextToken
         }

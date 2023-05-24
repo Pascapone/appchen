@@ -28,6 +28,10 @@ export default function UserMenu(){
   const handleAccount = async () => {
     console.log(userId)
   }
+  
+  const handleDashboard = async () => {
+    console.log("Click Dashboard")
+  }
 
   const handleCloseUserMenu = (setting: Setting) => {
     console.log(setting);
@@ -37,6 +41,9 @@ export default function UserMenu(){
         break;
       case "Account":
         handleAccount();
+        break;
+      case "Dashboard":
+        handleDashboard();
         break;
     
       default:

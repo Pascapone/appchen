@@ -19,6 +19,19 @@ export const getUser = /* GraphQL */ `
         }
         nextToken
       }
+      ownedCourses {
+        items {
+          id
+          name
+          level
+          ownerId
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -39,6 +52,9 @@ export const listUsers = /* GraphQL */ `
         courses {
           nextToken
         }
+        ownedCourses {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -52,6 +68,23 @@ export const getCourse = /* GraphQL */ `
       id
       name
       level
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      startDate
+      endDate
       users {
         items {
           id
@@ -78,6 +111,57 @@ export const listCourses = /* GraphQL */ `
         id
         name
         level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
+        users {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const coursesByOwnerId = /* GraphQL */ `
+  query CoursesByOwnerId(
+    $ownerId: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelCourseFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    coursesByOwnerId(
+      ownerId: $ownerId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        name
+        level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
         users {
           nextToken
         }
@@ -102,6 +186,9 @@ export const getCoursesUsers = /* GraphQL */ `
         courses {
           nextToken
         }
+        ownedCourses {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -109,6 +196,17 @@ export const getCoursesUsers = /* GraphQL */ `
         id
         name
         level
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        startDate
+        endDate
         users {
           nextToken
         }
@@ -143,6 +241,9 @@ export const listCoursesUsers = /* GraphQL */ `
           id
           name
           level
+          ownerId
+          startDate
+          endDate
           createdAt
           updatedAt
         }
@@ -184,6 +285,9 @@ export const coursesUsersByUserId = /* GraphQL */ `
           id
           name
           level
+          ownerId
+          startDate
+          endDate
           createdAt
           updatedAt
         }
@@ -225,6 +329,9 @@ export const coursesUsersByCourseId = /* GraphQL */ `
           id
           name
           level
+          ownerId
+          startDate
+          endDate
           createdAt
           updatedAt
         }

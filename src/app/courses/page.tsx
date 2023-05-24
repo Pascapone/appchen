@@ -2,28 +2,76 @@
 
 import { useEffect, useState } from 'react'
 import { withAuthenticator, WithAuthenticatorProps } from '@aws-amplify/ui-react'
-import { createJoinCourse } from '@/restapi/course'
-import { Level } from '@/GraphQL'
+import { RestAPI } from '@/restapi/RestAPI'
 import { useUserStore } from '@/store/userStore'
-import { getUserCourses } from '@/restapi/course'
-import { Card, Grid, CardContent, Typography, CardHeader, CardActionArea, ButtonBase } from '@mui/material'
+import { Card, Grid, CardContent, Typography, CardHeader, CardActionArea, Box, CardActions, Button, TextField} from '@mui/material'
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import DeleteDialog from '@/components/dialogs/DeleteDialog'
+import Link from 'next/link'
 
 const Courses = ({signOut, user}: WithAuthenticatorProps) => {  
   const [userId, userGroups] = useUserStore(state => [state.userId, state.userGroups])
   const [courses, setCourses] = useState<any[]>([])
-
-  console.log(user?.username)
-  console.log(user?.attributes)
-
-  const handleCreateJoinCourse = async () => {
-    await createJoinCourse("test", Level.B12, userId)
-    handleGetUserCourses()
-  }
+  const [submitting, setSubmitting] = useState(false)
+  const [courseId, setCourseId] = useState('')
+  const [courseUserId, setCourseUserId] = useState('')
+  const [deleteCourseId, setDeleteCourseId] = useState('')
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
 
   const handleGetUserCourses = async () => {
-    const courses = await getUserCourses(userId)
+    const courses = await RestAPI.course.getUserCourses(userId).catch(err => {
+      console.log(err)
+      return
+    })
+    console.log("User Courses:", courses)
     setCourses(courses)
+  }  
+
+  const handleDeleteCourse = async (courseId: string) => {
+    setDeleteCourseId(courseId)
+    setOpenDeleteDialog(true)    
+  }
+
+  const handleGetCourseModel = async (courseId: string) => {
+    const course = await RestAPI.course.getCourse(courseId).catch(err => {
+      console.log(err)
+    })
+    console.log(course)
+  }
+
+  const handleJoinUserToCourse = async () => {
+    RestAPI.course.joinUserToCourse(courseUserId, courseId)
+  }
+
+  const submitDeleteCourse = async () => {
+    setSubmitting(true)
+    await RestAPI.course.deleteCourse(deleteCourseId).catch(err => {
+      console.log(err)
+    })
+    setSubmitting(false)
+    setOpenDeleteDialog(false)
+  }
+
+  // TODO: Leave Course Functionality
+  const handleLeaveCourse = async (courseId: string) => {
+    await RestAPI.course.leaveCourse(courseId).catch(err => {
+      console.log(err)
+    })
+  }
+
+  const onChangeInputField = (event: React.ChangeEvent<HTMLInputElement>) => {    
+    switch (event.target.id) {
+      case "KursId":
+        setCourseId(event.target.value)
+        break;
+      case "UserId":
+        setCourseUserId(event.target.value)
+        break;    
+      default:
+        break;
+    }
+    
+    event.target.id
   }
 
   useEffect(() => {
@@ -35,9 +83,37 @@ const Courses = ({signOut, user}: WithAuthenticatorProps) => {
   
 
   return (
-    <div>      
+    <div>        
+      <DeleteDialog 
+        title="Kurs Löschen" 
+        deleteText='Sind Sie sicher, dass Sie den Krus löschen wollen?' 
+        open={openDeleteDialog} 
+        submitting={submitting} 
+        handleCancel={() => {setOpenDeleteDialog(false)}} 
+        handleConfirm={submitDeleteCourse}
+      />         
       Courses
-      <button onClick={handleCreateJoinCourse}>Create and Join Course</button>     
+      <TextField
+        autoFocus
+        margin="dense"
+        id="KursId"
+        label="KursId"
+        type="text"
+        fullWidth
+        variant="standard"
+        onChange={onChangeInputField}
+      />
+      <TextField
+        autoFocus
+        margin="dense"
+        id="UserId"
+        label="UserId"
+        type="text"
+        fullWidth
+        variant="standard"
+        onChange={onChangeInputField}
+      />
+      <Button onClick={handleJoinUserToCourse} size="small">Join User to Group</Button>
       <Grid container spacing={2}>
         {courses.map(course => {
             return (
@@ -52,8 +128,16 @@ const Courses = ({signOut, user}: WithAuthenticatorProps) => {
                       This impressive paella is a perfect party dish and a fun meal to cook
                       together with your guests. Add 1 cup of frozen peas along with the mussels,
                       if you like.
+                      This impressive paella is a perfect party dish and a fun meal to cook
+                      together with your guests. Add 1 cup of frozen peas along with the mussels,
+                      if you like.
                     </Typography>
-                  </CardContent>                  
+                  </CardContent>        
+                  <CardActions>
+                    <Button onClick={() => handleDeleteCourse(course.id)} size="small">Delete Course</Button>
+                    <Button onClick={() => handleGetCourseModel(course.id)} size="small">Get Course Model</Button>
+                    <Button onClick={() => handleLeaveCourse(course.id)} size="small">Leave Course</Button>
+                  </CardActions>          
                 </Card>
               </Grid>
             )
@@ -63,11 +147,16 @@ const Courses = ({signOut, user}: WithAuthenticatorProps) => {
           userGroups?.includes("admin") &&  (
             <Grid item xs={6} key="Add Course Card">              
                 <Card sx={{height: "100%"}}>     
-                  <CardActionArea onClick={() => console.log("TEST")}>
-                    <CardContent>                      
-                      <Typography textAlign={"center"} color="secondary">
-                        <ControlPointIcon sx={{ fontSize: 100 }}/>
-                      </Typography>
+                  <CardActionArea sx={{height: "100%"}} LinkComponent={Link} href='/courses/create'>
+                    <CardHeader   
+                      title={`Erstelle einen neuen Kurs`}
+                    />
+                    <CardContent>       
+                      <Box display="flex" justifyContent="center" alignItems="center">              
+                        <Typography color="secondary">
+                          <ControlPointIcon sx={{ fontSize: 100 }}/>
+                        </Typography>
+                      </Box> 
                     </CardContent>      
                   </CardActionArea>           
                 </Card>             
