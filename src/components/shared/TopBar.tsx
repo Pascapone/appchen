@@ -4,7 +4,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { styled } from '@mui/system';
 import { useTheme } from '@mui/material/styles';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import UserMenu from '@/components/shared/UserMenu';
+import UserMenu from '@/components/shared/UserMenu/UserMenu';
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   zIndex: theme.zIndex.drawer + 1,

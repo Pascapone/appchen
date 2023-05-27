@@ -2,7 +2,7 @@
 
 import 'antd/dist/reset.css';
 import './globals.css'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Amplify } from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
@@ -18,6 +18,7 @@ import { ConfigProvider, theme } from 'antd';
 import { Auth, Hub } from 'aws-amplify'
 
 import { useUserStore } from '@/store/userStore';
+import { UserTheme } from '@/store/userStore';
 
 import { ToastContainer } from 'react-toastify';
 
@@ -88,14 +89,18 @@ export const metadata = {
   description: 'Learn German with Appchen',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+const getSystemDarkTheme = () => {
+ return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
 
-  // Zustand User Store
+
+
+export default function RootLayout({children}: {children: React.ReactNode}) {
+
   const [userLogin, userLogout] = useUserStore((state) => [state.userLogin, state.userLogout])
+  const [userTheme, setUserTheme] = useUserStore((state) => [state.userTheme, state.setUserTheme])
+  const [userDarkMode, setUserDarkMode] = useUserStore((state) => [state.darkMode, state.setDarkMode]) 
+  const [didMount, setDidMount] = useState(false)
 
   // Read user data from Zustand User Store
   const userInfo = useUserStore((state) => ({userId: state.userId, name: state.name, email: state.email}))
@@ -110,6 +115,25 @@ export default function RootLayout({
   const handleUserSignedOut = async () => {
     userLogout();
   }
+
+  const initializeTheme = () => {
+    const localTheme = localStorage.getItem("userTheme");
+    if(localTheme === "light") {
+      setUserTheme('light');
+      setUserDarkMode(false);
+    } else if(localTheme === "dark") {    
+      setUserTheme('dark');
+      setUserDarkMode(true);
+    } else {    
+      setUserTheme('system');
+      setUserDarkMode(getSystemDarkTheme());
+    }
+  }
+
+  if(userTheme === null) {
+    initializeTheme();
+    setDidMount(true)  
+  }  
 
   useEffect(() => {
     // Create listener for auth events
@@ -136,8 +160,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider theme={darkTheme}>
-          <ConfigProvider theme={darkThemeAntd}>
+        <ThemeProvider theme={userDarkMode ? darkTheme : lightTheme}>
+          <ConfigProvider theme={userDarkMode ? darkThemeAntd: lightThemeAntd}>
             <AmplifyProvider>    
               <ToastContainer 
                 position="bottom-left"

@@ -1,5 +1,6 @@
 import { API, Auth, graphqlOperation } from 'aws-amplify'
 import { GraphQLQuery } from '@aws-amplify/api';
+import {GraphQLResult} from '@aws-amplify/api-graphql';
 
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD' | 'PATCH'
 
@@ -24,7 +25,7 @@ export const restApiAction = async (route: string, body: any, method: Method) =>
   }
 }
 
-export const graphQlQuery = async (query: any, variables: any) => {
+export const graphQlQuery = async (query: any, variables: any): Promise<GraphQLResult<any>> => {
   const model = await API.graphql<GraphQLQuery<any>>(
     graphqlOperation(query, variables)
   );  

@@ -90,21 +90,22 @@ app.get('/', groupPermissions(['admin']), function (req, res) {
     res.json({ success: 'get call succeed!', url: req.url });
 });
 app.post('/course/create', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var level, name, userId, startDate, endDate, body, err_1;
+    var courseLevel, courseName, userId, startDate, endDate, userName, body, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                level = req.body.level;
-                name = req.body.name;
+                courseLevel = req.body.level;
+                courseName = req.body.name;
                 userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
                 startDate = req.body.startDate;
                 endDate = req.body.endDate;
+                userName = req.apiGateway.event.requestContext.authorizer.claims.name;
                 console.log("EVENT: ".concat(JSON.stringify(req.body)));
                 console.log("Endpoint:", GRAPHQL_ENDPOINT);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, (0, course_actions_1.createCourse)(name, level, userId, startDate, endDate)];
+                return [4 /*yield*/, (0, course_actions_1.createCourse)(courseName, courseLevel, userName, userId, startDate, endDate)];
             case 2:
                 body = _a.sent();
                 res.json({ success: 'Create Course', url: req.url, body: body.data.createCourse });
@@ -173,16 +174,42 @@ app.post('/course/join', groupPermissions(['admin']), function (req, res, next) 
         }
     });
 }); });
-app.post('/course/create-and-join', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var level, name, userId, startDate, endDate, body, err_4, courseId, err_5;
+app.post('/course/join-link', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, token, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                level = req.body.level;
-                name = req.body.name;
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                token = req.body.token;
+                console.log("User Id:", userId);
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, course_actions_1.joinCourseWithToken)(userId, token)];
+            case 2:
+                _a.sent();
+                res.json({ success: 'User joined course', url: req.url, body: req.body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_4 = _a.sent();
+                console.log("Error in Promise: ".concat(err_4));
+                next(err_4);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post('/course/create-and-join', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var courseLevel, courseName, userId, startDate, endDate, userName, body, err_5, courseId, err_6;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                courseLevel = req.body.level;
+                courseName = req.body.name;
                 userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
                 startDate = req.body.startDate;
                 endDate = req.body.endDate;
+                userName = req.apiGateway.event.requestContext.authorizer.claims.name;
                 console.log("Start Date:", startDate);
                 console.log("End Date:", endDate);
                 console.log("EVENT: ".concat(JSON.stringify(req.body)));
@@ -191,14 +218,14 @@ app.post('/course/create-and-join', groupPermissions(['admin']), function (req, 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, (0, course_actions_1.createCourse)(name, level, userId, startDate, endDate)];
+                return [4 /*yield*/, (0, course_actions_1.createCourse)(courseName, courseLevel, userName, userId, startDate, endDate)];
             case 2:
                 body = _a.sent();
                 return [3 /*break*/, 4];
             case 3:
-                err_4 = _a.sent();
-                console.log("Error in Promise Create Course: ".concat(err_4));
-                next(err_4);
+                err_5 = _a.sent();
+                console.log("Error in Promise Create Course: ".concat(err_5));
+                next(err_5);
                 return [2 /*return*/];
             case 4:
                 _a.trys.push([4, 6, , 7]);
@@ -209,16 +236,31 @@ app.post('/course/create-and-join', groupPermissions(['admin']), function (req, 
                 res.json({ success: 'Course Created and User Joined', url: req.url, body: { createCourse: body.data.createCourse, joinedCourseId: courseId } });
                 return [3 /*break*/, 7];
             case 6:
-                err_5 = _a.sent();
-                console.log("Error in Promise Join Group: ".concat(err_5));
-                next(err_5);
+                err_6 = _a.sent();
+                console.log("Error in Promise Join Group: ".concat(err_6));
+                next(err_6);
                 return [2 /*return*/];
             case 7: return [2 /*return*/];
         }
     });
 }); });
+app.post('/course/createInviteLink', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var courseId, userId, token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                courseId = req.body.courseId;
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                return [4 /*yield*/, (0, course_actions_1.createInviteLink)(courseId)];
+            case 1:
+                token = _a.sent();
+                res.json({ success: "Course Id: ".concat(userId), url: req.url, body: { token: token } });
+                return [2 /*return*/];
+        }
+    });
+}); });
 app.delete('/course/:courseId', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var userId, courseId, err_6;
+    var userId, courseId, err_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -236,9 +278,9 @@ app.delete('/course/:courseId', groupPermissions(['admin']), function (req, res,
                 res.json({ success: 'Course Created and User Joined', url: req.url, body: { courseId: courseId } });
                 return [3 /*break*/, 4];
             case 3:
-                err_6 = _a.sent();
-                console.log("Error in Promise: ".concat(err_6));
-                next(err_6);
+                err_7 = _a.sent();
+                console.log("Error in Promise: ".concat(err_7));
+                next(err_7);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }

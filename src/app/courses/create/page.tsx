@@ -15,6 +15,13 @@ import Dropdown from '@/components/inputs/Dropdown';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 
+
+type InputErrors = {
+  courseName: boolean,
+  date: boolean,
+  level: boolean
+}
+
 function CreateCourse() {
   const [ submitting, setSubmitting ] = useState(false)
   const [ courseLevel, setCourseLevel ] = React.useState<Level | null>(null)
@@ -62,41 +69,36 @@ function CreateCourse() {
   }
 
   const handleSubmitCreateCourseDialog = async () => {   
-    console.log(courseName, courseLevel)
-    console.log(startDate, endDate)
 
-    if(startDate === null || endDate === null) {
-      setDateError(true)
-    }
-    else{
-      setDateError(false)
+    const inputErrors: InputErrors = {
+      courseName: courseName === '',
+      date: startDate === null || endDate === null,
+      level: courseLevel === null
     }
 
-    if(courseLevel === null) {
-      setLevelError(true)
-    }
-    else{
-      setLevelError(false)
-    }
+    setCourseNameError(inputErrors.courseName)
+    setDateError(inputErrors.date)
+    setLevelError(inputErrors.level)    
 
-    if(courseName === '') {
-      setCourseNameError(true)
-    }
-    else{
-      setCourseNameError(false)
-    }
-
-    if(courseNameError || dateError || levelError) {
+    if(Object.values(inputErrors).some(error => error)) {
       inputError()
       return
     }
 
     setSubmitting(true)   
+
     // Implement Error Handling
     await RestAPI.course.createJoinCourse(courseName, courseLevel!, startDate!, endDate!).catch(err => {
       console.log(err)      
     })
+
+    setCourseName('')
+    setCourseLevel(null)
+    setStartDate(null)
+    setEndDate(null)    
     setSubmitting(false)
+
+    router.push('/courses')
   }
 
   const onOpenChangeDateRange = (open: boolean) => {

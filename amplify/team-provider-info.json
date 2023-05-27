@@ -20,13 +20,14 @@
       "function": {
         "appchenAuthPostConfirmation": {
           "deploymentBucketName": "amplify-appchen-sampledev-193413-deployment",
-          "s3Key": "amplify-builds/appchenAuthPostConfirmation-31707257726f41523963-build.zip",
+          "s3Key": "amplify-builds/appchenAuthPostConfirmation-58624165534e6747682b-build.zip",
           "GROUP": "default",
           "VARIABLE": "my variable"
         },
         "appchenRESTLambda": {
           "deploymentBucketName": "amplify-appchen-sampledev-193413-deployment",
-          "s3Key": "amplify-builds/appchenRESTLambda-527471366b4f77414144-build.zip"
+          "s3Key": "amplify-builds/appchenRESTLambda-71496a4a6d73566e6250-build.zip",
+          "secretsPathAmplifyAppId": "dmi2ognqxcp2k"
         }
       },
       "api": {

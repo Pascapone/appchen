@@ -25,6 +25,8 @@ export const getUser = /* GraphQL */ `
           name
           level
           ownerId
+          ownerName
+          inviteToken
           startDate
           endDate
           createdAt
@@ -69,6 +71,7 @@ export const getCourse = /* GraphQL */ `
       name
       level
       ownerId
+      ownerName
       owner {
         id
         name
@@ -83,6 +86,7 @@ export const getCourse = /* GraphQL */ `
         createdAt
         updatedAt
       }
+      inviteToken
       startDate
       endDate
       users {
@@ -112,6 +116,7 @@ export const listCourses = /* GraphQL */ `
         name
         level
         ownerId
+        ownerName
         owner {
           id
           name
@@ -120,6 +125,7 @@ export const listCourses = /* GraphQL */ `
           createdAt
           updatedAt
         }
+        inviteToken
         startDate
         endDate
         users {
@@ -152,6 +158,7 @@ export const coursesByOwnerId = /* GraphQL */ `
         name
         level
         ownerId
+        ownerName
         owner {
           id
           name
@@ -160,6 +167,7 @@ export const coursesByOwnerId = /* GraphQL */ `
           createdAt
           updatedAt
         }
+        inviteToken
         startDate
         endDate
         users {
@@ -197,6 +205,7 @@ export const getCoursesUsers = /* GraphQL */ `
         name
         level
         ownerId
+        ownerName
         owner {
           id
           name
@@ -205,6 +214,7 @@ export const getCoursesUsers = /* GraphQL */ `
           createdAt
           updatedAt
         }
+        inviteToken
         startDate
         endDate
         users {
@@ -242,6 +252,8 @@ export const listCoursesUsers = /* GraphQL */ `
           name
           level
           ownerId
+          ownerName
+          inviteToken
           startDate
           endDate
           createdAt
@@ -286,6 +298,8 @@ export const coursesUsersByUserId = /* GraphQL */ `
           name
           level
           ownerId
+          ownerName
+          inviteToken
           startDate
           endDate
           createdAt
@@ -330,6 +344,8 @@ export const coursesUsersByCourseId = /* GraphQL */ `
           name
           level
           ownerId
+          ownerName
+          inviteToken
           startDate
           endDate
           createdAt

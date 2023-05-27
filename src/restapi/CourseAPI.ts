@@ -3,6 +3,7 @@ import { graphQlQuery } from './utils';
 import { Level } from '@/GraphQL';
 import { getCourse as getCourseQuery } from '@/graphql/queries';
 import { userCourseQuery } from '@/graphql/customQueries';
+import { getCourseWithUsersQuery } from '@/graphql/customQueries';
 
 export class CourseAPI {
   async createJoinCourse(courseName: string, level: Level, startDate: Date, endDate: Date) {
@@ -41,10 +42,23 @@ export class CourseAPI {
     return await restApiAction('/course/join', body, 'POST')
   }
 
+  async joinCourseWithLink(token: string) {
+    const body= {
+      token: token,
+    }
+  
+    return await restApiAction('/course/join-link', body, 'POST')
+  }
+
   // Type any should be replaced with the type of the course object (see GraphQL schema)
   async getCourse(courseId: string) {
     const model = await graphQlQuery(getCourseQuery, { id: courseId })
-    return model
+    return model.data.getCourse
+  }
+
+  async getCourseWithUsers(courseId: string) {
+    const model = await graphQlQuery(getCourseWithUsersQuery, { id: courseId })
+    return model.data.getCourse
   }
 
   async  leaveCourse(courseId: string) {
@@ -59,5 +73,13 @@ export class CourseAPI {
     const body= {}
     console.log("Course Id Delete", courseId)
     return await restApiAction(`/course/${courseId}`, body, 'DELETE')
+  }
+
+  async createCourseInviteLink (courseId: string) {
+    const body= {
+      courseId: courseId,
+    }
+  
+    return await restApiAction('/course/createInviteLink', body, 'POST') 
   }
 }

@@ -206,6 +206,14 @@
           "resourceName": "appchenRESTLambda"
         }
       ]
+    },
+    "AMPLIFY_function_appchenRESTLambda_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "appchenRESTLambda"
+        }
+      ]
     }
   }
 }

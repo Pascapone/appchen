@@ -20,7 +20,9 @@ type Course @model @auth(rules: [
   name: String!
   level: Level!
   ownerId: ID! @index(name: "byUser")
+  ownerName: String!
   owner: User! @belongsTo(fields: ["ownerId"])
+  inviteToken: String
   startDate: AWSDateTime!
   endDate: AWSDateTime!
   users: [User] @manyToMany(relationName: "CoursesUsers")

@@ -1,19 +1,39 @@
-import { useEffect, useState } from 'react';
-import { Typography, IconButton, Avatar, MenuItem, Menu } from '@mui/material';
-import { Auth, Hub } from 'aws-amplify'
+import { useState } from 'react';
+import { IconButton, Avatar, Menu } from '@mui/material';
+import { Auth } from 'aws-amplify'
 import { useUserStore } from '@/store/userStore';
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'] as const;
-type Setting = typeof settings[number];
+import { ExpandableSetting } from './ExpandableMenuItem'
+import { BasicSetting } from './BasicMenuItem'
+
+import BaseMenu from './BaseMenu'
+
+import ThemeMenu from './ThemeMenu'
+
+type MenuView = 'Base' | 'Theme'
 
 export default function UserMenu(){
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  
+  const [menuView, setMenuView] = useState<MenuView>('Base');
+
   const [userId] = useUserStore((state) => [state.userId])
   
 
+  const showMenu = (view: MenuView) => {
+    switch (view) {
+      case 'Base':
+        return <BaseMenu handleCloseUserMenu={handleClickMenuButton} handleExpandMenu={handleExpandMenu}/>
+      case 'Theme':
+        return <ThemeMenu backToBase={backToBaseMenuView}/>
+    }
+  }
+
+  const backToBaseMenuView = () => {
+    setMenuView('Base')
+  }
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    backToBaseMenuView()
     setAnchorElUser(event.currentTarget);
   };
 
@@ -33,7 +53,7 @@ export default function UserMenu(){
     console.log("Click Dashboard")
   }
 
-  const handleCloseUserMenu = (setting: Setting) => {
+  const handleClickMenuButton = (setting: BasicSetting) => {
     console.log(setting);
     switch (setting) {
       case "Logout":
@@ -42,7 +62,7 @@ export default function UserMenu(){
       case "Account":
         handleAccount();
         break;
-      case "Dashboard":
+      case "Dashboard Super":
         handleDashboard();
         break;
     
@@ -52,11 +72,27 @@ export default function UserMenu(){
     setAnchorElUser(null);
   };
 
+  const handleCloseUserMenu = (setting: BasicSetting) => {   
+    setAnchorElUser(null);    
+  };
+
+  const handleExpandMenu = (setting: ExpandableSetting) => {
+    console.log(setting);
+    switch (setting) {
+      case "Theme":        
+        setMenuView('Theme')
+        break;
+    
+      default:
+        break;
+    }
+  };
+
   return(
     <>
       <IconButton onClick={handleOpenUserMenu}>
         <Avatar src="path/to/avatar-image.jpg" alt="User Avatar" />
-      </IconButton>  
+      </IconButton>
       <Menu
         sx={{ mt: '45px' }}
         id="menu-appbar"
@@ -73,11 +109,7 @@ export default function UserMenu(){
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {settings.map((setting: Setting) => (
-          <MenuItem key={setting} onClick={(e) => handleCloseUserMenu(setting)}>
-            <Typography textAlign="center">{setting}</Typography>
-          </MenuItem>
-        ))}
+        {showMenu(menuView)}
       </Menu>
     </>
   )

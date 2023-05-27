@@ -3,19 +3,51 @@ import { createCoursesUsers as createCoursesUsersQuery } from './graphql/mutatio
 import { getCourse as getCourseQuery } from './graphql/queries';
 import { getUser as getUserQuery } from './graphql/queries';
 import { deleteCoursesUsers as deleteCoursesUsersQuery } from './graphql/mutations';
+import { updateCourse as updateCourseQuery } from './graphql/mutations';
 import { getCourseOwnerIdQuery } from './graphql/customQueries';
+
+import jwt from 'jsonwebtoken'; 
 
 import { graphQlRequest } from './utils';
 
-export const createCourse = async (name: string, level: string, ownerId: string, startDate: string, endDate: string) => {
+import { SSM } from 'aws-sdk';
+
+let secretsInitialized = false;
+
+interface Secrets {
+  JWT_PRIVATE_KEY: string,
+}
+
+let secrets: Secrets = {
+  JWT_PRIVATE_KEY: "",
+}
+
+const getSecrets = async () => {
+  const keys = Object.keys(secrets);
+  const { Parameters } = await (new SSM())
+  .getParameters({
+    Names: keys.map(secretName => process.env[secretName]),
+    WithDecryption: true,
+  })
+  .promise();
   
+  keys.forEach(key => {
+    secrets[key] = Parameters.find(parameter => parameter.Name === process.env[key]).Value;
+  })
+
+  secretsInitialized = true;
+}
+
+export const createCourse = async (courseName: string, courseLevel: string, userName: string, ownerId: string, startDate: string, endDate: string) => {
+
   const variables = {
     input: {
-      name: name,
-      level: level,
+      name: courseName,
+      level: courseLevel,
       ownerId: ownerId,
       startDate: startDate,
-      endDate: endDate
+      endDate: endDate,
+      ownerName: userName
     }
   };
 
@@ -142,4 +174,69 @@ export const deleteCourse = async (courseId: string, userId: string) => {
   })
 
   return { success: "Deleted Course", courseId: courseId}
+}
+
+export const createInviteLink = async (courseId: string) => {
+
+  if(!secretsInitialized) {
+    await getSecrets()
+  }
+
+  const course = await getCourse(courseId).catch((error) => {
+    console.log("Get Course Promise Error:", error)
+    throw error
+  })
+
+  const token = jwt.sign({ 
+    courseId,
+    courseName: course.name,
+    courseLevel: course.level,
+    courseStartDate: course.startDate,
+    courseEndDate: course.endDate,
+    courseOwnerName: course.ownerName,
+   }, secrets.JWT_PRIVATE_KEY);
+
+  const response = await graphQlRequest(updateCourseQuery, { 
+    input: {
+      id: courseId,
+      inviteToken: token
+    }
+  }).catch((error) => {
+    console.log("Get Course Promise Error:", error)
+    throw error
+  })
+
+  console.log("Response Update", response)
+
+  console.log("JWT Private Key", secrets.JWT_PRIVATE_KEY)
+  console.log("Secrets", secrets)
+  return token
+}
+
+export const joinCourseWithToken = async (userId: string, token: string) => {
+  if(!secretsInitialized) {
+    await getSecrets()
+  }
+
+  const valid = jwt.verify(token, secrets.JWT_PRIVATE_KEY);
+
+  if(!valid) {
+    throw new Error("Invalid Token")
+  }
+
+  const payload = jwt.decode(token);  
+  if(payload !== null && typeof payload === 'object') {  
+
+    const course = await getCourse(payload.courseId)
+    console.log("Course", course)
+    console.log("Invite Token", course.inviteToken)
+    if(course.inviteToken !== token) {
+      throw new Error("Invalid Token")
+    }
+    await joinUserToCourse(userId, payload.courseId)
+  }
+  else{
+    throw new Error("Error Decoding Token")
+  }
+  
 }

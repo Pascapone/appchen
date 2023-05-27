@@ -18,7 +18,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
-import { createCourse, joinUserToCourse, deleteCourse, leaveCourse } from './course-actions';
+import { createCourse, joinUserToCourse, deleteCourse, leaveCourse, createInviteLink, joinCourseWithToken } from './course-actions';
 
 const GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
@@ -62,17 +62,18 @@ app.get('/', groupPermissions(['admin']), function(req, res) {
 
 
 app.post('/course/create', groupPermissions(['admin']), async  (req, res, next) => {  
-  const level = req.body.level
-  const name = req.body.name
+  const courseLevel = req.body.level
+  const courseName = req.body.name
   const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
   const startDate = req.body.startDate
   const endDate = req.body.endDate
+  const userName = req.apiGateway.event.requestContext.authorizer.claims.name
 
   console.log(`EVENT: ${JSON.stringify(req.body)}`);
   console.log("Endpoint:", GRAPHQL_ENDPOINT)
 
   try {
-    const body = await createCourse(name, level, userId, startDate, endDate)
+    const body = await createCourse(courseName, courseLevel, userName, userId, startDate, endDate)
     res.json({success: 'Create Course', url: req.url, body: body.data.createCourse})     
   } catch (err) {
     console.log(`Error in Promise: ${err}`)
@@ -116,12 +117,28 @@ app.post('/course/join', groupPermissions(['admin']), async  (req, res, next) =>
   }
 });
 
+app.post('/course/join-link', async  (req, res, next) => {  
+  const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
+  const token = req.body.token
+
+  console.log("User Id:", userId)
+
+  try {
+    await joinCourseWithToken(userId, token)
+    res.json({success: 'User joined course', url: req.url, body: req.body})     
+  } catch (err) {
+    console.log(`Error in Promise: ${err}`)
+    next(err)
+  }
+});
+
 app.post('/course/create-and-join', groupPermissions(['admin']), async  (req, res, next) => {    
-  const level = req.body.level
-  const name = req.body.name
+  const courseLevel = req.body.level
+  const courseName = req.body.name
   const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
   const startDate = req.body.startDate
   const endDate = req.body.endDate
+  const userName = req.apiGateway.event.requestContext.authorizer.claims.name
 
   console.log("Start Date:", startDate)
   console.log("End Date:", endDate)
@@ -133,7 +150,7 @@ app.post('/course/create-and-join', groupPermissions(['admin']), async  (req, re
 
   let body
   try {
-    body = await createCourse(name, level, userId, startDate, endDate)        
+    body = await createCourse(courseName, courseLevel, userName, userId, startDate, endDate)        
   } catch (err) {
     console.log(`Error in Promise Create Course: ${err}`)
     next(err)
@@ -149,6 +166,15 @@ app.post('/course/create-and-join', groupPermissions(['admin']), async  (req, re
     next(err)
     return
   }
+});
+
+app.post('/course/createInviteLink', groupPermissions(['admin']), async  (req, res, next) => {    
+  const courseId = req.body.courseId
+  const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
+  
+
+  const token = await createInviteLink(courseId)
+  res.json({success: `Course Id: ${userId}`, url: req.url, body: { token }})
 });
 
 app.delete('/course/:courseId', groupPermissions(['admin']), async (req, res, next) => {

@@ -14,6 +14,10 @@ export const userCourseQuery = /* GraphQL */ `
             id
             name
             level
+            startDate
+            endDate
+            ownerId
+            ownerName
           }
         }
         nextToken
@@ -26,6 +30,35 @@ export const getCourseOwnerIdQuery = /* GraphQL */ `
     getCourse(id: $id) {
       id
       ownerId      
+    }
+  }
+`;
+export const getCourseWithUsersQuery = /* GraphQL */ `
+  query GetCourse($id: ID!) {
+    getCourse(id: $id) {
+      id
+      name
+      level
+      ownerId
+      ownerName     
+      startDate
+      endDate
+      users {
+        items {
+          id
+          userId
+          courseId
+          createdAt
+          updatedAt
+          user {
+            id
+            name
+            email
+            userType
+          }       
+        }
+        nextToken
+      }
     }
   }
 `;

@@ -28,6 +28,8 @@ export const createUser = /* GraphQL */ `
           name
           level
           ownerId
+          ownerName
+          inviteToken
           startDate
           endDate
           createdAt
@@ -66,6 +68,8 @@ export const updateUser = /* GraphQL */ `
           name
           level
           ownerId
+          ownerName
+          inviteToken
           startDate
           endDate
           createdAt
@@ -104,6 +108,8 @@ export const deleteUser = /* GraphQL */ `
           name
           level
           ownerId
+          ownerName
+          inviteToken
           startDate
           endDate
           createdAt
@@ -126,6 +132,7 @@ export const createCourse = /* GraphQL */ `
       name
       level
       ownerId
+      ownerName
       owner {
         id
         name
@@ -140,6 +147,7 @@ export const createCourse = /* GraphQL */ `
         createdAt
         updatedAt
       }
+      inviteToken
       startDate
       endDate
       users {
@@ -167,6 +175,7 @@ export const updateCourse = /* GraphQL */ `
       name
       level
       ownerId
+      ownerName
       owner {
         id
         name
@@ -181,6 +190,7 @@ export const updateCourse = /* GraphQL */ `
         createdAt
         updatedAt
       }
+      inviteToken
       startDate
       endDate
       users {
@@ -208,6 +218,7 @@ export const deleteCourse = /* GraphQL */ `
       name
       level
       ownerId
+      ownerName
       owner {
         id
         name
@@ -222,6 +233,7 @@ export const deleteCourse = /* GraphQL */ `
         createdAt
         updatedAt
       }
+      inviteToken
       startDate
       endDate
       users {
@@ -267,6 +279,7 @@ export const createCoursesUsers = /* GraphQL */ `
         name
         level
         ownerId
+        ownerName
         owner {
           id
           name
@@ -275,6 +288,7 @@ export const createCoursesUsers = /* GraphQL */ `
           createdAt
           updatedAt
         }
+        inviteToken
         startDate
         endDate
         users {
@@ -316,6 +330,7 @@ export const updateCoursesUsers = /* GraphQL */ `
         name
         level
         ownerId
+        ownerName
         owner {
           id
           name
@@ -324,6 +339,7 @@ export const updateCoursesUsers = /* GraphQL */ `
           createdAt
           updatedAt
         }
+        inviteToken
         startDate
         endDate
         users {
@@ -365,6 +381,7 @@ export const deleteCoursesUsers = /* GraphQL */ `
         name
         level
         ownerId
+        ownerName
         owner {
           id
           name
@@ -373,6 +390,7 @@ export const deleteCoursesUsers = /* GraphQL */ `
           createdAt
           updatedAt
         }
+        inviteToken
         startDate
         endDate
         users {

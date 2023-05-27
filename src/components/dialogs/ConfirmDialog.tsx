@@ -1,17 +1,40 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Dropdown from '../inputs/Dropdown';
 import { Box, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 
-export default function DeleteDialog({title="Löschen", deleteText, open, submitting, handleCancel, handleConfirm} : {title: string, deleteText: string, open: boolean, submitting: boolean, handleCancel: () => void, handleConfirm: () => void}) {  
+export type DialogStyle = 'success' | 'warning' | 'error' | 'info'
+
+interface DialogProps {
+  title?: string,
+  dialogText: string,
+  confirmButtonText?: string,
+  dialogStyle?: DialogStyle,
+  permanentWarning?: boolean,
+  open: boolean,
+  submitting: boolean,
+  handleCancel: () => void,
+  handleConfirm: () => void
+}
+
+
+export default function ConfirmDialog({
+  title="Löschen", 
+  dialogText, 
+  confirmButtonText="Löschen",
+  dialogStyle='success', 
+  permanentWarning=false,
+  open, 
+  submitting, 
+  handleCancel, 
+  handleConfirm
+} : DialogProps) {  
 
   return (
     <div>
@@ -21,8 +44,7 @@ export default function DeleteDialog({title="Löschen", deleteText, open, submit
         </DialogTitle>        
         <Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={submitting}
-          title='Löschen...'            
+          open={submitting}         
         >
           <CircularProgress />        
         </Backdrop>         
@@ -30,16 +52,18 @@ export default function DeleteDialog({title="Löschen", deleteText, open, submit
           <DialogContent>
             <DialogContentText>              
               <Typography variant='body1' component='span'>
-                {deleteText}<br/><br/>
-              </Typography>      
-              <Typography variant='body1' component='span' color='red'>
-                Achtung diese Aktion ist unwiderruflich!<br/><br/>
-              </Typography>          
+                {dialogText}<br/><br/>
+              </Typography>  
+              {permanentWarning &&
+                <Typography variant='body1' component='span' color='red'>
+                  Achtung diese Aktion ist unwiderruflich!<br/><br/>
+                </Typography>    
+              }                        
             </DialogContentText>    
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCancel}>Abbrechen</Button>
-            <Button color='warning' variant='contained' onClick={() => handleConfirm()}>Löschen</Button>
+            <Button color={dialogStyle} variant='contained' onClick={() => handleConfirm()}>{confirmButtonText}</Button>
           </DialogActions>
         </Box>   
       </Dialog>
