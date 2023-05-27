@@ -6,7 +6,7 @@ import { deleteCoursesUsers as deleteCoursesUsersQuery } from './graphql/mutatio
 import { updateCourse as updateCourseQuery } from './graphql/mutations';
 import { getCourseOwnerIdQuery } from './graphql/customQueries';
 
-import jwt from 'jsonwebtoken'; 
+import crypto from 'crypto';
 
 import { graphQlRequest } from './utils';
 
@@ -178,23 +178,12 @@ export const deleteCourse = async (courseId: string, userId: string) => {
 
 export const createInviteLink = async (courseId: string) => {
 
-  if(!secretsInitialized) {
-    await getSecrets()
-  }
+  const token = crypto.randomBytes(10).toString('hex')
 
   const course = await getCourse(courseId).catch((error) => {
     console.log("Get Course Promise Error:", error)
     throw error
-  })
-
-  const token = jwt.sign({ 
-    courseId,
-    courseName: course.name,
-    courseLevel: course.level,
-    courseStartDate: course.startDate,
-    courseEndDate: course.endDate,
-    courseOwnerName: course.ownerName,
-   }, secrets.JWT_PRIVATE_KEY);
+  }) 
 
   const response = await graphQlRequest(updateCourseQuery, { 
     input: {
@@ -208,35 +197,21 @@ export const createInviteLink = async (courseId: string) => {
 
   console.log("Response Update", response)
 
-  console.log("JWT Private Key", secrets.JWT_PRIVATE_KEY)
-  console.log("Secrets", secrets)
   return token
 }
 
-export const joinCourseWithToken = async (userId: string, token: string) => {
-  if(!secretsInitialized) {
-    await getSecrets()
+export const joinCourseWithToken = async (userId: string, courseId: string, token: string) => {
+
+  const course = await getCourse(courseId)
+  console.log("Course", course)
+  console.log("Invite Token", course.inviteToken)
+  if(!course.inviteToken || course.inviteToken === "") {
+    throw new Error("Course does not have an invite token")
   }
-
-  const valid = jwt.verify(token, secrets.JWT_PRIVATE_KEY);
-
-  if(!valid) {
+  if(course.inviteToken !== token) {
     throw new Error("Invalid Token")
   }
+  await joinUserToCourse(userId, courseId)
 
-  const payload = jwt.decode(token);  
-  if(payload !== null && typeof payload === 'object') {  
-
-    const course = await getCourse(payload.courseId)
-    console.log("Course", course)
-    console.log("Invite Token", course.inviteToken)
-    if(course.inviteToken !== token) {
-      throw new Error("Invalid Token")
-    }
-    await joinUserToCourse(userId, payload.courseId)
-  }
-  else{
-    throw new Error("Error Decoding Token")
-  }
   
 }

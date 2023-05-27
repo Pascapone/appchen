@@ -12,13 +12,11 @@
     "aws-serverless-express": "^3.3.5",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
-    "jsonwebtoken": "^9.0.0",
     "node-fetch": "^2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.92",
     "@types/aws-serverless-express": "^3.3.5",
-    "@types/jsonwebtoken": "^9.0.2",
     "aws-sdk": "^2.1386.0"
   }
 }

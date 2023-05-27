@@ -175,17 +175,18 @@ app.post('/course/join', groupPermissions(['admin']), function (req, res, next) 
     });
 }); });
 app.post('/course/join-link', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var userId, token, err_4;
+    var userId, token, courseId, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
                 token = req.body.token;
+                courseId = req.body.courseId;
                 console.log("User Id:", userId);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, (0, course_actions_1.joinCourseWithToken)(userId, token)];
+                return [4 /*yield*/, (0, course_actions_1.joinCourseWithToken)(userId, courseId, token)];
             case 2:
                 _a.sent();
                 res.json({ success: 'User joined course', url: req.url, body: req.body });

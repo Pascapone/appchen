@@ -120,11 +120,12 @@ app.post('/course/join', groupPermissions(['admin']), async  (req, res, next) =>
 app.post('/course/join-link', async  (req, res, next) => {  
   const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
   const token = req.body.token
+  const courseId = req.body.courseId
 
   console.log("User Id:", userId)
 
   try {
-    await joinCourseWithToken(userId, token)
+    await joinCourseWithToken(userId, courseId, token)
     res.json({success: 'User joined course', url: req.url, body: req.body})     
   } catch (err) {
     console.log(`Error in Promise: ${err}`)

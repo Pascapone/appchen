@@ -5,7 +5,7 @@ import { dateToGermanString } from '@/utils/dateUtils'
 import { RestAPI } from '@/restapi/RestAPI'
 import { useRouter } from 'next/navigation'
 
-import jwt from 'jsonwebtoken'
+import { toast } from 'react-toastify';
 
 export default function JoinCourse({params}: any) {
   const [courseName, setCourseName] = useState('')
@@ -19,35 +19,57 @@ export default function JoinCourse({params}: any) {
 
   const router = useRouter()
 
-  const decodeToken = async (token: string) => {
-    const payload = jwt.decode(token)
+  const successfullyJoined = () => toast.success("Dem Kurs erfolgreich beigetreten!", {
+    theme: "colored",
+  });
 
-    if(payload !== null && typeof payload === 'object') {  
-      setCourseName(payload.courseName)    
-      setCourseLevel(payload.courseLevel)
-      setCourseOwnerName(payload.courseOwnerName)
-      setCourseStartDate(dateToGermanString(new Date(payload.courseStartDate)))
-      setCourseEndDate(dateToGermanString(new Date(payload.courseEndDate)))
-      setCourseId(payload.courseId)
-      setToken(token)
-    }
+  const failedJoining = () => toast.error("Der Einladungslink ist nicht gültig!", {
+    theme: "colored",
+  });
+
+  const getCourseInfo = async (token: string, courseId: string) => {
+    console.log("Kurs ID", courseId)
+    try {
+      const course = await RestAPI.course.getCourseWithUsers(courseId)
+      console.log("Kurs Model", course)
+
+      if(course) {  
+        setCourseName(course.name)    
+        setCourseLevel(course.level)
+        setCourseOwnerName(course.ownerName)
+        setCourseStartDate(dateToGermanString(new Date(course.startDate)))
+        setCourseEndDate(dateToGermanString(new Date(course.endDate)))
+        setCourseId(courseId)
+        setToken(token)
+      }
+
+    } catch (err) {
+      console.log(err)
+    }    
   }
 
   const handleJoinCourse = async () => {    
     setSubmitting(true)
-    await RestAPI.course.joinCourseWithLink(token).catch(err => {
+    try {
+      await RestAPI.course.joinCourseWithLink(token, courseId)
+      successfullyJoined()
+      router.push(`/courses/${courseId}`)
+    } catch (err) {
       console.log(err)
-    })
-    router.push(`/courses/${courseId}`)
+      setSubmitting(false)
+      failedJoining()
+      router.push(`/courses`)
+    }    
   }
 
   useEffect(() => {
-    decodeToken(params.token)
+    getCourseInfo(params.token, params.courseId)
     return () => {
     }
   }, [])
 
   console.log("Token", params.token)
+  console.log("Params", params)
   return (
     <Box>
       <Backdrop

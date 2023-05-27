@@ -21,6 +21,7 @@ import { useUserStore } from '@/store/userStore';
 import { UserTheme } from '@/store/userStore';
 
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';

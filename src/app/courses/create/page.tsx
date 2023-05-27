@@ -13,8 +13,6 @@ import { level } from '@/constants/courseData';
 import Dropdown from '@/components/inputs/Dropdown';
 
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'
-
 
 type InputErrors = {
   courseName: boolean,

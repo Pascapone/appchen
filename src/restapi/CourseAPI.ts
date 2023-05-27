@@ -42,9 +42,10 @@ export class CourseAPI {
     return await restApiAction('/course/join', body, 'POST')
   }
 
-  async joinCourseWithLink(token: string) {
+  async joinCourseWithLink(token: string, courseId: string) {
     const body= {
       token: token,
+      courseId: courseId
     }
   
     return await restApiAction('/course/join-link', body, 'POST')

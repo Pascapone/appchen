@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation'
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog'
 import InviteLinkDialog from './components/InviteLinkDialog'
 
-import jwt from 'jsonwebtoken'
+import { toast } from 'react-toastify';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -58,6 +58,19 @@ export default function Course({params}: any) {
 
   const router = useRouter()
 
+  const notifyCreatedLink = () => toast.success("Neuen Einladungslink erstellt.", {
+    theme: "colored",
+  });
+
+  const notifyLeftCourse = () => toast.info("Sie haben den Kurs verlassen.", {
+    theme: "colored",
+  });
+
+  const notifyDeletedCourse = () => toast.info("Der Kurs wurde permanent gelöscht.", {
+    theme: "colored",
+  });
+
+
   const handleChangeIndex = (event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
@@ -80,14 +93,11 @@ export default function Course({params}: any) {
     setSubmitting(true)
 
     const reponse = await RestAPI.course.createCourseInviteLink(courseId)
-    const payload = jwt.decode(reponse.body.token)
     
-    if(payload !== null && typeof payload === 'object') {
-      await handleGetCourseModel(payload.courseId)
-      console.log("Course ID", payload.courseId)
-    }
-
+    await handleGetCourseModel(courseId)
+    
     setSubmitting(false)
+    notifyCreatedLink()
     console.log("Token", reponse.body.token)
   }
 
@@ -96,6 +106,7 @@ export default function Course({params}: any) {
     await RestAPI.course.leaveCourse(courseId).catch(err => {
       console.log(err)
     })
+    notifyLeftCourse()
     router.push('/courses')
   }
 
@@ -108,6 +119,7 @@ export default function Course({params}: any) {
     await RestAPI.course.deleteCourse(courseModel.id).catch(err => {
       console.log(err)
     })
+    notifyDeletedCourse()
     setSubmitting(false)
     setOpenDeleteDialog(false)
     router.push('/courses')
@@ -140,6 +152,7 @@ export default function Course({params}: any) {
         handleCancel={() => {setOpenInviteLinkDialog(false)}}
         handleConfirm={() => {handleCreateInviteLink(courseModel.id)}}
         token={courseModel?.inviteToken}
+        courseId={courseModel?.id}
       />
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}

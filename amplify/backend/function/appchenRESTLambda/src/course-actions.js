@@ -47,7 +47,7 @@ var queries_2 = require("./graphql/queries");
 var mutations_3 = require("./graphql/mutations");
 var mutations_4 = require("./graphql/mutations");
 var customQueries_1 = require("./graphql/customQueries");
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var crypto_1 = __importDefault(require("crypto"));
 var utils_1 = require("./utils");
 var aws_sdk_1 = require("aws-sdk");
 var secretsInitialized = false;
@@ -260,29 +260,17 @@ var deleteCourse = function (courseId, userId) { return __awaiter(void 0, void 0
 }); };
 exports.deleteCourse = deleteCourse;
 var createInviteLink = function (courseId) { return __awaiter(void 0, void 0, void 0, function () {
-    var course, token, response;
+    var token, course, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!!secretsInitialized) return [3 /*break*/, 2];
-                return [4 /*yield*/, getSecrets()];
+                token = crypto_1.default.randomBytes(10).toString('hex');
+                return [4 /*yield*/, (0, exports.getCourse)(courseId).catch(function (error) {
+                        console.log("Get Course Promise Error:", error);
+                        throw error;
+                    })];
             case 1:
-                _a.sent();
-                _a.label = 2;
-            case 2: return [4 /*yield*/, (0, exports.getCourse)(courseId).catch(function (error) {
-                    console.log("Get Course Promise Error:", error);
-                    throw error;
-                })];
-            case 3:
                 course = _a.sent();
-                token = jsonwebtoken_1.default.sign({
-                    courseId: courseId,
-                    courseName: course.name,
-                    courseLevel: course.level,
-                    courseStartDate: course.startDate,
-                    courseEndDate: course.endDate,
-                    courseOwnerName: course.ownerName,
-                }, secrets.JWT_PRIVATE_KEY);
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_4.updateCourse, {
                         input: {
                             id: courseId,
@@ -292,47 +280,33 @@ var createInviteLink = function (courseId) { return __awaiter(void 0, void 0, vo
                         console.log("Get Course Promise Error:", error);
                         throw error;
                     })];
-            case 4:
+            case 2:
                 response = _a.sent();
                 console.log("Response Update", response);
-                console.log("JWT Private Key", secrets.JWT_PRIVATE_KEY);
-                console.log("Secrets", secrets);
                 return [2 /*return*/, token];
         }
     });
 }); };
 exports.createInviteLink = createInviteLink;
-var joinCourseWithToken = function (userId, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var valid, payload, course;
+var joinCourseWithToken = function (userId, courseId, token) { return __awaiter(void 0, void 0, void 0, function () {
+    var course;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                if (!!secretsInitialized) return [3 /*break*/, 2];
-                return [4 /*yield*/, getSecrets()];
+            case 0: return [4 /*yield*/, (0, exports.getCourse)(courseId)];
             case 1:
-                _a.sent();
-                _a.label = 2;
-            case 2:
-                valid = jsonwebtoken_1.default.verify(token, secrets.JWT_PRIVATE_KEY);
-                if (!valid) {
-                    throw new Error("Invalid Token");
-                }
-                payload = jsonwebtoken_1.default.decode(token);
-                if (!(payload !== null && typeof payload === 'object')) return [3 /*break*/, 5];
-                return [4 /*yield*/, (0, exports.getCourse)(payload.courseId)];
-            case 3:
                 course = _a.sent();
                 console.log("Course", course);
                 console.log("Invite Token", course.inviteToken);
+                if (!course.inviteToken || course.inviteToken === "") {
+                    throw new Error("Course does not have an invite token");
+                }
                 if (course.inviteToken !== token) {
                     throw new Error("Invalid Token");
                 }
-                return [4 /*yield*/, (0, exports.joinUserToCourse)(userId, payload.courseId)];
-            case 4:
+                return [4 /*yield*/, (0, exports.joinUserToCourse)(userId, courseId)];
+            case 2:
                 _a.sent();
-                return [3 /*break*/, 6];
-            case 5: throw new Error("Error Decoding Token");
-            case 6: return [2 /*return*/];
+                return [2 /*return*/];
         }
     });
 }); };

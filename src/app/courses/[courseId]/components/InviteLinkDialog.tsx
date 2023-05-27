@@ -13,10 +13,13 @@ import { shortenText } from '@/utils/textUtils';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useTheme } from '@mui/material';
 
+import { toast } from 'react-toastify';
+
 interface DialogProps {
   open: boolean,
   submitting: boolean,
   token: string,
+  courseId: string,
   handleCancel: () => void,
   handleConfirm: () => void
 }
@@ -25,6 +28,7 @@ export default function InviteLinkDialog({
   open, 
   submitting, 
   token,
+  courseId,
   handleCancel, 
   handleConfirm
 }: DialogProps) {
@@ -32,6 +36,10 @@ export default function InviteLinkDialog({
   const [inviteLink, setInviteLink] = useState('')
 
   const theme = useTheme()
+  
+  const notifyCopiedLinkToClipboard = () => toast.info("Einladungslink in die Zwischenablage kopiert.", {
+    theme: "colored",
+  });
 
   const getBaseUrl = () => {    
     const port = window.location.port
@@ -42,9 +50,14 @@ export default function InviteLinkDialog({
     return `https://${hostname}`
   }  
 
+  const handleCopyLinkToClipboard = () => {
+    navigator.clipboard.writeText(inviteLink)
+    notifyCopiedLinkToClipboard()
+  }
+
   useEffect(() => {
     if(!token) return
-    setInviteLink(`${getBaseUrl()}/courses/join/${token}`)
+    setInviteLink(`${getBaseUrl()}/courses/join/${courseId}/${token}`)
   }, [token])
 
   console.log('InviteLinkDialog', token)
@@ -74,7 +87,7 @@ export default function InviteLinkDialog({
                     <Typography variant='subtitle2' component='span' sx={{paddingLeft: 1}}>              
                       {shortenText(inviteLink, 40)}   
                     </Typography>
-                    <IconButton onClick={() => navigator.clipboard.writeText(inviteLink)}>
+                    <IconButton onClick={handleCopyLinkToClipboard}>
                       <ContentCopyIcon />
                     </IconButton>
                   </Box>
