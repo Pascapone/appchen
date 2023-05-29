@@ -62,7 +62,7 @@ export class CourseAPI {
     return model.data.getCourse
   }
 
-  async  leaveCourse(courseId: string) {
+  async leaveCourse(courseId: string) {
     const body= {
       courseId: courseId,
     }
@@ -82,5 +82,14 @@ export class CourseAPI {
     }
   
     return await restApiAction('/course/createInviteLink', body, 'POST') 
+  }
+
+  async invalidateInviteLink (courseId: string) {
+    console.log("Invalidate Invite Link", courseId)
+    const body= {
+      courseId: courseId,
+    }
+  
+    return await restApiAction('/course/invalidate-invite-link', body, 'POST') 
   }
 }

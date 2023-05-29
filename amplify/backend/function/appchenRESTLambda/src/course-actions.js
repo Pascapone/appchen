@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.joinCourseWithToken = exports.createInviteLink = exports.deleteCourse = exports.getCourse = exports.joinUserToCourse = exports.leaveCourse = exports.getCourseOwnerId = exports.getUser = exports.createCourse = void 0;
+exports.joinCourseWithToken = exports.invalidateInviteLink = exports.createInviteLink = exports.setInviteToken = exports.deleteCourse = exports.getCourse = exports.joinUserToCourse = exports.leaveCourse = exports.getCourseOwnerId = exports.getUser = exports.createCourse = void 0;
 var mutations_1 = require("./graphql/mutations");
 var mutations_2 = require("./graphql/mutations");
 var queries_1 = require("./graphql/queries");
@@ -92,7 +92,6 @@ var createCourse = function (courseName, courseLevel, userName, ownerId, startDa
                     }
                 };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_1.createCourse, variables).catch(function (error) {
-                        console.log("Create Course Promise Error:", error);
                         throw error;
                     })];
             case 1:
@@ -111,7 +110,6 @@ var getUser = function (userId) { return __awaiter(void 0, void 0, void 0, funct
                     id: userId
                 };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(queries_2.getUser, variables).catch(function (error) {
-                        console.log("Get Course Promise Error:", error);
                         throw error;
                     })];
             case 1:
@@ -126,7 +124,6 @@ var getCourseOwnerId = function (courseId) { return __awaiter(void 0, void 0, vo
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, (0, utils_1.graphQlRequest)(customQueries_1.getCourseOwnerIdQuery, { id: courseId }).catch(function (error) {
-                    console.log("Get Course Owner Id Promise Error:", error);
                     throw error;
                 })];
             case 1:
@@ -140,15 +137,11 @@ var leaveCourse = function (userId, courseId) { return __awaiter(void 0, void 0,
     var ownerId, variables, body;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                console.group("Get Course Owner Id");
-                return [4 /*yield*/, (0, exports.getCourseOwnerId)(courseId).catch(function (error) {
-                        console.log("Get Course Owner Id Promise Error:", error);
-                        throw error;
-                    })];
+            case 0: return [4 /*yield*/, (0, exports.getCourseOwnerId)(courseId).catch(function (error) {
+                    throw error;
+                })];
             case 1:
                 ownerId = _a.sent();
-                console.log("Owner Id:", ownerId);
                 if (ownerId === userId) {
                     throw new Error("Course owner cannot leave course");
                 }
@@ -158,7 +151,6 @@ var leaveCourse = function (userId, courseId) { return __awaiter(void 0, void 0,
                     }
                 };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_3.deleteCoursesUsers, variables).catch(function (error) {
-                        console.log("Delete Course User Relation Promise Error:", error);
                         throw error;
                     })];
             case 2:
@@ -181,7 +173,6 @@ var joinUserToCourse = function (userId, courseId) { return __awaiter(void 0, vo
                     }
                 };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_2.createCoursesUsers, variables).catch(function (error) {
-                        console.log("Create Course Promise Error:", error);
                         throw error;
                     })];
             case 1:
@@ -198,7 +189,6 @@ var getCourse = function (courseId) { return __awaiter(void 0, void 0, void 0, f
             case 0:
                 courseQueryVariables = { id: courseId };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(queries_1.getCourse, courseQueryVariables).catch(function (error) {
-                        console.log("Get Course Promise Error:", error);
                         throw error;
                     })];
             case 1:
@@ -213,13 +203,10 @@ var deleteCourse = function (courseId, userId) { return __awaiter(void 0, void 0
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, (0, exports.getCourse)(courseId).catch(function (error) {
-                    console.log("Get Course Promise Error:", error);
                     throw error;
                 })];
             case 1:
                 course = _a.sent();
-                console.log("Course:", course);
-                console.log("Course Users:", course.users.items);
                 return [4 /*yield*/, Promise.all(course.users.items.map(function (element) { return __awaiter(void 0, void 0, void 0, function () {
                         var deleteCoursesUsersVariables;
                         return __generator(this, function (_a) {
@@ -237,19 +224,16 @@ var deleteCourse = function (courseId, userId) { return __awaiter(void 0, void 0
                             }
                         });
                     }); })).catch(function (error) {
-                        console.log("Delete Course Promise Error:", error);
                         throw error;
                     })];
             case 2:
                 _a.sent();
-                console.log("Course Id:", course.id);
                 deleteCourseVariables = {
                     input: {
                         id: courseId,
                     }
                 };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_1.deleteCourse, deleteCourseVariables).catch(function (error) {
-                        console.log("Delete Course Promise Error:", error);
                         throw error;
                     })];
             case 3:
@@ -259,44 +243,69 @@ var deleteCourse = function (courseId, userId) { return __awaiter(void 0, void 0
     });
 }); };
 exports.deleteCourse = deleteCourse;
-var createInviteLink = function (courseId) { return __awaiter(void 0, void 0, void 0, function () {
-    var token, course, response;
+var setInviteToken = function (courseId, token, userId) { return __awaiter(void 0, void 0, void 0, function () {
+    var condition, input, response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                condition = {
+                    ownerId: {
+                        eq: userId
+                    }
+                };
+                input = {
+                    id: courseId,
+                    inviteToken: token
+                };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_4.updateCourse, { input: input, condition: condition }).catch(function (error) {
+                        throw error;
+                    })];
+            case 1:
+                response = _a.sent();
+                return [2 /*return*/, token];
+        }
+    });
+}); };
+exports.setInviteToken = setInviteToken;
+var createInviteLink = function (courseId, userId) { return __awaiter(void 0, void 0, void 0, function () {
+    var token;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 token = crypto_1.default.randomBytes(10).toString('hex');
-                return [4 /*yield*/, (0, exports.getCourse)(courseId).catch(function (error) {
-                        console.log("Get Course Promise Error:", error);
+                return [4 /*yield*/, (0, exports.setInviteToken)(courseId, token, userId).catch(function (error) {
                         throw error;
                     })];
             case 1:
-                course = _a.sent();
-                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_4.updateCourse, {
-                        input: {
-                            id: courseId,
-                            inviteToken: token
-                        }
-                    }).catch(function (error) {
-                        console.log("Get Course Promise Error:", error);
-                        throw error;
-                    })];
-            case 2:
-                response = _a.sent();
-                console.log("Response Update", response);
+                _a.sent();
                 return [2 /*return*/, token];
         }
     });
 }); };
 exports.createInviteLink = createInviteLink;
+var invalidateInviteLink = function (courseId, userId) { return __awaiter(void 0, void 0, void 0, function () {
+    var token;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, (0, exports.setInviteToken)(courseId, "", userId).catch(function (error) {
+                    throw error;
+                })];
+            case 1:
+                token = _a.sent();
+                return [2 /*return*/, token];
+        }
+    });
+}); };
+exports.invalidateInviteLink = invalidateInviteLink;
 var joinCourseWithToken = function (userId, courseId, token) { return __awaiter(void 0, void 0, void 0, function () {
     var course;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, (0, exports.getCourse)(courseId)];
+            case 0: return [4 /*yield*/, (0, exports.getCourse)(courseId).catch(function (error) {
+                    throw error;
+                })];
             case 1:
                 course = _a.sent();
-                console.log("Course", course);
-                console.log("Invite Token", course.inviteToken);
                 if (!course.inviteToken || course.inviteToken === "") {
                     throw new Error("Course does not have an invite token");
                 }

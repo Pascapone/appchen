@@ -11,10 +11,14 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import { useRouter } from 'next/navigation'
 
+import { withAuthenticator, WithAuthenticatorProps } from '@aws-amplify/ui-react'
+
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog'
 import InviteLinkDialog from './components/InviteLinkDialog'
 
 import { toast } from 'react-toastify';
+
+import { updateTest } from '@/restapi/utils'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -49,12 +53,13 @@ function a11yProps(index: number) {
   };
 }
 
-export default function Course({params}: any) {
+const Course = ({params, signOut, user}: any) => {
   const [courseModel, setCourseModel] = useState<any>(null)
   const [tabIndex, setTabIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [openInviteLinkDialog, setOpenInviteLinkDialog] = useState(false)
+  const [openLeaveCourseDialog, setOpenLeaveCourseDialog] = useState(false)
 
   const router = useRouter()
 
@@ -67,6 +72,10 @@ export default function Course({params}: any) {
   });
 
   const notifyDeletedCourse = () => toast.info("Der Kurs wurde permanent gelöscht.", {
+    theme: "colored",
+  });
+
+  const notifyInvalidateCourseLink = () => toast.info("Der Einladungslink des Kurses wurde deaktiviert.", {
     theme: "colored",
   });
 
@@ -101,15 +110,6 @@ export default function Course({params}: any) {
     console.log("Token", reponse.body.token)
   }
 
-  const handleLeaveCourse = async (courseId: string) => {
-    setSubmitting(true)
-    await RestAPI.course.leaveCourse(courseId).catch(err => {
-      console.log(err)
-    })
-    notifyLeftCourse()
-    router.push('/courses')
-  }
-
   const handleDeleteCourse = async () => {
     setOpenDeleteDialog(true)    
   }
@@ -125,12 +125,36 @@ export default function Course({params}: any) {
     router.push('/courses')
   }
 
+  const submitLeaveCourse = async () => {
+    setSubmitting(true)
+    await RestAPI.course.leaveCourse(courseModel.id).catch(err => {
+      console.log(err)
+    })
+    notifyLeftCourse()
+    router.push('/courses')
+  }
+
+  const handleInvalidateToken = async () => {
+    setSubmitting(true)
+    await RestAPI.course.invalidateInviteLink(courseModel.id).catch(err => {
+      console.log(err)
+    })
+    await handleGetCourseModel(courseModel.id)
+    setSubmitting(false)
+    notifyInvalidateCourseLink()
+  }
+
+  const handleRequest = async () => {
+    console.log("Request")
+    await updateTest(courseModel.id, "asdsaf")    
+  }
+
   useEffect(() => {
     handleGetCourseModel(params.courseId)
     return () => {
     }
   }, [])
-
+  console.log("User Authenticator", user.attributes.sub)
   console.log(courseModel)
   
   return (
@@ -146,6 +170,16 @@ export default function Course({params}: any) {
         handleCancel={() => {setOpenDeleteDialog(false)}} 
         handleConfirm={submitDeleteCourse}
       />     
+      <ConfirmDialog 
+        title="Kurs verlassen" 
+        dialogText='Sind Sie sicher, dass Sie den Kurs verlasen wollen?'
+        confirmButtonText='Verlassen'
+        dialogStyle='error'
+        open={openLeaveCourseDialog} 
+        submitting={submitting} 
+        handleCancel={() => {setOpenLeaveCourseDialog(false)}} 
+        handleConfirm={submitLeaveCourse}
+      /> 
       <InviteLinkDialog
         open={openInviteLinkDialog}
         submitting={submitting}
@@ -153,6 +187,9 @@ export default function Course({params}: any) {
         handleConfirm={() => {handleCreateInviteLink(courseModel.id)}}
         token={courseModel?.inviteToken}
         courseId={courseModel?.id}
+        courseLevel={courseModel?.level}
+        courseName={courseModel?.name}
+        handleInvalidateToken={handleInvalidateToken}
       />
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -250,22 +287,29 @@ export default function Course({params}: any) {
             <Typography noWrap variant="h6" alignSelf='center'>
               Aktionen
             </Typography> 
-            <Button variant="contained" color="error" onClick={() => handleLeaveCourse(courseModel.id)}>Kurs verlassen</Button>
-          </Box>
-          <Divider sx={{paddingBottom: 1}}/>
-          <Box sx={{paddingTop: 1}}>
-            <Typography noWrap variant="h6" alignSelf='center'>
-              Admin Options
-            </Typography>
-            <Box display='flex' flexWrap='wrap' flexDirection='row'>
-              <Box paddingRight={1} paddingBottom={1}>
-                <Button variant="contained" color="primary" onClick={handleInviteLinkDialog}>Einladungslink</Button>      
+            <Button variant="contained" color="error" onClick={() => setOpenLeaveCourseDialog(true)}>Kurs verlassen</Button>
+          </Box>             
+          { user.attributes.sub === courseModel?.ownerId && 
+            <>
+              <Divider sx={{paddingBottom: 1}}/>
+              <Box sx={{paddingTop: 1}}>
+                <Typography noWrap variant="h6" alignSelf='center'>
+                  Admin Options
+                </Typography>
+                <Box display='flex' flexWrap='wrap' flexDirection='row'>
+                  <Box paddingRight={1} paddingBottom={1}>
+                    <Button variant="contained" color="primary" onClick={handleInviteLinkDialog}>Einladungslink</Button>      
+                  </Box>
+                  <Box paddingRight={1} paddingBottom={1}>
+                    <Button variant="contained" color="error" onClick={handleDeleteCourse}>Kurs löschen</Button>          
+                  </Box>        
+                  <Box paddingRight={1} paddingBottom={1}>
+                    <Button variant="contained" color="success" onClick={handleRequest}>Conditional Request</Button>          
+                  </Box>                     
+                </Box>            
               </Box>
-              <Box paddingRight={1} paddingBottom={1}>
-                <Button variant="contained" color="error" onClick={handleDeleteCourse}>Kurs löschen</Button>          
-              </Box>                            
-            </Box>            
-          </Box>
+            </>
+          }      
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
           Aufgaben
@@ -277,3 +321,5 @@ export default function Course({params}: any) {
     </Box>
   )
 }
+
+export default withAuthenticator(Course)

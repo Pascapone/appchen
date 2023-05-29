@@ -2,11 +2,16 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type CreateUserInput = {
-  id?: string | null,
+export type User = {
+  __typename: "User",
+  id: string,
   name: string,
   email: string,
   userType: UserType,
+  courses?: ModelCoursesUsersConnection | null,
+  ownedCourses?: ModelCourseConnection | null,
+  createdAt: string,
+  updatedAt: string,
 };
 
 export enum UserType {
@@ -14,6 +19,65 @@ export enum UserType {
   TEACHER = "TEACHER",
 }
 
+
+export type ModelCoursesUsersConnection = {
+  __typename: "ModelCoursesUsersConnection",
+  items:  Array<CoursesUsers | null >,
+  nextToken?: string | null,
+};
+
+export type CoursesUsers = {
+  __typename: "CoursesUsers",
+  id: string,
+  userId: string,
+  courseId: string,
+  user: User,
+  course: Course,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export type Course = {
+  __typename: "Course",
+  id: string,
+  name: string,
+  level: Level,
+  ownerId: string,
+  ownerName: string,
+  owner: User,
+  inviteToken?: string | null,
+  startDate: string,
+  endDate: string,
+  users?: ModelCoursesUsersConnection | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export enum Level {
+  A11 = "A11",
+  A12 = "A12",
+  A21 = "A21",
+  A22 = "A22",
+  B11 = "B11",
+  B12 = "B12",
+  B21 = "B21",
+  B22 = "B22",
+  C1 = "C1",
+}
+
+
+export type ModelCourseConnection = {
+  __typename: "ModelCourseConnection",
+  items:  Array<Course | null >,
+  nextToken?: string | null,
+};
+
+export type CreateUserInput = {
+  id?: string | null,
+  name: string,
+  email: string,
+  userType: UserType,
+};
 
 export type ModelUserConditionInput = {
   name?: ModelStringInput | null,
@@ -69,57 +133,6 @@ export type ModelUserTypeInput = {
   ne?: UserType | null,
 };
 
-export type User = {
-  __typename: "User",
-  id: string,
-  name: string,
-  email: string,
-  userType: UserType,
-  courses?: ModelCoursesUsersConnection | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export type ModelCoursesUsersConnection = {
-  __typename: "ModelCoursesUsersConnection",
-  items:  Array<CoursesUsers | null >,
-  nextToken?: string | null,
-};
-
-export type CoursesUsers = {
-  __typename: "CoursesUsers",
-  id: string,
-  userId: string,
-  courseId: string,
-  user: User,
-  course: Course,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export type Course = {
-  __typename: "Course",
-  id: string,
-  name: string,
-  level: Level,
-  users?: ModelCoursesUsersConnection | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export enum Level {
-  A11 = "A11",
-  A12 = "A12",
-  A21 = "A21",
-  A22 = "A22",
-  B11 = "B11",
-  B12 = "B12",
-  B21 = "B21",
-  B22 = "B22",
-  C1 = "C1",
-}
-
-
 export type UpdateUserInput = {
   id: string,
   name?: string | null,
@@ -135,11 +148,21 @@ export type CreateCourseInput = {
   id?: string | null,
   name: string,
   level: Level,
+  ownerId: string,
+  ownerName: string,
+  inviteToken?: string | null,
+  startDate: string,
+  endDate: string,
 };
 
 export type ModelCourseConditionInput = {
   name?: ModelStringInput | null,
   level?: ModelLevelInput | null,
+  ownerId?: ModelIDInput | null,
+  ownerName?: ModelStringInput | null,
+  inviteToken?: ModelStringInput | null,
+  startDate?: ModelStringInput | null,
+  endDate?: ModelStringInput | null,
   and?: Array< ModelCourseConditionInput | null > | null,
   or?: Array< ModelCourseConditionInput | null > | null,
   not?: ModelCourseConditionInput | null,
@@ -150,10 +173,31 @@ export type ModelLevelInput = {
   ne?: Level | null,
 };
 
+export type ModelIDInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  size?: ModelSizeInput | null,
+};
+
 export type UpdateCourseInput = {
   id: string,
   name?: string | null,
   level?: Level | null,
+  ownerId?: string | null,
+  ownerName?: string | null,
+  inviteToken?: string | null,
+  startDate?: string | null,
+  endDate?: string | null,
 };
 
 export type DeleteCourseInput = {
@@ -172,22 +216,6 @@ export type ModelCoursesUsersConditionInput = {
   and?: Array< ModelCoursesUsersConditionInput | null > | null,
   or?: Array< ModelCoursesUsersConditionInput | null > | null,
   not?: ModelCoursesUsersConditionInput | null,
-};
-
-export type ModelIDInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-  size?: ModelSizeInput | null,
 };
 
 export type UpdateCoursesUsersInput = {
@@ -220,16 +248,21 @@ export type ModelCourseFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
   level?: ModelLevelInput | null,
+  ownerId?: ModelIDInput | null,
+  ownerName?: ModelStringInput | null,
+  inviteToken?: ModelStringInput | null,
+  startDate?: ModelStringInput | null,
+  endDate?: ModelStringInput | null,
   and?: Array< ModelCourseFilterInput | null > | null,
   or?: Array< ModelCourseFilterInput | null > | null,
   not?: ModelCourseFilterInput | null,
 };
 
-export type ModelCourseConnection = {
-  __typename: "ModelCourseConnection",
-  items:  Array<Course | null >,
-  nextToken?: string | null,
-};
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
 
 export type ModelCoursesUsersFilterInput = {
   id?: ModelIDInput | null,
@@ -239,12 +272,6 @@ export type ModelCoursesUsersFilterInput = {
   or?: Array< ModelCoursesUsersFilterInput | null > | null,
   not?: ModelCoursesUsersFilterInput | null,
 };
-
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
 
 export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
@@ -289,6 +316,11 @@ export type ModelSubscriptionCourseFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
   level?: ModelSubscriptionStringInput | null,
+  ownerId?: ModelSubscriptionIDInput | null,
+  ownerName?: ModelSubscriptionStringInput | null,
+  inviteToken?: ModelSubscriptionStringInput | null,
+  startDate?: ModelSubscriptionStringInput | null,
+  endDate?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionCourseFilterInput | null > | null,
   or?: Array< ModelSubscriptionCourseFilterInput | null > | null,
 };
@@ -299,6 +331,89 @@ export type ModelSubscriptionCoursesUsersFilterInput = {
   courseId?: ModelSubscriptionIDInput | null,
   and?: Array< ModelSubscriptionCoursesUsersFilterInput | null > | null,
   or?: Array< ModelSubscriptionCoursesUsersFilterInput | null > | null,
+};
+
+export type GetUserWithCoursesQueryVariables = {
+  id: string,
+};
+
+export type GetUserWithCoursesQuery = {
+  getUser?:  {
+    __typename: "User",
+    id: string,
+    name: string,
+    email: string,
+    userType: UserType,
+    courses?:  {
+      __typename: "ModelCoursesUsersConnection",
+      items:  Array< {
+        __typename: "CoursesUsers",
+        id: string,
+        userId: string,
+        courseId: string,
+        course:  {
+          __typename: "Course",
+          id: string,
+          name: string,
+          level: Level,
+          startDate: string,
+          endDate: string,
+          ownerId: string,
+          ownerName: string,
+        },
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+  } | null,
+};
+
+export type GetCourseOwnerIdQueryVariables = {
+  id: string,
+};
+
+export type GetCourseOwnerIdQuery = {
+  getCourse?:  {
+    __typename: "Course",
+    id: string,
+    ownerId: string,
+  } | null,
+};
+
+export type GetCourseWithUsersQueryVariables = {
+  id: string,
+};
+
+export type GetCourseWithUsersQuery = {
+  getCourse?:  {
+    __typename: "Course",
+    id: string,
+    name: string,
+    level: Level,
+    ownerId: string,
+    ownerName: string,
+    inviteToken?: string | null,
+    startDate: string,
+    endDate: string,
+    users?:  {
+      __typename: "ModelCoursesUsersConnection",
+      items:  Array< {
+        __typename: "CoursesUsers",
+        id: string,
+        userId: string,
+        courseId: string,
+        createdAt: string,
+        updatedAt: string,
+        user:  {
+          __typename: "User",
+          id: string,
+          name: string,
+          email: string,
+          userType: UserType,
+        },
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+  } | null,
 };
 
 export type CreateUserMutationVariables = {
@@ -320,6 +435,23 @@ export type CreateUserMutation = {
         id: string,
         userId: string,
         courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    ownedCourses?:  {
+      __typename: "ModelCourseConnection",
+      items:  Array< {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -354,6 +486,23 @@ export type UpdateUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    ownedCourses?:  {
+      __typename: "ModelCourseConnection",
+      items:  Array< {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -383,6 +532,23 @@ export type DeleteUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    ownedCourses?:  {
+      __typename: "ModelCourseConnection",
+      items:  Array< {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -399,6 +565,28 @@ export type CreateCourseMutation = {
     id: string,
     name: string,
     level: Level,
+    ownerId: string,
+    ownerName: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    inviteToken?: string | null,
+    startDate: string,
+    endDate: string,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
       items:  Array< {
@@ -427,6 +615,28 @@ export type UpdateCourseMutation = {
     id: string,
     name: string,
     level: Level,
+    ownerId: string,
+    ownerName: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    inviteToken?: string | null,
+    startDate: string,
+    endDate: string,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
       items:  Array< {
@@ -455,6 +665,28 @@ export type DeleteCourseMutation = {
     id: string,
     name: string,
     level: Level,
+    ownerId: string,
+    ownerName: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    inviteToken?: string | null,
+    startDate: string,
+    endDate: string,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
       items:  Array< {
@@ -493,6 +725,10 @@ export type CreateCoursesUsersMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -501,6 +737,20 @@ export type CreateCoursesUsersMutation = {
       id: string,
       name: string,
       level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
@@ -534,6 +784,10 @@ export type UpdateCoursesUsersMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -542,6 +796,20 @@ export type UpdateCoursesUsersMutation = {
       id: string,
       name: string,
       level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
@@ -575,6 +843,10 @@ export type DeleteCoursesUsersMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -583,6 +855,20 @@ export type DeleteCoursesUsersMutation = {
       id: string,
       name: string,
       level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
@@ -618,6 +904,23 @@ export type GetUserQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    ownedCourses?:  {
+      __typename: "ModelCourseConnection",
+      items:  Array< {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -642,6 +945,10 @@ export type ListUsersQuery = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -659,6 +966,28 @@ export type GetCourseQuery = {
     id: string,
     name: string,
     level: Level,
+    ownerId: string,
+    ownerName: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    inviteToken?: string | null,
+    startDate: string,
+    endDate: string,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
       items:  Array< {
@@ -690,6 +1019,61 @@ export type ListCoursesQuery = {
       id: string,
       name: string,
       level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
+      users?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type CoursesByOwnerIdQueryVariables = {
+  ownerId: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelCourseFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type CoursesByOwnerIdQuery = {
+  coursesByOwnerId?:  {
+    __typename: "ModelCourseConnection",
+    items:  Array< {
+      __typename: "Course",
+      id: string,
+      name: string,
+      level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
@@ -721,6 +1105,10 @@ export type GetCoursesUsersQuery = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -729,6 +1117,20 @@ export type GetCoursesUsersQuery = {
       id: string,
       name: string,
       level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
@@ -769,6 +1171,11 @@ export type ListCoursesUsersQuery = {
         id: string,
         name: string,
         level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
         createdAt: string,
         updatedAt: string,
       },
@@ -809,6 +1216,11 @@ export type CoursesUsersByUserIdQuery = {
         id: string,
         name: string,
         level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
         createdAt: string,
         updatedAt: string,
       },
@@ -849,6 +1261,11 @@ export type CoursesUsersByCourseIdQuery = {
         id: string,
         name: string,
         level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
         createdAt: string,
         updatedAt: string,
       },
@@ -882,6 +1299,23 @@ export type OnCreateUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    ownedCourses?:  {
+      __typename: "ModelCourseConnection",
+      items:  Array< {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -905,6 +1339,23 @@ export type OnUpdateUserSubscription = {
         id: string,
         userId: string,
         courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    ownedCourses?:  {
+      __typename: "ModelCourseConnection",
+      items:  Array< {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -938,6 +1389,23 @@ export type OnDeleteUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    ownedCourses?:  {
+      __typename: "ModelCourseConnection",
+      items:  Array< {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -953,6 +1421,28 @@ export type OnCreateCourseSubscription = {
     id: string,
     name: string,
     level: Level,
+    ownerId: string,
+    ownerName: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    inviteToken?: string | null,
+    startDate: string,
+    endDate: string,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
       items:  Array< {
@@ -980,6 +1470,28 @@ export type OnUpdateCourseSubscription = {
     id: string,
     name: string,
     level: Level,
+    ownerId: string,
+    ownerName: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    inviteToken?: string | null,
+    startDate: string,
+    endDate: string,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
       items:  Array< {
@@ -1007,6 +1519,28 @@ export type OnDeleteCourseSubscription = {
     id: string,
     name: string,
     level: Level,
+    ownerId: string,
+    ownerName: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    inviteToken?: string | null,
+    startDate: string,
+    endDate: string,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
       items:  Array< {
@@ -1044,6 +1578,10 @@ export type OnCreateCoursesUsersSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1052,6 +1590,20 @@ export type OnCreateCoursesUsersSubscription = {
       id: string,
       name: string,
       level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
@@ -1084,6 +1636,10 @@ export type OnUpdateCoursesUsersSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1092,6 +1648,20 @@ export type OnUpdateCoursesUsersSubscription = {
       id: string,
       name: string,
       level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
@@ -1124,6 +1694,10 @@ export type OnDeleteCoursesUsersSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1132,6 +1706,20 @@ export type OnDeleteCoursesUsersSubscription = {
       id: string,
       name: string,
       level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,

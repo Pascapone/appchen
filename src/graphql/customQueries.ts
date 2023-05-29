@@ -1,5 +1,5 @@
 export const userCourseQuery = /* GraphQL */ `
-  query GetUser($id: ID!) {
+  query GetUserWithCourses($id: ID!) {
     getUser(id: $id) {
       id
       name
@@ -26,7 +26,7 @@ export const userCourseQuery = /* GraphQL */ `
   }
 `;
 export const getCourseOwnerIdQuery = /* GraphQL */ `
-  query GetCourse($id: ID!) {
+  query GetCourseOwnerId($id: ID!) {
     getCourse(id: $id) {
       id
       ownerId      
@@ -34,7 +34,7 @@ export const getCourseOwnerIdQuery = /* GraphQL */ `
   }
 `;
 export const getCourseWithUsersQuery = /* GraphQL */ `
-  query GetCourse($id: ID!) {
+  query GetCourseWithUsers($id: ID!) {
     getCourse(id: $id) {
       id
       name

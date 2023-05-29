@@ -6,6 +6,8 @@ import { deleteCoursesUsers as deleteCoursesUsersQuery } from './graphql/mutatio
 import { updateCourse as updateCourseQuery } from './graphql/mutations';
 import { getCourseOwnerIdQuery } from './graphql/customQueries';
 
+import { ModelCourseConditionInput, UpdateCourseInput } from './graphql/GraphQL'
+
 import crypto from 'crypto';
 
 import { graphQlRequest } from './utils';
@@ -52,7 +54,6 @@ export const createCourse = async (courseName: string, courseLevel: string, user
   };
 
 	const body = await graphQlRequest(createCourseQuery, variables).catch((error) => {
-    console.log("Create Course Promise Error:", error)
     throw error
   });  
 
@@ -65,7 +66,6 @@ export const getUser = async (userId: string) => {
   };
 
   const body = await graphQlRequest(getUserQuery, variables).catch((error) => {
-    console.log("Get Course Promise Error:", error)
     throw error
   });  
 
@@ -74,7 +74,6 @@ export const getUser = async (userId: string) => {
 
 export const getCourseOwnerId = async (courseId: string) => {
   const course = await graphQlRequest(getCourseOwnerIdQuery, { id: courseId }).catch((error) => {
-    console.log("Get Course Owner Id Promise Error:", error)
     throw error
   });
 
@@ -83,13 +82,10 @@ export const getCourseOwnerId = async (courseId: string) => {
 
 export const leaveCourse = async (userId: string, courseId: string) => {
 
-  console.group("Get Course Owner Id")
   const ownerId = await getCourseOwnerId(courseId).catch((error) => {
-    console.log("Get Course Owner Id Promise Error:", error)
     throw error
   });
 
-  console.log("Owner Id:", ownerId)
   if(ownerId === userId) {
     throw new Error("Course owner cannot leave course")
   }
@@ -101,7 +97,6 @@ export const leaveCourse = async (userId: string, courseId: string) => {
   };
 
   const body = await graphQlRequest(deleteCoursesUsersQuery, variables).catch((error) => {
-    console.log("Delete Course User Relation Promise Error:", error)
     throw error
   });  
 
@@ -120,7 +115,6 @@ export const joinUserToCourse = async (userId: string, courseId: string) => {
   };
 
   const body = await graphQlRequest(createCoursesUsersQuery, variables).catch((error) => {
-    console.log("Create Course Promise Error:", error)
     throw error
   }); 
 
@@ -131,7 +125,6 @@ export const getCourse = async (courseId: string) => {
   const courseQueryVariables = { id: courseId }
 	
   const getCourseBody = await graphQlRequest(getCourseQuery, courseQueryVariables).catch((error) => {
-    console.log("Get Course Promise Error:", error)
     throw error
   })
 
@@ -141,12 +134,8 @@ export const getCourse = async (courseId: string) => {
 export const deleteCourse = async (courseId: string, userId: string) => {
 
   const course = await getCourse(courseId).catch((error) => { 
-    console.log("Get Course Promise Error:", error)
     throw error
   })
-
-  console.log("Course:", course)
-  console.log("Course Users:", course.users.items)
 
   await Promise.all(course.users.items .map(async (element) => {
     const deleteCoursesUsersVariables = {
@@ -156,11 +145,8 @@ export const deleteCourse = async (courseId: string, userId: string) => {
     };
     await graphQlRequest(deleteCoursesUsersQuery, deleteCoursesUsersVariables)
   })).catch((error) => {
-    console.log("Delete Course Promise Error:", error)
     throw error
   })  
-
-  console.log("Course Id:", course.id)
 
   const deleteCourseVariables = {
     input: {
@@ -169,42 +155,53 @@ export const deleteCourse = async (courseId: string, userId: string) => {
   };  
 
   await graphQlRequest(deleteCourseQuery, deleteCourseVariables).catch((error) => {
-    console.log("Delete Course Promise Error:", error)
     throw error
   })
 
   return { success: "Deleted Course", courseId: courseId}
 }
 
-export const createInviteLink = async (courseId: string) => {
-
-  const token = crypto.randomBytes(10).toString('hex')
-
-  const course = await getCourse(courseId).catch((error) => {
-    console.log("Get Course Promise Error:", error)
-    throw error
-  }) 
-
-  const response = await graphQlRequest(updateCourseQuery, { 
-    input: {
-      id: courseId,
-      inviteToken: token
+export const setInviteToken = async (courseId: string, token: string, userId: string) => {
+  const condition: ModelCourseConditionInput = {
+    ownerId: {
+      eq: userId
     }
-  }).catch((error) => {
-    console.log("Get Course Promise Error:", error)
+  }
+
+  const input: UpdateCourseInput = {
+    id: courseId,
+    inviteToken: token
+  }
+
+  const response = await graphQlRequest(updateCourseQuery, { input, condition }).catch((error) => {
     throw error
   })
 
-  console.log("Response Update", response)
+  return token
+}
 
+export const createInviteLink = async (courseId: string, userId: string) => {  
+
+  const token = crypto.randomBytes(10).toString('hex')  
+  await setInviteToken(courseId, token, userId).catch((error) => {
+    throw error
+  })
+
+  return token
+}
+
+export const invalidateInviteLink = async (courseId: string, userId: string) => {
+  const token = await setInviteToken(courseId, "", userId).catch((error) => {
+    throw error
+  })
   return token
 }
 
 export const joinCourseWithToken = async (userId: string, courseId: string, token: string) => {
 
-  const course = await getCourse(courseId)
-  console.log("Course", course)
-  console.log("Invite Token", course.inviteToken)
+  const course = await getCourse(courseId).catch((error) => {
+    throw error
+  })
   if(!course.inviteToken || course.inviteToken === "") {
     throw new Error("Course does not have an invite token")
   }

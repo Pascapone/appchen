@@ -80,12 +80,15 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "*");
     next();
 });
+// Log all events
+app.use(function (err, req, res, next) {
+    console.log("EVENT: ".concat(JSON.stringify(req.body)));
+    next();
+});
 /**********************
  * Example get method *
  **********************/
 app.get('/', groupPermissions(['admin']), function (req, res) {
-    console.log(req);
-    console.log(req.apiGateway.event.requestContext.authorizer.claims['cognito:groups']);
     // Add your code here
     res.json({ success: 'get call succeed!', url: req.url });
 });
@@ -100,8 +103,6 @@ app.post('/course/create', groupPermissions(['admin']), function (req, res, next
                 startDate = req.body.startDate;
                 endDate = req.body.endDate;
                 userName = req.apiGateway.event.requestContext.authorizer.claims.name;
-                console.log("EVENT: ".concat(JSON.stringify(req.body)));
-                console.log("Endpoint:", GRAPHQL_ENDPOINT);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
@@ -112,7 +113,6 @@ app.post('/course/create', groupPermissions(['admin']), function (req, res, next
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _a.sent();
-                console.log("Error in Promise: ".concat(err_1));
                 next(err_1);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -126,8 +126,6 @@ app.post('/course/leave', function (req, res, next) { return __awaiter(void 0, v
             case 0:
                 userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
                 courseId = req.body.courseId;
-                console.log("User Id:", userId);
-                console.log("Course Id:", courseId);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
@@ -138,7 +136,6 @@ app.post('/course/leave', function (req, res, next) { return __awaiter(void 0, v
                 return [3 /*break*/, 4];
             case 3:
                 err_2 = _a.sent();
-                console.log("Error in Promise: ".concat(err_2));
                 next(err_2);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -153,10 +150,6 @@ app.post('/course/join', groupPermissions(['admin']), function (req, res, next) 
             case 0:
                 userId = req.body.userId;
                 courseId = req.body.courseId;
-                console.log("EVENT: ".concat(JSON.stringify(req.body)));
-                console.log("Endpoint:", GRAPHQL_ENDPOINT);
-                console.log("User Id:", userId);
-                console.log("Course Id:", courseId);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
@@ -167,7 +160,6 @@ app.post('/course/join', groupPermissions(['admin']), function (req, res, next) 
                 return [3 /*break*/, 4];
             case 3:
                 err_3 = _a.sent();
-                console.log("Error in Promise: ".concat(err_3));
                 next(err_3);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -182,7 +174,6 @@ app.post('/course/join-link', function (req, res, next) { return __awaiter(void 
                 userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
                 token = req.body.token;
                 courseId = req.body.courseId;
-                console.log("User Id:", userId);
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
@@ -193,7 +184,6 @@ app.post('/course/join-link', function (req, res, next) { return __awaiter(void 
                 return [3 /*break*/, 4];
             case 3:
                 err_4 = _a.sent();
-                console.log("Error in Promise: ".concat(err_4));
                 next(err_4);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
@@ -211,11 +201,6 @@ app.post('/course/create-and-join', groupPermissions(['admin']), function (req, 
                 startDate = req.body.startDate;
                 endDate = req.body.endDate;
                 userName = req.apiGateway.event.requestContext.authorizer.claims.name;
-                console.log("Start Date:", startDate);
-                console.log("End Date:", endDate);
-                console.log("EVENT: ".concat(JSON.stringify(req.body)));
-                console.log("Endpoint:", GRAPHQL_ENDPOINT);
-                console.log("Create and Join Course");
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
@@ -225,7 +210,6 @@ app.post('/course/create-and-join', groupPermissions(['admin']), function (req, 
                 return [3 /*break*/, 4];
             case 3:
                 err_5 = _a.sent();
-                console.log("Error in Promise Create Course: ".concat(err_5));
                 next(err_5);
                 return [2 /*return*/];
             case 4:
@@ -238,7 +222,6 @@ app.post('/course/create-and-join', groupPermissions(['admin']), function (req, 
                 return [3 /*break*/, 7];
             case 6:
                 err_6 = _a.sent();
-                console.log("Error in Promise Join Group: ".concat(err_6));
                 next(err_6);
                 return [2 /*return*/];
             case 7: return [2 /*return*/];
@@ -246,30 +229,58 @@ app.post('/course/create-and-join', groupPermissions(['admin']), function (req, 
     });
 }); });
 app.post('/course/createInviteLink', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var courseId, userId, token;
+    var courseId, userId, token, err_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 courseId = req.body.courseId;
                 userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
-                return [4 /*yield*/, (0, course_actions_1.createInviteLink)(courseId)];
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, course_actions_1.createInviteLink)(courseId, userId)];
+            case 2:
                 token = _a.sent();
                 res.json({ success: "Course Id: ".concat(userId), url: req.url, body: { token: token } });
-                return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 3:
+                err_7 = _a.sent();
+                next(err_7);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post('/course/invalidate-invite-link', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var courseId, userId, token, err_8;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                courseId = req.body.courseId;
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, course_actions_1.invalidateInviteLink)(courseId, userId)];
+            case 2:
+                token = _a.sent();
+                res.json({ success: "Ivalidate Link for Course Id: ".concat(userId), url: req.url, body: { token: token } });
+                return [3 /*break*/, 4];
+            case 3:
+                err_8 = _a.sent();
+                next(err_8);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
 app.delete('/course/:courseId', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var userId, courseId, err_7;
+    var userId, courseId, err_9;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
                 courseId = req.params.courseId;
-                console.log("Delete Course - Route");
-                console.log("Course Id:", courseId);
-                console.log("EVENT: ".concat(JSON.stringify(req.body)));
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
@@ -279,9 +290,8 @@ app.delete('/course/:courseId', groupPermissions(['admin']), function (req, res,
                 res.json({ success: 'Course Created and User Joined', url: req.url, body: { courseId: courseId } });
                 return [3 /*break*/, 4];
             case 3:
-                err_7 = _a.sent();
-                console.log("Error in Promise: ".concat(err_7));
-                next(err_7);
+                err_9 = _a.sent();
+                next(err_9);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -293,16 +303,12 @@ app.post('/course/:courseId', function (req, res) {
 });
 // Error middleware must be defined last
 app.use(function (err, req, res, next) {
-    console.error(err.message);
     if (!err.statusCode)
         err.statusCode = 500; // If err has no specified error code, set error code to 'Internal Server Error (500)'
-    console.log("Response:", res);
-    console.log(err.statusCode);
-    console.log(err.message);
+    console.error("--- Express Error Handler ---\n", "Error Message: ".concat(err.message), "Error Status Code: ".concat(err.statusCode));
     res.status(err.statusCode).json({ message: err.message }).end();
 });
 app.listen(3000, function () {
-    console.log("App started");
 });
 // Export the app object. When executing the application local this does nothing. However,
 // to port it to AWS Lambda we will create a wrapper around that will load the app from
