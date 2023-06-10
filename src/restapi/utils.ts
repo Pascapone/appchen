@@ -28,6 +28,8 @@ export const restApiAction = async (route: string, body: any, method: Method) =>
       return await API.post(apiName, path, myInit);
     case 'DELETE':
       return await API.del(apiName, path, myInit);
+    case 'PUT':
+      return await API.put(apiName, path, myInit);
   }
 }
 
@@ -37,30 +39,4 @@ export const graphQlQuery = async (query: any, variables: any): Promise<GraphQLR
   );  
   
   return model
-}
-
-
-// ------------------- Course API ------------------- //
-// Is just a test function, delete it later
-// Test passed -> Conditional update works
-export const updateTest = async (courseId: string, userId: string) => {
- 
-  const input: UpdateCourseInput = {
-    id: courseId,
-    inviteToken: 'Real Test'
-  };
-
-  const condition: ModelCourseConditionInput = {
-    ownerId: {
-      eq: "4d8de7e8-f672-4fe4-b0ce-bf9fff1c21b7"
-    }
-  }
-  
-  const updatedCourse = await API.graphql<GraphQLQuery<UpdateCourseMutation>>({ 
-    query: updateCourseQuery, 
-    variables: { input, condition },
-
-  });
-
-  return updatedCourse
 }

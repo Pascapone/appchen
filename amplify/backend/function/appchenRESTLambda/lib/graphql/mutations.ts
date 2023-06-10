@@ -37,6 +37,35 @@ export const createUser = /* GraphQL */ `
         }
         nextToken
       }
+      TextAssignmentsUser {
+        items {
+          id
+          textAssignmentId
+          userId
+          textAssignmentCourseId
+          submission
+          startTime
+          endTime
+          submissionTime
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      TextAssignments {
+        items {
+          id
+          ownerId
+          name
+          description
+          link
+          level
+          timeLimit
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -72,6 +101,35 @@ export const updateUser = /* GraphQL */ `
           inviteToken
           startDate
           endDate
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      TextAssignmentsUser {
+        items {
+          id
+          textAssignmentId
+          userId
+          textAssignmentCourseId
+          submission
+          startTime
+          endTime
+          submissionTime
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      TextAssignments {
+        items {
+          id
+          ownerId
+          name
+          description
+          link
+          level
+          timeLimit
           createdAt
           updatedAt
         }
@@ -117,6 +175,35 @@ export const deleteUser = /* GraphQL */ `
         }
         nextToken
       }
+      TextAssignmentsUser {
+        items {
+          id
+          textAssignmentId
+          userId
+          textAssignmentCourseId
+          submission
+          startTime
+          endTime
+          submissionTime
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      TextAssignments {
+        items {
+          id
+          ownerId
+          name
+          description
+          link
+          level
+          timeLimit
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -144,6 +231,12 @@ export const createCourse = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -155,6 +248,17 @@ export const createCourse = /* GraphQL */ `
           id
           userId
           courseId
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      TextAssignments {
+        items {
+          id
+          courseId
+          textAssignmentId
+          dueDate
           createdAt
           updatedAt
         }
@@ -187,6 +291,12 @@ export const updateCourse = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -198,6 +308,17 @@ export const updateCourse = /* GraphQL */ `
           id
           userId
           courseId
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      TextAssignments {
+        items {
+          id
+          courseId
+          textAssignmentId
+          dueDate
           createdAt
           updatedAt
         }
@@ -230,6 +351,12 @@ export const deleteCourse = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -246,6 +373,632 @@ export const deleteCourse = /* GraphQL */ `
         }
         nextToken
       }
+      TextAssignments {
+        items {
+          id
+          courseId
+          textAssignmentId
+          dueDate
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createTextAssignment = /* GraphQL */ `
+  mutation CreateTextAssignment(
+    $input: CreateTextAssignmentInput!
+    $condition: ModelTextAssignmentConditionInput
+  ) {
+    createTextAssignment(input: $input, condition: $condition) {
+      id
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      name
+      description
+      link
+      level
+      timeLimit
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateTextAssignment = /* GraphQL */ `
+  mutation UpdateTextAssignment(
+    $input: UpdateTextAssignmentInput!
+    $condition: ModelTextAssignmentConditionInput
+  ) {
+    updateTextAssignment(input: $input, condition: $condition) {
+      id
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      name
+      description
+      link
+      level
+      timeLimit
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteTextAssignment = /* GraphQL */ `
+  mutation DeleteTextAssignment(
+    $input: DeleteTextAssignmentInput!
+    $condition: ModelTextAssignmentConditionInput
+  ) {
+    deleteTextAssignment(input: $input, condition: $condition) {
+      id
+      ownerId
+      owner {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      name
+      description
+      link
+      level
+      timeLimit
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createTextAssignmentCourse = /* GraphQL */ `
+  mutation CreateTextAssignmentCourse(
+    $input: CreateTextAssignmentCourseInput!
+    $condition: ModelTextAssignmentCourseConditionInput
+  ) {
+    createTextAssignmentCourse(input: $input, condition: $condition) {
+      id
+      courseId
+      course {
+        id
+        name
+        level
+        ownerId
+        ownerName
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        inviteToken
+        startDate
+        endDate
+        users {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      textAssignmentId
+      textAssignment {
+        id
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        name
+        description
+        link
+        level
+        timeLimit
+        createdAt
+        updatedAt
+      }
+      textAssignmentUsers {
+        items {
+          id
+          textAssignmentId
+          userId
+          textAssignmentCourseId
+          submission
+          startTime
+          endTime
+          submissionTime
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      dueDate
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateTextAssignmentCourse = /* GraphQL */ `
+  mutation UpdateTextAssignmentCourse(
+    $input: UpdateTextAssignmentCourseInput!
+    $condition: ModelTextAssignmentCourseConditionInput
+  ) {
+    updateTextAssignmentCourse(input: $input, condition: $condition) {
+      id
+      courseId
+      course {
+        id
+        name
+        level
+        ownerId
+        ownerName
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        inviteToken
+        startDate
+        endDate
+        users {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      textAssignmentId
+      textAssignment {
+        id
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        name
+        description
+        link
+        level
+        timeLimit
+        createdAt
+        updatedAt
+      }
+      textAssignmentUsers {
+        items {
+          id
+          textAssignmentId
+          userId
+          textAssignmentCourseId
+          submission
+          startTime
+          endTime
+          submissionTime
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      dueDate
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteTextAssignmentCourse = /* GraphQL */ `
+  mutation DeleteTextAssignmentCourse(
+    $input: DeleteTextAssignmentCourseInput!
+    $condition: ModelTextAssignmentCourseConditionInput
+  ) {
+    deleteTextAssignmentCourse(input: $input, condition: $condition) {
+      id
+      courseId
+      course {
+        id
+        name
+        level
+        ownerId
+        ownerName
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        inviteToken
+        startDate
+        endDate
+        users {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      textAssignmentId
+      textAssignment {
+        id
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        name
+        description
+        link
+        level
+        timeLimit
+        createdAt
+        updatedAt
+      }
+      textAssignmentUsers {
+        items {
+          id
+          textAssignmentId
+          userId
+          textAssignmentCourseId
+          submission
+          startTime
+          endTime
+          submissionTime
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      dueDate
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createTextAssignmentUser = /* GraphQL */ `
+  mutation CreateTextAssignmentUser(
+    $input: CreateTextAssignmentUserInput!
+    $condition: ModelTextAssignmentUserConditionInput
+  ) {
+    createTextAssignmentUser(input: $input, condition: $condition) {
+      id
+      textAssignmentId
+      textAssignment {
+        id
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        name
+        description
+        link
+        level
+        timeLimit
+        createdAt
+        updatedAt
+      }
+      userId
+      user {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      textAssignmentCourseId
+      textAssignmentCourse {
+        id
+        courseId
+        course {
+          id
+          name
+          level
+          ownerId
+          ownerName
+          inviteToken
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        textAssignmentId
+        textAssignment {
+          id
+          ownerId
+          name
+          description
+          link
+          level
+          timeLimit
+          createdAt
+          updatedAt
+        }
+        textAssignmentUsers {
+          nextToken
+        }
+        dueDate
+        createdAt
+        updatedAt
+      }
+      submission
+      startTime
+      endTime
+      submissionTime
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateTextAssignmentUser = /* GraphQL */ `
+  mutation UpdateTextAssignmentUser(
+    $input: UpdateTextAssignmentUserInput!
+    $condition: ModelTextAssignmentUserConditionInput
+  ) {
+    updateTextAssignmentUser(input: $input, condition: $condition) {
+      id
+      textAssignmentId
+      textAssignment {
+        id
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        name
+        description
+        link
+        level
+        timeLimit
+        createdAt
+        updatedAt
+      }
+      userId
+      user {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      textAssignmentCourseId
+      textAssignmentCourse {
+        id
+        courseId
+        course {
+          id
+          name
+          level
+          ownerId
+          ownerName
+          inviteToken
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        textAssignmentId
+        textAssignment {
+          id
+          ownerId
+          name
+          description
+          link
+          level
+          timeLimit
+          createdAt
+          updatedAt
+        }
+        textAssignmentUsers {
+          nextToken
+        }
+        dueDate
+        createdAt
+        updatedAt
+      }
+      submission
+      startTime
+      endTime
+      submissionTime
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteTextAssignmentUser = /* GraphQL */ `
+  mutation DeleteTextAssignmentUser(
+    $input: DeleteTextAssignmentUserInput!
+    $condition: ModelTextAssignmentUserConditionInput
+  ) {
+    deleteTextAssignmentUser(input: $input, condition: $condition) {
+      id
+      textAssignmentId
+      textAssignment {
+        id
+        ownerId
+        owner {
+          id
+          name
+          email
+          userType
+          createdAt
+          updatedAt
+        }
+        name
+        description
+        link
+        level
+        timeLimit
+        createdAt
+        updatedAt
+      }
+      userId
+      user {
+        id
+        name
+        email
+        userType
+        courses {
+          nextToken
+        }
+        ownedCourses {
+          nextToken
+        }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      textAssignmentCourseId
+      textAssignmentCourse {
+        id
+        courseId
+        course {
+          id
+          name
+          level
+          ownerId
+          ownerName
+          inviteToken
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        textAssignmentId
+        textAssignment {
+          id
+          ownerId
+          name
+          description
+          link
+          level
+          timeLimit
+          createdAt
+          updatedAt
+        }
+        textAssignmentUsers {
+          nextToken
+        }
+        dueDate
+        createdAt
+        updatedAt
+      }
+      submission
+      startTime
+      endTime
+      submissionTime
       createdAt
       updatedAt
     }
@@ -271,6 +1024,12 @@ export const createCoursesUsers = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -292,6 +1051,9 @@ export const createCoursesUsers = /* GraphQL */ `
         startDate
         endDate
         users {
+          nextToken
+        }
+        TextAssignments {
           nextToken
         }
         createdAt
@@ -322,6 +1084,12 @@ export const updateCoursesUsers = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -343,6 +1111,9 @@ export const updateCoursesUsers = /* GraphQL */ `
         startDate
         endDate
         users {
+          nextToken
+        }
+        TextAssignments {
           nextToken
         }
         createdAt
@@ -373,6 +1144,12 @@ export const deleteCoursesUsers = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
+        TextAssignmentsUser {
+          nextToken
+        }
+        TextAssignments {
+          nextToken
+        }
         createdAt
         updatedAt
       }
@@ -394,6 +1171,9 @@ export const deleteCoursesUsers = /* GraphQL */ `
         startDate
         endDate
         users {
+          nextToken
+        }
+        TextAssignments {
           nextToken
         }
         createdAt

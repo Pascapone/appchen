@@ -19,6 +19,8 @@ import bodyParser from 'body-parser';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
 import { createCourse, joinUserToCourse, deleteCourse, leaveCourse, createInviteLink, joinCourseWithToken, invalidateInviteLink } from './course-actions';
+import { createTextAssignment, createTextAssignmentCourse, createTextAssignmentUser, deleteTextAssignment, updateTextAssignment } from './assignment-actions';
+import { Level } from './graphql/GraphQL';
 
 const GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
 const AWS_REGION = process.env.AWS_REGION || 'us-east-1';
@@ -31,7 +33,7 @@ app.use(awsServerlessExpressMiddleware.eventContext())
 type Groups = 'admin' | 'superAdmin' | 'default'
 
 // Creates a group permissions middleware
-const groupPermissions = (allowedGroups: [Groups]) => {
+const groupPermissions = (allowedGroups: Array<Groups>) => {
   return (req, res, next) => {
     const userGroups = req.apiGateway.event.requestContext.authorizer.claims['cognito:groups'].split(',')
     if (userGroups && userGroups.some(group => allowedGroups.includes(group))) {
@@ -65,7 +67,7 @@ app.get('/', groupPermissions(['admin']), function(req, res) {
 });
 
 
-app.post('/course/create', groupPermissions(['admin']), async  (req, res, next) => {  
+app.post('/course/create', groupPermissions(['admin', 'superAdmin']), async  (req, res, next) => {  
   const courseLevel = req.body.level
   const courseName = req.body.name
   const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
@@ -94,7 +96,7 @@ app.post('/course/leave', async  (req, res, next) => {
 });
 
 // TODO: Implement invite link join. At the moment only admins can join users to courses
-app.post('/course/join', groupPermissions(['admin']), async  (req, res, next) => {    
+app.post('/course/join', groupPermissions(['admin', 'superAdmin']), async  (req, res, next) => {    
   const userId = req.body.userId
   const courseId = req.body.courseId
 
@@ -119,7 +121,7 @@ app.post('/course/join-link', async  (req, res, next) => {
   }
 });
 
-app.post('/course/create-and-join', groupPermissions(['admin']), async  (req, res, next) => {    
+app.post('/course/create-and-join', groupPermissions(['admin', 'superAdmin']), async  (req, res, next) => {    
   const courseLevel = req.body.level
   const courseName = req.body.name
   const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
@@ -145,7 +147,7 @@ app.post('/course/create-and-join', groupPermissions(['admin']), async  (req, re
   }
 });
 
-app.post('/course/createInviteLink', groupPermissions(['admin']), async  (req, res, next) => {    
+app.post('/course/createInviteLink', groupPermissions(['admin', 'superAdmin']), async  (req, res, next) => {    
   const courseId = req.body.courseId
   const userId = req.apiGateway.event.requestContext.authorizer.claims.sub  
 
@@ -157,7 +159,7 @@ app.post('/course/createInviteLink', groupPermissions(['admin']), async  (req, r
   }  
 });
 
-app.post('/course/invalidate-invite-link', groupPermissions(['admin']), async  (req, res, next) => {    
+app.post('/course/invalidate-invite-link', groupPermissions(['admin', 'superAdmin']), async  (req, res, next) => {    
   const courseId = req.body.courseId
   const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
 
@@ -169,7 +171,7 @@ app.post('/course/invalidate-invite-link', groupPermissions(['admin']), async  (
   }
 });
 
-app.delete('/course/:courseId', groupPermissions(['admin']), async (req, res, next) => {
+app.delete('/course/:courseId', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {
   // Add your code here
   const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
   const courseId = req.params.courseId
@@ -185,6 +187,79 @@ app.delete('/course/:courseId', groupPermissions(['admin']), async (req, res, ne
 app.post('/course/:courseId', function(req, res) {
   // Add your code here
   res.json({success: `Course Id: ${req.params.courseId}`, url: req.url, body: req.body})
+});
+
+app.post('/assignment/text-assignment', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {
+  const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
+  const assignmentName = req.body.name
+  const courseLevel = req.body.level as Level
+  const description = req.body.description
+  const link = req.body.link
+  const timeLimit = req.body.timeLimit
+
+  try {
+    const body = await createTextAssignment(assignmentName, courseLevel, description, link, timeLimit, userId)    
+    res.json({success: `Assignment ID: ${body.data.createTextAssignment.id}`, createTextAssignment: body.data.createTextAssignment})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.delete('/assignment/text-assignment', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {
+  const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
+  const assignmentId = req.body.assignmentId
+
+  try {
+    const body = await deleteTextAssignment(assignmentId, userId)
+    res.json({success: `Deleted Assignment ID: ${assignmentId}`, deleteTextAssignment: body})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.put('/assignment/text-assignment', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {
+  const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
+  const assignmentId = req.body.assignmentId
+  const assignmentName = req.body.name
+  const courseLevel = req.body.level as Level
+  const description = req.body.description
+  const link = req.body.link
+  const timeLimit = req.body.timeLimit
+
+  try {
+    const body = await updateTextAssignment(assignmentId, assignmentName, courseLevel, description, link, timeLimit, userId)
+    res.json({success: `Update Assignment ID: ${assignmentId}`, deleteTextAssignment: body})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.post('/assignment/text-assignment-course', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {
+  const courseId = req.body.courseId
+  const textAssignmentId = req.body.textAssignmentId
+  const dueDate = req.body.dueDate
+
+  try {
+    const body = await createTextAssignmentCourse(courseId, textAssignmentId, dueDate)    
+    res.json({success: `Course Assignment ID: ${body.data.createTextAssignmentCourse.id}`, createTextAssignmentCourse: body.data.createTextAssignmentCourse})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.post('/assignment/text-assignment-user', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {
+  const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
+  const textAssignmentCourseId = req.body.textAssignmentCourseId
+  const textAssignmentId = req.body.textAssignmentId
+
+  console.log("User Id:", userId)
+
+  try {
+    const body = await createTextAssignmentUser(userId, textAssignmentCourseId, textAssignmentId)
+    res.json({success: `User Assignment ID: ${body.data.createTextAssignmentUser.id}`, createTextAssignmentUser: body.data.createTextAssignmentUser})  
+  } catch (err) {
+    next(err)
+  }  
 });
 
 // Error middleware must be defined last

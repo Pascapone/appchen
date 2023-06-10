@@ -1,8 +1,13 @@
 'use client'
+
+import { RestAPI } from '@/restapi/RestAPI';
+import { Level } from '@/GraphQL';
+
 import { CSSProperties, MouseEventHandler } from 'react';
 import {$createParagraphNode, $getRoot, $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND, TextFormatType, $getNodeByKey, LexicalNode, EditorState, createCommand, LexicalCommand, $getNearestNodeFromDOMNode } from 'lexical';
 import {$setBlocksType, $addNodeStyle, $patchStyleText, $getSelectionStyleValueForProperty} from '@lexical/selection';
 import {$createHeadingNode} from '@lexical/rich-text';
+import {$generateHtmlFromNodes} from '@lexical/html';
 import {useEffect, useState} from 'react';
 
 import './editor.css'
@@ -173,7 +178,7 @@ function ToolbarPlugin({heading, setHeading, formats, setFormats}: {heading: Hea
 
       $setBlocksType(selection, () => $createHeadingNode(h))
     })
-  }
+  } 
 
   const handleCustomCommand = () => {
     editor.dispatchCommand(HELLO_WORLD_COMMAND, "Hello World!");    
@@ -232,6 +237,23 @@ function ToolbarPlugin({heading, setHeading, formats, setFormats}: {heading: Hea
   )
 }
 
+function ExportPlugin() {
+  const [editor] = useLexicalComposerContext();  
+
+  const handleExport = () => {
+    editor.update(() => {
+      const htmlString = $generateHtmlFromNodes(editor, null); 
+      console.log("HTML", htmlString)
+    })   
+  }   
+
+  return (    
+    <Box sx={{paddingTop: 1}}>
+      <Button variant='contained' onClick={handleExport}>Abschicken</Button>
+    </Box>
+  )
+}
+
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -252,6 +274,29 @@ export default function Editor() {
     ]
   };
 
+  // --- Debugging --- (Move to course page as admin feature)
+  const handleCreateTextAssignment = () => {
+    RestAPI.assignment.creatTextAssignment("First", Level.A12, "First course", "https://www.google.com", "02 :00:00.000")
+  }
+
+  const handleCreateTextAssignmentCourse = () => {
+    RestAPI.assignment.creatTextAssignmentCourse("8a2c01aa-63a2-4441-8bb9-6e717e424129", "d5271ebe-d9b9-4ef8-a14c-e015d70c3fcf", new Date().toISOString())
+  }
+
+  const handleGetCourse = async () => {
+    const respone = await RestAPI.course.getCourse("8a2c01aa-63a2-4441-8bb9-6e717e424129")
+    console.log(respone)
+  }
+
+  const handleCreateTextAssignmentUser = () => {
+    RestAPI.assignment.creatTextAssignmentUser("d5271ebe-d9b9-4ef8-a14c-e015d70c3fcf", "97affaf1-54b1-430c-ae3a-c0a8a7d40870")
+  }
+
+  const handleGetUser = async () => {
+    const respone = await RestAPI.user.getUser("4d8de7e8-f672-4fe4-b0ce-bf9fff1c21b7")
+    console.log(respone) 
+  }
+
   return (
     <div>
       <LexicalComposer initialConfig={initialConfig}>
@@ -267,7 +312,13 @@ export default function Editor() {
         <HistoryPlugin />
         <MyCustomAutoFocusPlugin />
         <RegisterCommandsPlugin />
+        <ExportPlugin />
       </LexicalComposer>
+      <Button onClick={handleCreateTextAssignment}>Create Assignment</Button>
+      <Button onClick={handleCreateTextAssignmentCourse}>Create Course Assignment</Button>
+      <Button onClick={handleCreateTextAssignmentUser}>Create User Assignment</Button>
+      <Button onClick={handleGetCourse}>Get Course</Button>
+      <Button onClick={handleGetUser}>Get User</Button>
     </div>
   );
 }

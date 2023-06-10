@@ -56,6 +56,7 @@ var express_1 = __importDefault(require("express"));
 var body_parser_1 = __importDefault(require("body-parser"));
 var middleware_1 = __importDefault(require("aws-serverless-express/middleware"));
 var course_actions_1 = require("./course-actions");
+var assignment_actions_1 = require("./assignment-actions");
 var GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
 var AWS_REGION = process.env.AWS_REGION || 'us-east-1';
 // declare a new express app
@@ -301,6 +302,133 @@ app.post('/course/:courseId', function (req, res) {
     // Add your code here
     res.json({ success: "Course Id: ".concat(req.params.courseId), url: req.url, body: req.body });
 });
+app.post('/assignment/text-assignment', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, assignmentName, courseLevel, description, link, timeLimit, body, err_10;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                assignmentName = req.body.name;
+                courseLevel = req.body.level;
+                description = req.body.description;
+                link = req.body.link;
+                timeLimit = req.body.timeLimit;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.createTextAssignment)(assignmentName, courseLevel, description, link, timeLimit, userId)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Assignment ID: ".concat(body.data.createTextAssignment.id), createTextAssignment: body.data.createTextAssignment });
+                return [3 /*break*/, 4];
+            case 3:
+                err_10 = _a.sent();
+                next(err_10);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.delete('/assignment/text-assignment', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, assignmentId, body, err_11;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                assignmentId = req.body.assignmentId;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.deleteTextAssignment)(assignmentId, userId)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Deleted Assignment ID: ".concat(assignmentId), deleteTextAssignment: body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_11 = _a.sent();
+                next(err_11);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.put('/assignment/text-assignment', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, assignmentId, assignmentName, courseLevel, description, link, timeLimit, body, err_12;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                assignmentId = req.body.assignmentId;
+                assignmentName = req.body.name;
+                courseLevel = req.body.level;
+                description = req.body.description;
+                link = req.body.link;
+                timeLimit = req.body.timeLimit;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.updateTextAssignment)(assignmentId, assignmentName, courseLevel, description, link, timeLimit, userId)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Update Assignment ID: ".concat(assignmentId), deleteTextAssignment: body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_12 = _a.sent();
+                next(err_12);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post('/assignment/text-assignment-course', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var courseId, textAssignmentId, dueDate, body, err_13;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                courseId = req.body.courseId;
+                textAssignmentId = req.body.textAssignmentId;
+                dueDate = req.body.dueDate;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.createTextAssignmentCourse)(courseId, textAssignmentId, dueDate)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Course Assignment ID: ".concat(body.data.createTextAssignmentCourse.id), createTextAssignmentCourse: body.data.createTextAssignmentCourse });
+                return [3 /*break*/, 4];
+            case 3:
+                err_13 = _a.sent();
+                next(err_13);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post('/assignment/text-assignment-user', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, textAssignmentCourseId, textAssignmentId, body, err_14;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                textAssignmentCourseId = req.body.textAssignmentCourseId;
+                textAssignmentId = req.body.textAssignmentId;
+                console.log("User Id:", userId);
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.createTextAssignmentUser)(userId, textAssignmentCourseId, textAssignmentId)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "User Assignment ID: ".concat(body.data.createTextAssignmentUser.id), createTextAssignmentUser: body.data.createTextAssignmentUser });
+                return [3 /*break*/, 4];
+            case 3:
+                err_14 = _a.sent();
+                next(err_14);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 // Error middleware must be defined last
 app.use(function (err, req, res, next) {
     if (!err.statusCode)

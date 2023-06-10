@@ -9,6 +9,8 @@ type User @model @auth(rules: [
   userType: UserType!
   courses: [Course] @manyToMany(relationName: "CoursesUsers")
   ownedCourses: [Course] @hasMany(indexName: "byUser", fields: ["id"])
+  TextAssignmentsUser: [TextAssignmentUser] @hasMany(indexName: "byUser", fields: ["id"])
+  TextAssignments: [TextAssignment] @hasMany(indexName: "byUser", fields: ["id"])
 }
 
 type Course @model @auth(rules: [
@@ -26,8 +28,73 @@ type Course @model @auth(rules: [
   startDate: AWSDateTime!
   endDate: AWSDateTime!
   users: [User] @manyToMany(relationName: "CoursesUsers")
+  TextAssignments: [TextAssignmentCourse] @hasMany(indexName: "byCourse", fields: ["id"]) # This will not be added to model. It uses index to get the data
 }
 
+
+# ------------- Text Assignment ------------- #
+# ------------------------------------------- #
+type TextAssignment @model @auth(rules: [
+    { allow: private, provider: iam, operations: [create, update, delete, read] },
+    { allow: groups, groups: ["admin", "superAdmin"], operations: [create, update, delete, read] },
+    { allow: groups, groups: ["default"], operations: [read] },
+  ]) {
+  id: ID!
+
+  ownerId: ID! @index(name: "byUser")
+  owner: User! @belongsTo(fields: ["ownerId"])
+
+  name: String!
+  description: String!
+  link: AWSURL! # link to the pdf
+  level: Level! # level of the text
+  timeLimit: AWSTime! # time limit for the assignment
+}
+
+type TextAssignmentCourse @model @auth(rules: [
+    { allow: private, provider: iam, operations: [create, update, delete, read] },
+    { allow: groups, groups: ["admin", "superAdmin"], operations: [create, update, delete, read] },
+    { allow: groups, groups: ["default"], operations: [read] },
+  ]) {
+  id: ID!
+
+  courseId: ID! @index(name: "byCourse")
+  course: Course! @belongsTo(fields: ["courseId"])
+
+  textAssignmentId: ID!
+  textAssignment: TextAssignment! @hasOne(fields: ["textAssignmentId"])
+
+  textAssignmentUsers: [TextAssignmentUser] @hasMany(indexName: "byTextAssignmentCourse", fields: ["id"])
+
+  dueDate: AWSDateTime # due date for the assignment
+  timeLimit: AWSTime
+}
+
+type TextAssignmentUser @model @auth(rules: [
+    { allow: private, provider: iam, operations: [create, update, delete, read] },
+    { allow: groups, groups: ["admin", "superAdmin"], operations: [create, update, delete, read] },
+    { allow: groups, groups: ["default"], operations: [read] },
+  ]) {  
+  id: ID!  
+
+  textAssignmentId: ID!
+  textAssignment: TextAssignment! @hasOne(fields: ["textAssignmentId"])
+
+  userId: ID! @index(name: "byUser")
+  user: User! @belongsTo(fields: ["userId"])
+
+  textAssignmentCourseId: ID @index(name: "byTextAssignmentCourse")
+  textAssignmentCourse: TextAssignmentCourse @belongsTo(fields: ["textAssignmentCourseId"])
+
+  submission: String
+  startTime: AWSDateTime
+  endTime: AWSDateTime
+  submissionTime: AWSDateTime
+}
+
+
+# ------------------ Enums ------------------ #
+# ------------------------------------------- #
 enum Level {
   A11
   A12

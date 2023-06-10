@@ -33,18 +33,6 @@ const Courses = ({signOut, user}: WithAuthenticatorProps) => {
     setCourses(courses)
   }  
 
-  const handleDeleteCourse = async (courseId: string) => {
-    setDeleteCourseId(courseId)
-    setOpenDeleteDialog(true)    
-  }
-
-  const handleGetCourseModel = async (courseId: string) => {
-    const course = await RestAPI.course.getCourse(courseId).catch(err => {
-      console.log(err)
-    })
-    console.log(course)
-  }  
-
   const submitDeleteCourse = async () => {
     setSubmitting(true)
     await RestAPI.course.deleteCourse(deleteCourseId).catch(err => {

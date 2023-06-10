@@ -10,6 +10,8 @@ export type User = {
   userType: UserType,
   courses?: ModelCoursesUsersConnection | null,
   ownedCourses?: ModelCourseConnection | null,
+  TextAssignmentsUser?: ModelTextAssignmentUserConnection | null,
+  TextAssignments?: ModelTextAssignmentConnection | null,
   createdAt: string,
   updatedAt: string,
 };
@@ -49,6 +51,7 @@ export type Course = {
   startDate: string,
   endDate: string,
   users?: ModelCoursesUsersConnection | null,
+  TextAssignments?: ModelTextAssignmentCourseConnection | null,
   createdAt: string,
   updatedAt: string,
 };
@@ -66,9 +69,71 @@ export enum Level {
 }
 
 
+export type ModelTextAssignmentCourseConnection = {
+  __typename: "ModelTextAssignmentCourseConnection",
+  items:  Array<TextAssignmentCourse | null >,
+  nextToken?: string | null,
+};
+
+export type TextAssignmentCourse = {
+  __typename: "TextAssignmentCourse",
+  id: string,
+  courseId: string,
+  course: Course,
+  textAssignmentId: string,
+  textAssignment: TextAssignment,
+  textAssignmentUsers?: ModelTextAssignmentUserConnection | null,
+  dueDate?: string | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export type TextAssignment = {
+  __typename: "TextAssignment",
+  id: string,
+  ownerId: string,
+  owner: User,
+  name: string,
+  description: string,
+  link: string,
+  level: Level,
+  timeLimit: string,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export type ModelTextAssignmentUserConnection = {
+  __typename: "ModelTextAssignmentUserConnection",
+  items:  Array<TextAssignmentUser | null >,
+  nextToken?: string | null,
+};
+
+export type TextAssignmentUser = {
+  __typename: "TextAssignmentUser",
+  id: string,
+  textAssignmentId: string,
+  textAssignment: TextAssignment,
+  userId: string,
+  user: User,
+  textAssignmentCourseId?: string | null,
+  textAssignmentCourse?: TextAssignmentCourse | null,
+  submission?: string | null,
+  startTime?: string | null,
+  endTime?: string | null,
+  submissionTime?: string | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
 export type ModelCourseConnection = {
   __typename: "ModelCourseConnection",
   items:  Array<Course | null >,
+  nextToken?: string | null,
+};
+
+export type ModelTextAssignmentConnection = {
+  __typename: "ModelTextAssignmentConnection",
+  items:  Array<TextAssignment | null >,
   nextToken?: string | null,
 };
 
@@ -204,6 +269,108 @@ export type DeleteCourseInput = {
   id: string,
 };
 
+export type CreateTextAssignmentInput = {
+  id?: string | null,
+  ownerId: string,
+  name: string,
+  description: string,
+  link: string,
+  level: Level,
+  timeLimit: string,
+};
+
+export type ModelTextAssignmentConditionInput = {
+  ownerId?: ModelIDInput | null,
+  name?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  link?: ModelStringInput | null,
+  level?: ModelLevelInput | null,
+  timeLimit?: ModelStringInput | null,
+  and?: Array< ModelTextAssignmentConditionInput | null > | null,
+  or?: Array< ModelTextAssignmentConditionInput | null > | null,
+  not?: ModelTextAssignmentConditionInput | null,
+};
+
+export type UpdateTextAssignmentInput = {
+  id: string,
+  ownerId?: string | null,
+  name?: string | null,
+  description?: string | null,
+  link?: string | null,
+  level?: Level | null,
+  timeLimit?: string | null,
+};
+
+export type DeleteTextAssignmentInput = {
+  id: string,
+};
+
+export type CreateTextAssignmentCourseInput = {
+  id?: string | null,
+  courseId: string,
+  textAssignmentId: string,
+  dueDate?: string | null,
+};
+
+export type ModelTextAssignmentCourseConditionInput = {
+  courseId?: ModelIDInput | null,
+  textAssignmentId?: ModelIDInput | null,
+  dueDate?: ModelStringInput | null,
+  and?: Array< ModelTextAssignmentCourseConditionInput | null > | null,
+  or?: Array< ModelTextAssignmentCourseConditionInput | null > | null,
+  not?: ModelTextAssignmentCourseConditionInput | null,
+};
+
+export type UpdateTextAssignmentCourseInput = {
+  id: string,
+  courseId?: string | null,
+  textAssignmentId?: string | null,
+  dueDate?: string | null,
+};
+
+export type DeleteTextAssignmentCourseInput = {
+  id: string,
+};
+
+export type CreateTextAssignmentUserInput = {
+  id?: string | null,
+  textAssignmentId: string,
+  userId: string,
+  textAssignmentCourseId?: string | null,
+  submission?: string | null,
+  startTime?: string | null,
+  endTime?: string | null,
+  submissionTime?: string | null,
+};
+
+export type ModelTextAssignmentUserConditionInput = {
+  textAssignmentId?: ModelIDInput | null,
+  userId?: ModelIDInput | null,
+  textAssignmentCourseId?: ModelIDInput | null,
+  submission?: ModelStringInput | null,
+  startTime?: ModelStringInput | null,
+  endTime?: ModelStringInput | null,
+  submissionTime?: ModelStringInput | null,
+  and?: Array< ModelTextAssignmentUserConditionInput | null > | null,
+  or?: Array< ModelTextAssignmentUserConditionInput | null > | null,
+  not?: ModelTextAssignmentUserConditionInput | null,
+};
+
+export type UpdateTextAssignmentUserInput = {
+  id: string,
+  textAssignmentId?: string | null,
+  userId?: string | null,
+  textAssignmentCourseId?: string | null,
+  submission?: string | null,
+  startTime?: string | null,
+  endTime?: string | null,
+  submissionTime?: string | null,
+};
+
+export type DeleteTextAssignmentUserInput = {
+  id: string,
+};
+
 export type CreateCoursesUsersInput = {
   id?: string | null,
   userId: string,
@@ -264,6 +431,43 @@ export enum ModelSortDirection {
 }
 
 
+export type ModelTextAssignmentFilterInput = {
+  id?: ModelIDInput | null,
+  ownerId?: ModelIDInput | null,
+  name?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  link?: ModelStringInput | null,
+  level?: ModelLevelInput | null,
+  timeLimit?: ModelStringInput | null,
+  and?: Array< ModelTextAssignmentFilterInput | null > | null,
+  or?: Array< ModelTextAssignmentFilterInput | null > | null,
+  not?: ModelTextAssignmentFilterInput | null,
+};
+
+export type ModelTextAssignmentCourseFilterInput = {
+  id?: ModelIDInput | null,
+  courseId?: ModelIDInput | null,
+  textAssignmentId?: ModelIDInput | null,
+  dueDate?: ModelStringInput | null,
+  and?: Array< ModelTextAssignmentCourseFilterInput | null > | null,
+  or?: Array< ModelTextAssignmentCourseFilterInput | null > | null,
+  not?: ModelTextAssignmentCourseFilterInput | null,
+};
+
+export type ModelTextAssignmentUserFilterInput = {
+  id?: ModelIDInput | null,
+  textAssignmentId?: ModelIDInput | null,
+  userId?: ModelIDInput | null,
+  textAssignmentCourseId?: ModelIDInput | null,
+  submission?: ModelStringInput | null,
+  startTime?: ModelStringInput | null,
+  endTime?: ModelStringInput | null,
+  submissionTime?: ModelStringInput | null,
+  and?: Array< ModelTextAssignmentUserFilterInput | null > | null,
+  or?: Array< ModelTextAssignmentUserFilterInput | null > | null,
+  not?: ModelTextAssignmentUserFilterInput | null,
+};
+
 export type ModelCoursesUsersFilterInput = {
   id?: ModelIDInput | null,
   userId?: ModelIDInput | null,
@@ -323,6 +527,40 @@ export type ModelSubscriptionCourseFilterInput = {
   endDate?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionCourseFilterInput | null > | null,
   or?: Array< ModelSubscriptionCourseFilterInput | null > | null,
+};
+
+export type ModelSubscriptionTextAssignmentFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  ownerId?: ModelSubscriptionIDInput | null,
+  name?: ModelSubscriptionStringInput | null,
+  description?: ModelSubscriptionStringInput | null,
+  link?: ModelSubscriptionStringInput | null,
+  level?: ModelSubscriptionStringInput | null,
+  timeLimit?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionTextAssignmentFilterInput | null > | null,
+  or?: Array< ModelSubscriptionTextAssignmentFilterInput | null > | null,
+};
+
+export type ModelSubscriptionTextAssignmentCourseFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  courseId?: ModelSubscriptionIDInput | null,
+  textAssignmentId?: ModelSubscriptionIDInput | null,
+  dueDate?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionTextAssignmentCourseFilterInput | null > | null,
+  or?: Array< ModelSubscriptionTextAssignmentCourseFilterInput | null > | null,
+};
+
+export type ModelSubscriptionTextAssignmentUserFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  textAssignmentId?: ModelSubscriptionIDInput | null,
+  userId?: ModelSubscriptionIDInput | null,
+  textAssignmentCourseId?: ModelSubscriptionIDInput | null,
+  submission?: ModelSubscriptionStringInput | null,
+  startTime?: ModelSubscriptionStringInput | null,
+  endTime?: ModelSubscriptionStringInput | null,
+  submissionTime?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionTextAssignmentUserFilterInput | null > | null,
+  or?: Array< ModelSubscriptionTextAssignmentUserFilterInput | null > | null,
 };
 
 export type ModelSubscriptionCoursesUsersFilterInput = {
@@ -457,6 +695,39 @@ export type CreateUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    TextAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentConnection",
+      items:  Array< {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -498,6 +769,39 @@ export type UpdateUserMutation = {
         inviteToken?: string | null,
         startDate: string,
         endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentConnection",
+      items:  Array< {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -549,6 +853,39 @@ export type DeleteUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    TextAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentConnection",
+      items:  Array< {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -581,6 +918,14 @@ export type CreateCourseMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -594,6 +939,19 @@ export type CreateCourseMutation = {
         id: string,
         userId: string,
         courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentCourseConnection",
+      items:  Array< {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -631,6 +989,14 @@ export type UpdateCourseMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -644,6 +1010,19 @@ export type UpdateCourseMutation = {
         id: string,
         userId: string,
         courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentCourseConnection",
+      items:  Array< {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -681,6 +1060,14 @@ export type DeleteCourseMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -699,6 +1086,724 @@ export type DeleteCourseMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentCourseConnection",
+      items:  Array< {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type CreateTextAssignmentMutationVariables = {
+  input: CreateTextAssignmentInput,
+  condition?: ModelTextAssignmentConditionInput | null,
+};
+
+export type CreateTextAssignmentMutation = {
+  createTextAssignment?:  {
+    __typename: "TextAssignment",
+    id: string,
+    ownerId: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    name: string,
+    description: string,
+    link: string,
+    level: Level,
+    timeLimit: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type UpdateTextAssignmentMutationVariables = {
+  input: UpdateTextAssignmentInput,
+  condition?: ModelTextAssignmentConditionInput | null,
+};
+
+export type UpdateTextAssignmentMutation = {
+  updateTextAssignment?:  {
+    __typename: "TextAssignment",
+    id: string,
+    ownerId: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    name: string,
+    description: string,
+    link: string,
+    level: Level,
+    timeLimit: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteTextAssignmentMutationVariables = {
+  input: DeleteTextAssignmentInput,
+  condition?: ModelTextAssignmentConditionInput | null,
+};
+
+export type DeleteTextAssignmentMutation = {
+  deleteTextAssignment?:  {
+    __typename: "TextAssignment",
+    id: string,
+    ownerId: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    name: string,
+    description: string,
+    link: string,
+    level: Level,
+    timeLimit: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type CreateTextAssignmentCourseMutationVariables = {
+  input: CreateTextAssignmentCourseInput,
+  condition?: ModelTextAssignmentCourseConditionInput | null,
+};
+
+export type CreateTextAssignmentCourseMutation = {
+  createTextAssignmentCourse?:  {
+    __typename: "TextAssignmentCourse",
+    id: string,
+    courseId: string,
+    course:  {
+      __typename: "Course",
+      id: string,
+      name: string,
+      level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
+      users?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentUsers?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    dueDate?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type UpdateTextAssignmentCourseMutationVariables = {
+  input: UpdateTextAssignmentCourseInput,
+  condition?: ModelTextAssignmentCourseConditionInput | null,
+};
+
+export type UpdateTextAssignmentCourseMutation = {
+  updateTextAssignmentCourse?:  {
+    __typename: "TextAssignmentCourse",
+    id: string,
+    courseId: string,
+    course:  {
+      __typename: "Course",
+      id: string,
+      name: string,
+      level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
+      users?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentUsers?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    dueDate?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteTextAssignmentCourseMutationVariables = {
+  input: DeleteTextAssignmentCourseInput,
+  condition?: ModelTextAssignmentCourseConditionInput | null,
+};
+
+export type DeleteTextAssignmentCourseMutation = {
+  deleteTextAssignmentCourse?:  {
+    __typename: "TextAssignmentCourse",
+    id: string,
+    courseId: string,
+    course:  {
+      __typename: "Course",
+      id: string,
+      name: string,
+      level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
+      users?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentUsers?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    dueDate?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type CreateTextAssignmentUserMutationVariables = {
+  input: CreateTextAssignmentUserInput,
+  condition?: ModelTextAssignmentUserConditionInput | null,
+};
+
+export type CreateTextAssignmentUserMutation = {
+  createTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    id: string,
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    userId: string,
+    user:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentCourseId?: string | null,
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    submission?: string | null,
+    startTime?: string | null,
+    endTime?: string | null,
+    submissionTime?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type UpdateTextAssignmentUserMutationVariables = {
+  input: UpdateTextAssignmentUserInput,
+  condition?: ModelTextAssignmentUserConditionInput | null,
+};
+
+export type UpdateTextAssignmentUserMutation = {
+  updateTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    id: string,
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    userId: string,
+    user:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentCourseId?: string | null,
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    submission?: string | null,
+    startTime?: string | null,
+    endTime?: string | null,
+    submissionTime?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteTextAssignmentUserMutationVariables = {
+  input: DeleteTextAssignmentUserInput,
+  condition?: ModelTextAssignmentUserConditionInput | null,
+};
+
+export type DeleteTextAssignmentUserMutation = {
+  deleteTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    id: string,
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    userId: string,
+    user:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentCourseId?: string | null,
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    submission?: string | null,
+    startTime?: string | null,
+    endTime?: string | null,
+    submissionTime?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -729,6 +1834,14 @@ export type CreateCoursesUsersMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -753,6 +1866,10 @@ export type CreateCoursesUsersMutation = {
       endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,
@@ -788,6 +1905,14 @@ export type UpdateCoursesUsersMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -812,6 +1937,10 @@ export type UpdateCoursesUsersMutation = {
       endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,
@@ -847,6 +1976,14 @@ export type DeleteCoursesUsersMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -871,6 +2008,10 @@ export type DeleteCoursesUsersMutation = {
       endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,
@@ -921,6 +2062,39 @@ export type GetUserQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    TextAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentConnection",
+      items:  Array< {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -947,6 +2121,14 @@ export type ListUsersQuery = {
       } | null,
       ownedCourses?:  {
         __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,
@@ -982,6 +2164,14 @@ export type GetCourseQuery = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -995,6 +2185,19 @@ export type GetCourseQuery = {
         id: string,
         userId: string,
         courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentCourseConnection",
+      items:  Array< {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1035,6 +2238,10 @@ export type ListCoursesQuery = {
       endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,
@@ -1078,6 +2285,588 @@ export type CoursesByOwnerIdQuery = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetTextAssignmentQueryVariables = {
+  id: string,
+};
+
+export type GetTextAssignmentQuery = {
+  getTextAssignment?:  {
+    __typename: "TextAssignment",
+    id: string,
+    ownerId: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    name: string,
+    description: string,
+    link: string,
+    level: Level,
+    timeLimit: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListTextAssignmentsQueryVariables = {
+  filter?: ModelTextAssignmentFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListTextAssignmentsQuery = {
+  listTextAssignments?:  {
+    __typename: "ModelTextAssignmentConnection",
+    items:  Array< {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type TextAssignmentsByOwnerIdQueryVariables = {
+  ownerId: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelTextAssignmentFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type TextAssignmentsByOwnerIdQuery = {
+  textAssignmentsByOwnerId?:  {
+    __typename: "ModelTextAssignmentConnection",
+    items:  Array< {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetTextAssignmentCourseQueryVariables = {
+  id: string,
+};
+
+export type GetTextAssignmentCourseQuery = {
+  getTextAssignmentCourse?:  {
+    __typename: "TextAssignmentCourse",
+    id: string,
+    courseId: string,
+    course:  {
+      __typename: "Course",
+      id: string,
+      name: string,
+      level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
+      users?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentUsers?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    dueDate?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListTextAssignmentCoursesQueryVariables = {
+  filter?: ModelTextAssignmentCourseFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListTextAssignmentCoursesQuery = {
+  listTextAssignmentCourses?:  {
+    __typename: "ModelTextAssignmentCourseConnection",
+    items:  Array< {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type TextAssignmentCoursesByCourseIdQueryVariables = {
+  courseId: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelTextAssignmentCourseFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type TextAssignmentCoursesByCourseIdQuery = {
+  textAssignmentCoursesByCourseId?:  {
+    __typename: "ModelTextAssignmentCourseConnection",
+    items:  Array< {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetTextAssignmentUserQueryVariables = {
+  id: string,
+};
+
+export type GetTextAssignmentUserQuery = {
+  getTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    id: string,
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    userId: string,
+    user:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentCourseId?: string | null,
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    submission?: string | null,
+    startTime?: string | null,
+    endTime?: string | null,
+    submissionTime?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListTextAssignmentUsersQueryVariables = {
+  filter?: ModelTextAssignmentUserFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListTextAssignmentUsersQuery = {
+  listTextAssignmentUsers?:  {
+    __typename: "ModelTextAssignmentUserConnection",
+    items:  Array< {
+      __typename: "TextAssignmentUser",
+      id: string,
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      userId: string,
+      user:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentCourseId?: string | null,
+      textAssignmentCourse?:  {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      submission?: string | null,
+      startTime?: string | null,
+      endTime?: string | null,
+      submissionTime?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type TextAssignmentUsersByUserIdQueryVariables = {
+  userId: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelTextAssignmentUserFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type TextAssignmentUsersByUserIdQuery = {
+  textAssignmentUsersByUserId?:  {
+    __typename: "ModelTextAssignmentUserConnection",
+    items:  Array< {
+      __typename: "TextAssignmentUser",
+      id: string,
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      userId: string,
+      user:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentCourseId?: string | null,
+      textAssignmentCourse?:  {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      submission?: string | null,
+      startTime?: string | null,
+      endTime?: string | null,
+      submissionTime?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type TextAssignmentUsersByTextAssignmentCourseIdQueryVariables = {
+  textAssignmentCourseId: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelTextAssignmentUserFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type TextAssignmentUsersByTextAssignmentCourseIdQuery = {
+  textAssignmentUsersByTextAssignmentCourseId?:  {
+    __typename: "ModelTextAssignmentUserConnection",
+    items:  Array< {
+      __typename: "TextAssignmentUser",
+      id: string,
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      userId: string,
+      user:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentCourseId?: string | null,
+      textAssignmentCourse?:  {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      submission?: string | null,
+      startTime?: string | null,
+      endTime?: string | null,
+      submissionTime?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -1109,6 +2898,14 @@ export type GetCoursesUsersQuery = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1133,6 +2930,10 @@ export type GetCoursesUsersQuery = {
       endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,
@@ -1316,6 +3117,39 @@ export type OnCreateUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    TextAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentConnection",
+      items:  Array< {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1356,6 +3190,39 @@ export type OnUpdateUserSubscription = {
         inviteToken?: string | null,
         startDate: string,
         endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentConnection",
+      items:  Array< {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1406,6 +3273,39 @@ export type OnDeleteUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    TextAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentConnection",
+      items:  Array< {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1437,6 +3337,14 @@ export type OnCreateCourseSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1450,6 +3358,19 @@ export type OnCreateCourseSubscription = {
         id: string,
         userId: string,
         courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentCourseConnection",
+      items:  Array< {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1486,6 +3407,14 @@ export type OnUpdateCourseSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1499,6 +3428,19 @@ export type OnUpdateCourseSubscription = {
         id: string,
         userId: string,
         courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentCourseConnection",
+      items:  Array< {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1535,6 +3477,14 @@ export type OnDeleteCourseSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1553,6 +3503,715 @@ export type OnDeleteCourseSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    TextAssignments?:  {
+      __typename: "ModelTextAssignmentCourseConnection",
+      items:  Array< {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        dueDate?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnCreateTextAssignmentSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentFilterInput | null,
+};
+
+export type OnCreateTextAssignmentSubscription = {
+  onCreateTextAssignment?:  {
+    __typename: "TextAssignment",
+    id: string,
+    ownerId: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    name: string,
+    description: string,
+    link: string,
+    level: Level,
+    timeLimit: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateTextAssignmentSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentFilterInput | null,
+};
+
+export type OnUpdateTextAssignmentSubscription = {
+  onUpdateTextAssignment?:  {
+    __typename: "TextAssignment",
+    id: string,
+    ownerId: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    name: string,
+    description: string,
+    link: string,
+    level: Level,
+    timeLimit: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteTextAssignmentSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentFilterInput | null,
+};
+
+export type OnDeleteTextAssignmentSubscription = {
+  onDeleteTextAssignment?:  {
+    __typename: "TextAssignment",
+    id: string,
+    ownerId: string,
+    owner:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    name: string,
+    description: string,
+    link: string,
+    level: Level,
+    timeLimit: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnCreateTextAssignmentCourseSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentCourseFilterInput | null,
+};
+
+export type OnCreateTextAssignmentCourseSubscription = {
+  onCreateTextAssignmentCourse?:  {
+    __typename: "TextAssignmentCourse",
+    id: string,
+    courseId: string,
+    course:  {
+      __typename: "Course",
+      id: string,
+      name: string,
+      level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
+      users?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentUsers?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    dueDate?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateTextAssignmentCourseSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentCourseFilterInput | null,
+};
+
+export type OnUpdateTextAssignmentCourseSubscription = {
+  onUpdateTextAssignmentCourse?:  {
+    __typename: "TextAssignmentCourse",
+    id: string,
+    courseId: string,
+    course:  {
+      __typename: "Course",
+      id: string,
+      name: string,
+      level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
+      users?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentUsers?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    dueDate?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteTextAssignmentCourseSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentCourseFilterInput | null,
+};
+
+export type OnDeleteTextAssignmentCourseSubscription = {
+  onDeleteTextAssignmentCourse?:  {
+    __typename: "TextAssignmentCourse",
+    id: string,
+    courseId: string,
+    course:  {
+      __typename: "Course",
+      id: string,
+      name: string,
+      level: Level,
+      ownerId: string,
+      ownerName: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      inviteToken?: string | null,
+      startDate: string,
+      endDate: string,
+      users?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentUsers?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    dueDate?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnCreateTextAssignmentUserSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentUserFilterInput | null,
+};
+
+export type OnCreateTextAssignmentUserSubscription = {
+  onCreateTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    id: string,
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    userId: string,
+    user:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentCourseId?: string | null,
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    submission?: string | null,
+    startTime?: string | null,
+    endTime?: string | null,
+    submissionTime?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateTextAssignmentUserSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentUserFilterInput | null,
+};
+
+export type OnUpdateTextAssignmentUserSubscription = {
+  onUpdateTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    id: string,
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    userId: string,
+    user:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentCourseId?: string | null,
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    submission?: string | null,
+    startTime?: string | null,
+    endTime?: string | null,
+    submissionTime?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteTextAssignmentUserSubscriptionVariables = {
+  filter?: ModelSubscriptionTextAssignmentUserFilterInput | null,
+};
+
+export type OnDeleteTextAssignmentUserSubscription = {
+  onDeleteTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    id: string,
+    textAssignmentId: string,
+    textAssignment:  {
+      __typename: "TextAssignment",
+      id: string,
+      ownerId: string,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        email: string,
+        userType: UserType,
+        createdAt: string,
+        updatedAt: string,
+      },
+      name: string,
+      description: string,
+      link: string,
+      level: Level,
+      timeLimit: string,
+      createdAt: string,
+      updatedAt: string,
+    },
+    userId: string,
+    user:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      email: string,
+      userType: UserType,
+      courses?:  {
+        __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      ownedCourses?:  {
+        __typename: "ModelCourseConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    textAssignmentCourseId?: string | null,
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      id: string,
+      courseId: string,
+      course:  {
+        __typename: "Course",
+        id: string,
+        name: string,
+        level: Level,
+        ownerId: string,
+        ownerName: string,
+        inviteToken?: string | null,
+        startDate: string,
+        endDate: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentId: string,
+      textAssignment:  {
+        __typename: "TextAssignment",
+        id: string,
+        ownerId: string,
+        name: string,
+        description: string,
+        link: string,
+        level: Level,
+        timeLimit: string,
+        createdAt: string,
+        updatedAt: string,
+      },
+      textAssignmentUsers?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      dueDate?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    submission?: string | null,
+    startTime?: string | null,
+    endTime?: string | null,
+    submissionTime?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1582,6 +4241,14 @@ export type OnCreateCoursesUsersSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1606,6 +4273,10 @@ export type OnCreateCoursesUsersSubscription = {
       endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,
@@ -1640,6 +4311,14 @@ export type OnUpdateCoursesUsersSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1664,6 +4343,10 @@ export type OnUpdateCoursesUsersSubscription = {
       endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,
@@ -1698,6 +4381,14 @@ export type OnDeleteCoursesUsersSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
+      TextAssignmentsUser?:  {
+        __typename: "ModelTextAssignmentUserConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentConnection",
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     },
@@ -1722,6 +4413,10 @@ export type OnDeleteCoursesUsersSubscription = {
       endDate: string,
       users?:  {
         __typename: "ModelCoursesUsersConnection",
+        nextToken?: string | null,
+      } | null,
+      TextAssignments?:  {
+        __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
       createdAt: string,

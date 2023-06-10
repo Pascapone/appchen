@@ -37,8 +37,14 @@ export default function SideBar({ open, onClose }: SideBarProps) {
           <ListItemIcon>
             <GroupIcon/>
           </ListItemIcon>
-          <ListItemText primary="Courses" />
-        </ListItemButton>          
+          <ListItemText primary="Kurse" />
+        </ListItemButton>         
+        <ListItemButton LinkComponent={Link} href='/assignments'>
+          <ListItemIcon>
+            <GroupIcon/>
+          </ListItemIcon>
+          <ListItemText primary="Aufgaben" />
+        </ListItemButton> 
       </List>
     </StyledDrawer>
   )

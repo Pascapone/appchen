@@ -5,20 +5,15 @@ import { RestAPI } from '@/restapi/RestAPI'
 import { useEffect } from 'react'
 
 import { dateToGermanString } from '@/utils/dateUtils'
-
-import { Box, Typography, Divider, Tabs, Tab, Card, Backdrop, CircularProgress, ButtonGroup, Button, IconButton, Grid } from '@mui/material'
+import { Box, Typography, Divider, Tabs, Tab, Card, IconButton, Grid, Backdrop, CircularProgress } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import { useRouter } from 'next/navigation'
 
 import { withAuthenticator, WithAuthenticatorProps } from '@aws-amplify/ui-react'
 
-import ConfirmDialog from '@/components/dialogs/ConfirmDialog'
-import InviteLinkDialog from './components/InviteLinkDialog'
-
-import { toast } from 'react-toastify';
-
-import { updateTest } from '@/restapi/utils'
+import CourseAssignments from './components/CourseAssignments'
+import CourseActions from './components/CourseActions'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -55,30 +50,10 @@ function a11yProps(index: number) {
 
 const Course = ({params, signOut, user}: any) => {
   const [courseModel, setCourseModel] = useState<any>(null)
-  const [tabIndex, setTabIndex] = useState(0);
+  const [tabIndex, setTabIndex] = useState(0);  
   const [submitting, setSubmitting] = useState(false)
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
-  const [openInviteLinkDialog, setOpenInviteLinkDialog] = useState(false)
-  const [openLeaveCourseDialog, setOpenLeaveCourseDialog] = useState(false)
 
   const router = useRouter()
-
-  const notifyCreatedLink = () => toast.success("Neuen Einladungslink erstellt.", {
-    theme: "colored",
-  });
-
-  const notifyLeftCourse = () => toast.info("Sie haben den Kurs verlassen.", {
-    theme: "colored",
-  });
-
-  const notifyDeletedCourse = () => toast.info("Der Kurs wurde permanent gelöscht.", {
-    theme: "colored",
-  });
-
-  const notifyInvalidateCourseLink = () => toast.info("Der Einladungslink des Kurses wurde deaktiviert.", {
-    theme: "colored",
-  });
-
 
   const handleChangeIndex = (event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
@@ -94,60 +69,7 @@ const Course = ({params, signOut, user}: any) => {
     }
   }
 
-  const handleInviteLinkDialog = async () => {
-    setOpenInviteLinkDialog(true)
-  }
-
-  const handleCreateInviteLink = async (courseId: string) => {
-    setSubmitting(true)
-
-    const reponse = await RestAPI.course.createCourseInviteLink(courseId)
-    
-    await handleGetCourseModel(courseId)
-    
-    setSubmitting(false)
-    notifyCreatedLink()
-    console.log("Token", reponse.body.token)
-  }
-
-  const handleDeleteCourse = async () => {
-    setOpenDeleteDialog(true)    
-  }
-
-  const submitDeleteCourse = async () => {
-    setSubmitting(true)
-    await RestAPI.course.deleteCourse(courseModel.id).catch(err => {
-      console.log(err)
-    })
-    notifyDeletedCourse()
-    setSubmitting(false)
-    setOpenDeleteDialog(false)
-    router.push('/courses')
-  }
-
-  const submitLeaveCourse = async () => {
-    setSubmitting(true)
-    await RestAPI.course.leaveCourse(courseModel.id).catch(err => {
-      console.log(err)
-    })
-    notifyLeftCourse()
-    router.push('/courses')
-  }
-
-  const handleInvalidateToken = async () => {
-    setSubmitting(true)
-    await RestAPI.course.invalidateInviteLink(courseModel.id).catch(err => {
-      console.log(err)
-    })
-    await handleGetCourseModel(courseModel.id)
-    setSubmitting(false)
-    notifyInvalidateCourseLink()
-  }
-
-  const handleRequest = async () => {
-    console.log("Request")
-    await updateTest(courseModel.id, "asdsaf")    
-  }
+  
 
   useEffect(() => {
     handleGetCourseModel(params.courseId)
@@ -159,38 +81,6 @@ const Course = ({params, signOut, user}: any) => {
   
   return (
     <Box>
-      <ConfirmDialog 
-        title="Kurs Löschen" 
-        dialogText='Sind Sie sicher, dass Sie den Kurs löschen wollen?'
-        confirmButtonText='Löschen'
-        permanentWarning={true}
-        dialogStyle='error'
-        open={openDeleteDialog} 
-        submitting={submitting} 
-        handleCancel={() => {setOpenDeleteDialog(false)}} 
-        handleConfirm={submitDeleteCourse}
-      />     
-      <ConfirmDialog 
-        title="Kurs verlassen" 
-        dialogText='Sind Sie sicher, dass Sie den Kurs verlasen wollen?'
-        confirmButtonText='Verlassen'
-        dialogStyle='error'
-        open={openLeaveCourseDialog} 
-        submitting={submitting} 
-        handleCancel={() => {setOpenLeaveCourseDialog(false)}} 
-        handleConfirm={submitLeaveCourse}
-      /> 
-      <InviteLinkDialog
-        open={openInviteLinkDialog}
-        submitting={submitting}
-        handleCancel={() => {setOpenInviteLinkDialog(false)}}
-        handleConfirm={() => {handleCreateInviteLink(courseModel.id)}}
-        token={courseModel?.inviteToken}
-        courseId={courseModel?.id}
-        courseLevel={courseModel?.level}
-        courseName={courseModel?.name}
-        handleInvalidateToken={handleInvalidateToken}
-      />
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={submitting}
@@ -283,36 +173,16 @@ const Course = ({params, signOut, user}: any) => {
           </Grid>          
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
-          <Box sx={{paddingTop: 1}}>
-            <Typography noWrap variant="h6" alignSelf='center'>
-              Aktionen
-            </Typography> 
-            <Button variant="contained" color="error" onClick={() => setOpenLeaveCourseDialog(true)}>Kurs verlassen</Button>
-          </Box>             
-          { user.attributes.sub === courseModel?.ownerId && 
-            <>
-              <Divider sx={{paddingBottom: 1}}/>
-              <Box sx={{paddingTop: 1}}>
-                <Typography noWrap variant="h6" alignSelf='center'>
-                  Admin Options
-                </Typography>
-                <Box display='flex' flexWrap='wrap' flexDirection='row'>
-                  <Box paddingRight={1} paddingBottom={1}>
-                    <Button variant="contained" color="primary" onClick={handleInviteLinkDialog}>Einladungslink</Button>      
-                  </Box>
-                  <Box paddingRight={1} paddingBottom={1}>
-                    <Button variant="contained" color="error" onClick={handleDeleteCourse}>Kurs löschen</Button>          
-                  </Box>        
-                  <Box paddingRight={1} paddingBottom={1}>
-                    <Button variant="contained" color="success" onClick={handleRequest}>Conditional Request</Button>          
-                  </Box>                     
-                </Box>            
-              </Box>
-            </>
-          }      
+          <CourseActions 
+            courseModel={courseModel} 
+            user={user} 
+            submitting={submitting} 
+            setSubmitting={setSubmitting} 
+            handleGetCourseModel={handleGetCourseModel}
+          />
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
-          Aufgaben
+          <CourseAssignments/>
         </TabPanel>
         <TabPanel value={tabIndex} index={3}>
           Materialien

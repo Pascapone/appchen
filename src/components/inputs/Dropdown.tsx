@@ -1,12 +1,16 @@
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-export default function Dropdown({name, options, onChange, error}: {name: string, options: string[], onChange: (event: SelectChangeEvent) => void, error?: boolean}) {
-  const [selection, setSelection] = React.useState('');
+export default function Dropdown({name, options, onChange, error, defaultValue}: {name: string, options: string[], onChange: (event: SelectChangeEvent) => void, error?: boolean, defaultValue?: string}) {
+  const [selection, setSelection] = useState('');
+
+  useEffect(() => {
+    if(defaultValue) setSelection(defaultValue);
+  }, [])
 
   const handleChange = (event: SelectChangeEvent) => {
     setSelection(event.target.value as string);
