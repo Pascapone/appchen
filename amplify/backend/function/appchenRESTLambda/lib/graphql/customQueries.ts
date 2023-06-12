@@ -44,6 +44,50 @@ export const getCourseWithUsersQuery = /* GraphQL */ `
       inviteToken   
       startDate
       endDate
+      textAssignments {
+        items {
+          id
+          courseId
+          textAssignmentId
+          textAssignment {
+            id
+            name
+            ownerId
+            owner {
+              id
+              name
+              email
+              userType
+            }
+            description
+            link
+            level
+            timeLimit
+            createdAt
+            updatedAt
+          }
+          textAssignmentUsers {
+            items {
+              id
+              textAssignmentId
+              userId
+              textAssignmentCourseId
+              submission
+              startTime
+              endTime
+              submissionTime
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          dueDate
+          timeLimit
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       users {
         items {
           id

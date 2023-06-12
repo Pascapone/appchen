@@ -19,7 +19,7 @@ import bodyParser from 'body-parser';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
 import { createCourse, joinUserToCourse, deleteCourse, leaveCourse, createInviteLink, joinCourseWithToken, invalidateInviteLink } from './course-actions';
-import { createTextAssignment, createTextAssignmentCourse, createTextAssignmentUser, deleteTextAssignment, updateTextAssignment } from './assignment-actions';
+import { createTextAssignment, createTextAssignmentCourse, createTextAssignmentUser, deleteTextAssignment, updateTextAssignment, deleteTextAssignmentCourse } from './assignment-actions';
 import { Level } from './graphql/GraphQL';
 
 const GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
@@ -238,10 +238,22 @@ app.post('/assignment/text-assignment-course', groupPermissions(['admin', 'super
   const courseId = req.body.courseId
   const textAssignmentId = req.body.textAssignmentId
   const dueDate = req.body.dueDate
+  const timeLimit = req.body.timeLimit
 
   try {
-    const body = await createTextAssignmentCourse(courseId, textAssignmentId, dueDate)    
+    const body = await createTextAssignmentCourse(courseId, textAssignmentId, timeLimit, dueDate)    
     res.json({success: `Course Assignment ID: ${body.data.createTextAssignmentCourse.id}`, createTextAssignmentCourse: body.data.createTextAssignmentCourse})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.delete('/assignment/text-assignment-course', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {
+  const assignmentId = req.body.assignmentId
+
+  try {
+    const body = await deleteTextAssignmentCourse(assignmentId)    
+    res.json({success: `Delete Course Assignment ID: ${assignmentId}`, deleteTextAssignmentCourse: body})  
   } catch (err) {
     next(err)
   }  

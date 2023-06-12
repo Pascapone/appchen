@@ -9,8 +9,8 @@ type User @model @auth(rules: [
   userType: UserType!
   courses: [Course] @manyToMany(relationName: "CoursesUsers")
   ownedCourses: [Course] @hasMany(indexName: "byUser", fields: ["id"])
-  TextAssignmentsUser: [TextAssignmentUser] @hasMany(indexName: "byUser", fields: ["id"])
-  TextAssignments: [TextAssignment] @hasMany(indexName: "byUser", fields: ["id"])
+  textAssignmentsUser: [TextAssignmentUser] @hasMany(indexName: "byUser", fields: ["id"])
+  ownedTextAssignments: [TextAssignment] @hasMany(indexName: "byUser", fields: ["id"])
 }
 
 type Course @model @auth(rules: [
@@ -28,7 +28,7 @@ type Course @model @auth(rules: [
   startDate: AWSDateTime!
   endDate: AWSDateTime!
   users: [User] @manyToMany(relationName: "CoursesUsers")
-  TextAssignments: [TextAssignmentCourse] @hasMany(indexName: "byCourse", fields: ["id"]) # This will not be added to model. It uses index to get the data
+  textAssignments: [TextAssignmentCourse] @hasMany(indexName: "byCourse", fields: ["id"]) # This will not be added to model. It uses index to get the data
 }
 
 

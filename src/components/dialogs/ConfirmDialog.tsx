@@ -6,8 +6,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box, Typography } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import Backdrop from '@mui/material/Backdrop';
+
+import Loading from '@/components/display/Loading';
 
 export type DialogStyle = 'success' | 'warning' | 'error' | 'info'
 
@@ -42,12 +42,7 @@ export default function ConfirmDialog({
         <DialogTitle>
           {title}
         </DialogTitle>        
-        <Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={submitting}         
-        >
-          <CircularProgress />        
-        </Backdrop>         
+        <Loading submitting={submitting} />       
         <Box>
           <DialogContent>
             <DialogContentText>              

@@ -36,13 +36,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTextAssignmentUser = exports.createTextAssignmentCourse = exports.deleteTextAssignment = exports.updateTextAssignment = exports.createTextAssignment = void 0;
+exports.createTextAssignmentUser = exports.deleteTextAssignmentCourse = exports.createTextAssignmentCourse = exports.deleteTextAssignment = exports.updateTextAssignment = exports.createTextAssignment = void 0;
 var mutations_1 = require("./graphql/mutations");
 var mutations_2 = require("./graphql/mutations");
 var mutations_3 = require("./graphql/mutations");
 var mutations_4 = require("./graphql/mutations");
 var mutations_5 = require("./graphql/mutations");
+var mutations_6 = require("./graphql/mutations");
 var utils_1 = require("./utils");
+var course_actions_1 = require("./course-actions");
 var createTextAssignment = function (name, courseLevel, description, link, timeLimit, userId) { return __awaiter(void 0, void 0, void 0, function () {
     var input, variables, body;
     return __generator(this, function (_a) {
@@ -92,7 +94,7 @@ var updateTextAssignment = function (assignmentId, name, courseLevel, descriptio
                     }
                 };
                 variables = { input: input, condition: condition };
-                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_5.updateTextAssignment, variables).catch(function (error) {
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_6.updateTextAssignment, variables).catch(function (error) {
                         throw error;
                     })];
             case 1:
@@ -126,18 +128,64 @@ var deleteTextAssignment = function (assignmentId, userId) { return __awaiter(vo
     });
 }); };
 exports.deleteTextAssignment = deleteTextAssignment;
-var createTextAssignmentCourse = function (courseId, textAssignmentId, dueDate) { return __awaiter(void 0, void 0, void 0, function () {
-    var input, variables, body;
+var createTextAssignmentCourse = function (courseId, textAssignmentId, timeLimit, dueDate) { return __awaiter(void 0, void 0, void 0, function () {
+    var input, variables, body, courseAssignment, course;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 input = {
                     textAssignmentId: textAssignmentId,
                     courseId: courseId,
-                    dueDate: dueDate,
+                    timeLimit: timeLimit
                 };
+                if (dueDate != null)
+                    input['dueDate'] = dueDate;
                 variables = { input: input };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_2.createTextAssignmentCourse, variables).catch(function (error) {
+                        throw error;
+                    })];
+            case 1:
+                body = _a.sent();
+                courseAssignment = body.data.createTextAssignmentCourse;
+                console.log("Create Text Assignment Course Body", body);
+                return [4 /*yield*/, (0, course_actions_1.getCourse)(courseId).catch(function (error) {
+                        throw error;
+                    })];
+            case 2:
+                course = _a.sent();
+                console.log("Course Model", course);
+                console.log("Users:", course.users.items);
+                return [4 /*yield*/, Promise.all(course.users.items.map(function (user) { return __awaiter(void 0, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    console.log("User:", user);
+                                    return [4 /*yield*/, (0, exports.createTextAssignmentUser)(user.userId, courseAssignment.id, textAssignmentId).catch(function (error) {
+                                            throw error;
+                                        })];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); }))];
+            case 3:
+                _a.sent();
+                return [2 /*return*/, body];
+        }
+    });
+}); };
+exports.createTextAssignmentCourse = createTextAssignmentCourse;
+var deleteTextAssignmentCourse = function (assignmentId) { return __awaiter(void 0, void 0, void 0, function () {
+    var input, variables, body;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                input = {
+                    id: assignmentId,
+                };
+                variables = { input: input };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_5.deleteTextAssignmentCourse, variables).catch(function (error) {
                         throw error;
                     })];
             case 1:
@@ -146,19 +194,21 @@ var createTextAssignmentCourse = function (courseId, textAssignmentId, dueDate) 
         }
     });
 }); };
-exports.createTextAssignmentCourse = createTextAssignmentCourse;
+exports.deleteTextAssignmentCourse = deleteTextAssignmentCourse;
 var createTextAssignmentUser = function (userId, textAssignmentCourseId, textAssignmentId) { return __awaiter(void 0, void 0, void 0, function () {
     var input, variables, body;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                console.log("Create Text Assignment User", userId, textAssignmentCourseId, textAssignmentId);
                 input = {
                     userId: userId,
-                    textAssignmentId: textAssignmentId,
                     textAssignmentCourseId: textAssignmentCourseId,
+                    textAssignmentId: textAssignmentId,
                 };
                 variables = { input: input };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_3.createTextAssignmentUser, variables).catch(function (error) {
+                        console.log("Error in Create Text User:", error);
                         throw error;
                     })];
             case 1:

@@ -93,7 +93,7 @@ app.get('/', groupPermissions(['admin']), function (req, res) {
     // Add your code here
     res.json({ success: 'get call succeed!', url: req.url });
 });
-app.post('/course/create', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.post('/course/create', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var courseLevel, courseName, userId, startDate, endDate, userName, body, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -144,7 +144,7 @@ app.post('/course/leave', function (req, res, next) { return __awaiter(void 0, v
     });
 }); });
 // TODO: Implement invite link join. At the moment only admins can join users to courses
-app.post('/course/join', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.post('/course/join', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var userId, courseId, err_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -191,7 +191,7 @@ app.post('/course/join-link', function (req, res, next) { return __awaiter(void 
         }
     });
 }); });
-app.post('/course/create-and-join', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.post('/course/create-and-join', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var courseLevel, courseName, userId, startDate, endDate, userName, body, err_5, courseId, err_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -229,7 +229,7 @@ app.post('/course/create-and-join', groupPermissions(['admin']), function (req, 
         }
     });
 }); });
-app.post('/course/createInviteLink', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.post('/course/createInviteLink', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var courseId, userId, token, err_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -252,7 +252,7 @@ app.post('/course/createInviteLink', groupPermissions(['admin']), function (req,
         }
     });
 }); });
-app.post('/course/invalidate-invite-link', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.post('/course/invalidate-invite-link', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var courseId, userId, token, err_8;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -275,7 +275,7 @@ app.post('/course/invalidate-invite-link', groupPermissions(['admin']), function
         }
     });
 }); });
-app.delete('/course/:courseId', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.delete('/course/:courseId', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var userId, courseId, err_9;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -302,7 +302,7 @@ app.post('/course/:courseId', function (req, res) {
     // Add your code here
     res.json({ success: "Course Id: ".concat(req.params.courseId), url: req.url, body: req.body });
 });
-app.post('/assignment/text-assignment', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.post('/assignment/text-assignment', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var userId, assignmentName, courseLevel, description, link, timeLimit, body, err_10;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -329,7 +329,7 @@ app.post('/assignment/text-assignment', groupPermissions(['admin']), function (r
         }
     });
 }); });
-app.delete('/assignment/text-assignment', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.delete('/assignment/text-assignment', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var userId, assignmentId, body, err_11;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -352,7 +352,7 @@ app.delete('/assignment/text-assignment', groupPermissions(['admin']), function 
         }
     });
 }); });
-app.put('/assignment/text-assignment', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+app.put('/assignment/text-assignment', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var userId, assignmentId, assignmentName, courseLevel, description, link, timeLimit, body, err_12;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -380,18 +380,19 @@ app.put('/assignment/text-assignment', groupPermissions(['admin']), function (re
         }
     });
 }); });
-app.post('/assignment/text-assignment-course', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var courseId, textAssignmentId, dueDate, body, err_13;
+app.post('/assignment/text-assignment-course', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var courseId, textAssignmentId, dueDate, timeLimit, body, err_13;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 courseId = req.body.courseId;
                 textAssignmentId = req.body.textAssignmentId;
                 dueDate = req.body.dueDate;
+                timeLimit = req.body.timeLimit;
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, (0, assignment_actions_1.createTextAssignmentCourse)(courseId, textAssignmentId, dueDate)];
+                return [4 /*yield*/, (0, assignment_actions_1.createTextAssignmentCourse)(courseId, textAssignmentId, timeLimit, dueDate)];
             case 2:
                 body = _a.sent();
                 res.json({ success: "Course Assignment ID: ".concat(body.data.createTextAssignmentCourse.id), createTextAssignmentCourse: body.data.createTextAssignmentCourse });
@@ -404,8 +405,30 @@ app.post('/assignment/text-assignment-course', groupPermissions(['admin']), func
         }
     });
 }); });
-app.post('/assignment/text-assignment-user', groupPermissions(['admin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var userId, textAssignmentCourseId, textAssignmentId, body, err_14;
+app.delete('/assignment/text-assignment-course', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var assignmentId, body, err_14;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                assignmentId = req.body.assignmentId;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.deleteTextAssignmentCourse)(assignmentId)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Delete Course Assignment ID: ".concat(assignmentId), deleteTextAssignmentCourse: body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_14 = _a.sent();
+                next(err_14);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post('/assignment/text-assignment-user', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, textAssignmentCourseId, textAssignmentId, body, err_15;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -422,8 +445,8 @@ app.post('/assignment/text-assignment-user', groupPermissions(['admin']), functi
                 res.json({ success: "User Assignment ID: ".concat(body.data.createTextAssignmentUser.id), createTextAssignmentUser: body.data.createTextAssignmentUser });
                 return [3 /*break*/, 4];
             case 3:
-                err_14 = _a.sent();
-                next(err_14);
+                err_15 = _a.sent();
+                next(err_15);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }

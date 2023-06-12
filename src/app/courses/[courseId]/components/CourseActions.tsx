@@ -7,8 +7,11 @@ import { toast } from 'react-toastify';
 import ConfirmDialog from '@/components/dialogs/ConfirmDialog'
 import InviteLinkDialog from './InviteLinkDialog'
 import { Box, Typography, Divider, Backdrop, CircularProgress, Button } from '@mui/material'
+import { GetCourseWithUsersQuery } from '@/GraphQL'
 
-function CourseActions({user, courseModel, submitting, setSubmitting, handleGetCourseModel}: {user: any, courseModel: any, submitting: boolean, setSubmitting: (submitting: boolean) => void, handleGetCourseModel: (courseId: string) => void}) {
+type CourseModel = GetCourseWithUsersQuery['getCourse']
+
+function CourseActions({user, courseModel, submitting, setSubmitting, handleGetCourseModel}: {user: any, courseModel: CourseModel, submitting: boolean, setSubmitting: (submitting: boolean) => void, handleGetCourseModel: (courseId: string) => void}) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [openInviteLinkDialog, setOpenInviteLinkDialog] = useState(false)
   const [openLeaveCourseDialog, setOpenLeaveCourseDialog] = useState(false)
@@ -37,7 +40,7 @@ function CourseActions({user, courseModel, submitting, setSubmitting, handleGetC
 
   const submitDeleteCourse = async () => {
     setSubmitting(true)
-    await RestAPI.course.deleteCourse(courseModel.id).catch(err => {
+    await RestAPI.course.deleteCourse(courseModel!.id).catch(err => {
       console.log(err)
     })
     notifyDeletedCourse()
@@ -65,7 +68,7 @@ function CourseActions({user, courseModel, submitting, setSubmitting, handleGetC
 
   const submitLeaveCourse = async () => {
     setSubmitting(true)
-    await RestAPI.course.leaveCourse(courseModel.id).catch(err => {
+    await RestAPI.course.leaveCourse(courseModel!.id).catch(err => {
       console.log(err)
     })
     notifyLeftCourse()
@@ -74,10 +77,10 @@ function CourseActions({user, courseModel, submitting, setSubmitting, handleGetC
 
   const handleInvalidateToken = async () => {
     setSubmitting(true)
-    await RestAPI.course.invalidateInviteLink(courseModel.id).catch(err => {
+    await RestAPI.course.invalidateInviteLink(courseModel!.id).catch(err => {
       console.log(err)
     })
-    await handleGetCourseModel(courseModel.id)
+    await handleGetCourseModel(courseModel!.id)
     setSubmitting(false)
     notifyInvalidateCourseLink()
   }
@@ -109,17 +112,17 @@ function CourseActions({user, courseModel, submitting, setSubmitting, handleGetC
         open={openInviteLinkDialog}
         submitting={submitting}
         handleCancel={() => {setOpenInviteLinkDialog(false)}}
-        handleConfirm={() => {handleCreateInviteLink(courseModel.id)}}
-        token={courseModel?.inviteToken}
-        courseId={courseModel?.id}
-        courseLevel={courseModel?.level}
-        courseName={courseModel?.name}
+        handleConfirm={() => {handleCreateInviteLink(courseModel!.id)}}
+        token={courseModel!.inviteToken ? courseModel!.inviteToken : "Kein Token vorhanden"}
+        courseId={courseModel!.id}
+        courseLevel={courseModel!.level}
+        courseName={courseModel!.name}
         handleInvalidateToken={handleInvalidateToken}
       />      
       <Box sx={{paddingTop: 1}}>
             <Button variant="contained" color="error" onClick={() => setOpenLeaveCourseDialog(true)}>Kurs verlassen</Button>
           </Box>             
-          { user.attributes.sub === courseModel?.ownerId && 
+          { user.attributes.sub === courseModel!.ownerId && 
             <>
               <Divider sx={{paddingBottom: 1}}/>
               <Box sx={{paddingTop: 1}}>

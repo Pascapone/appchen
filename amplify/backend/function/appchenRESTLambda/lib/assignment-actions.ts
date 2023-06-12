@@ -3,9 +3,11 @@ import { createTextAssignmentCourse as createTextAssignmentCourseQuery } from '.
 import { createTextAssignmentUser as createTextAssignmentUserQuery } from './graphql/mutations';
 import { CreateTextAssignmentInput, CreateTextAssignmentCourseInput, CreateTextAssignmentUserInput, UpdateTextAssignmentInput, Level } from './graphql/GraphQL'
 import { deleteTextAssignment as deleteTextAssignmentQuery } from './graphql/mutations';
+import { deleteTextAssignmentCourse as deleteTextAssignmentQueryCourse } from './graphql/mutations';
 import { updateTextAssignment as updateTextAssignmentQuery } from './graphql/mutations';
-import { DeleteTextAssignmentInput, ModelTextAssignmentConditionInput } from './graphql/GraphQL';
+import { DeleteTextAssignmentInput, ModelTextAssignmentConditionInput, DeleteTextAssignmentCourseInput } from './graphql/GraphQL';
 import { graphQlRequest } from './utils';
+import { getCourse } from './course-actions';
 
 export const createTextAssignment = async (name: string, courseLevel: Level, description: string, link: string, timeLimit: string, userId: string) => {
 
@@ -80,17 +82,52 @@ export const deleteTextAssignment = async (assignmentId: string, userId: string)
   return body
 }
 
-export const createTextAssignmentCourse = async (courseId: string, textAssignmentId: string, dueDate: string) => {
-
+export const createTextAssignmentCourse = async (courseId: string, textAssignmentId: string, timeLimit: string, dueDate: string | null) => { 
+ 
   const input: CreateTextAssignmentCourseInput = {
-    textAssignmentId: textAssignmentId,
-    courseId: courseId,
-    dueDate: dueDate,
+    textAssignmentId,
+    courseId,
+    timeLimit
+  }
+
+  if(dueDate != null) input['dueDate'] = dueDate
+  const variables = { input };
+
+	const body = await graphQlRequest(createTextAssignmentCourseQuery, variables).catch((error) => {
+    throw error
+  });  
+
+  const courseAssignment = body.data.createTextAssignmentCourse
+
+  console.log("Create Text Assignment Course Body", body)
+
+  const course = await getCourse(courseId).catch((error) => {
+    throw error
+  });
+
+  console.log("Course Model", course)
+
+  console.log("Users:", course.users.items)
+
+  const response = await Promise.all(course.users.items.map(async (user) => {
+    console.log("User:", user)
+    await createTextAssignmentUser(user.userId, courseAssignment.id, textAssignmentId).catch((error) => {
+      throw error
+    });
+  }))
+
+  return body
+}
+
+export const deleteTextAssignmentCourse = async (assignmentId: string) => {
+
+  const input: DeleteTextAssignmentCourseInput = {
+    id: assignmentId,  
   }
 
   const variables = { input };
 
-	const body = await graphQlRequest(createTextAssignmentCourseQuery, variables).catch((error) => {
+	const body = await graphQlRequest(deleteTextAssignmentQueryCourse, variables).catch((error) => {
     throw error
   });  
 
@@ -101,13 +138,14 @@ export const createTextAssignmentUser = async (userId: string, textAssignmentCou
 
   const input: CreateTextAssignmentUserInput = {
     userId,
-    textAssignmentId,
     textAssignmentCourseId,
+    textAssignmentId,
   }
 
   const variables = { input };
 
 	const body = await graphQlRequest(createTextAssignmentUserQuery, variables).catch((error) => {
+    console.log("Error in Create Text User:", error)
     throw error
   });  
 

@@ -22,6 +22,21 @@ export const userCourseQuery = /* GraphQL */ `
         }
         nextToken
       }
+      textAssignmentsUser {
+        items {
+          id
+          textAssignmentId
+          userId
+          textAssignmentCourseId
+          submission
+          startTime
+          endTime
+          submissionTime
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -44,6 +59,50 @@ export const getCourseWithUsersQuery = /* GraphQL */ `
       inviteToken   
       startDate
       endDate
+      textAssignments {
+        items {
+          id
+          courseId
+          textAssignmentId
+          textAssignment {
+            id
+            name
+            ownerId
+            owner {
+              id
+              name
+              email
+              userType
+            }
+            description
+            link
+            level
+            timeLimit
+            createdAt
+            updatedAt
+          }
+          textAssignmentUsers {
+            items {
+              id
+              textAssignmentId
+              userId
+              textAssignmentCourseId
+              submission
+              startTime
+              endTime
+              submissionTime
+              createdAt
+              updatedAt
+            }
+            nextToken
+          }
+          dueDate
+          timeLimit
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       users {
         items {
           id
@@ -60,6 +119,76 @@ export const getCourseWithUsersQuery = /* GraphQL */ `
         }
         nextToken
       }
+    }
+  }
+`;
+
+export const getUserAssignments = /* GraphQL */ `
+query GetUserAssignments($id: ID!) {
+    getUser(id: $id) {
+      id
+      name
+      email
+      userType
+      courses {
+        items {
+          id
+          userId
+          courseId
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      textAssignmentsUser {
+        items {
+          id
+          textAssignmentId
+          userId
+          textAssignmentCourseId
+          submission
+          startTime
+          endTime
+          submissionTime
+          textAssignmentCourse {
+            id
+            courseId
+            dueDate
+            timeLimit
+            course {
+              id
+              name
+              level
+              ownerId
+              ownerName
+            }
+            textAssignment {
+              id
+              ownerId
+              owner {
+                id
+                name
+                email
+                userType
+                createdAt
+                updatedAt
+              }
+              name
+              description
+              link
+              level
+              timeLimit
+              createdAt
+              updatedAt
+            }
+          }
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
+      createdAt
+      updatedAt
     }
   }
 `;

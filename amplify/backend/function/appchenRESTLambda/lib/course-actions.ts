@@ -137,7 +137,7 @@ export const deleteCourse = async (courseId: string, userId: string) => {
     throw error
   })
 
-  await Promise.all(course.users.items .map(async (element) => {
+  await Promise.all(course.users.items.map(async (element) => {
     const deleteCoursesUsersVariables = {
       input: {
         id: element.id,

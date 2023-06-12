@@ -17,6 +17,7 @@ type UserAction = {
   setUserTheme: (userTheme: UserState['userTheme']) => void
   setDarkMode: (darkMode: UserState['darkMode']) => void
   userLogout: () => void
+  hasPermission: (allowedGroups: string[]) => boolean
 }
 
 export const useUserStore = create<UserState & UserAction>()((set) => ({
@@ -30,4 +31,9 @@ export const useUserStore = create<UserState & UserAction>()((set) => ({
   setUserTheme: (userTheme) => set(() => ({ userTheme: userTheme })),
   setDarkMode: (darkMode) => set(() => ({ darkMode: darkMode })),
   userLogout: () => set(() => ({ userId: "", name: "", email: "" })),
+  hasPermission: (allowedGroups) => { 
+    const userGroups = useUserStore.getState().userGroups
+    const permission = allowedGroups.some((group) => userGroups.includes(group))
+    return permission 
+  }
 }))

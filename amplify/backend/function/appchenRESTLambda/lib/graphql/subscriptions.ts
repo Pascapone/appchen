@@ -34,7 +34,7 @@ export const onCreateUser = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignmentsUser {
+      textAssignmentsUser {
         items {
           id
           textAssignmentId
@@ -49,7 +49,7 @@ export const onCreateUser = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignments {
+      ownedTextAssignments {
         items {
           id
           ownerId
@@ -100,7 +100,7 @@ export const onUpdateUser = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignmentsUser {
+      textAssignmentsUser {
         items {
           id
           textAssignmentId
@@ -115,7 +115,7 @@ export const onUpdateUser = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignments {
+      ownedTextAssignments {
         items {
           id
           ownerId
@@ -166,7 +166,7 @@ export const onDeleteUser = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignmentsUser {
+      textAssignmentsUser {
         items {
           id
           textAssignmentId
@@ -181,7 +181,7 @@ export const onDeleteUser = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignments {
+      ownedTextAssignments {
         items {
           id
           ownerId
@@ -219,10 +219,10 @@ export const onCreateCourse = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -241,12 +241,13 @@ export const onCreateCourse = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignments {
+      textAssignments {
         items {
           id
           courseId
           textAssignmentId
           dueDate
+          timeLimit
           createdAt
           updatedAt
         }
@@ -276,10 +277,10 @@ export const onUpdateCourse = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -298,12 +299,13 @@ export const onUpdateCourse = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignments {
+      textAssignments {
         items {
           id
           courseId
           textAssignmentId
           dueDate
+          timeLimit
           createdAt
           updatedAt
         }
@@ -333,10 +335,10 @@ export const onDeleteCourse = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -355,12 +357,13 @@ export const onDeleteCourse = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignments {
+      textAssignments {
         items {
           id
           courseId
           textAssignmentId
           dueDate
+          timeLimit
           createdAt
           updatedAt
         }
@@ -389,10 +392,10 @@ export const onCreateTextAssignment = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -426,10 +429,10 @@ export const onUpdateTextAssignment = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -463,10 +466,10 @@ export const onDeleteTextAssignment = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -509,7 +512,7 @@ export const onCreateTextAssignmentCourse = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
@@ -551,6 +554,7 @@ export const onCreateTextAssignmentCourse = /* GraphQL */ `
         nextToken
       }
       dueDate
+      timeLimit
       createdAt
       updatedAt
     }
@@ -583,7 +587,7 @@ export const onUpdateTextAssignmentCourse = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
@@ -625,6 +629,7 @@ export const onUpdateTextAssignmentCourse = /* GraphQL */ `
         nextToken
       }
       dueDate
+      timeLimit
       createdAt
       updatedAt
     }
@@ -657,7 +662,7 @@ export const onDeleteTextAssignmentCourse = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
@@ -699,6 +704,7 @@ export const onDeleteTextAssignmentCourse = /* GraphQL */ `
         nextToken
       }
       dueDate
+      timeLimit
       createdAt
       updatedAt
     }
@@ -742,10 +748,10 @@ export const onCreateTextAssignmentUser = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -783,6 +789,7 @@ export const onCreateTextAssignmentUser = /* GraphQL */ `
           nextToken
         }
         dueDate
+        timeLimit
         createdAt
         updatedAt
       }
@@ -833,10 +840,10 @@ export const onUpdateTextAssignmentUser = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -874,6 +881,7 @@ export const onUpdateTextAssignmentUser = /* GraphQL */ `
           nextToken
         }
         dueDate
+        timeLimit
         createdAt
         updatedAt
       }
@@ -924,10 +932,10 @@ export const onDeleteTextAssignmentUser = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -965,6 +973,7 @@ export const onDeleteTextAssignmentUser = /* GraphQL */ `
           nextToken
         }
         dueDate
+        timeLimit
         createdAt
         updatedAt
       }
@@ -996,10 +1005,10 @@ export const onCreateCoursesUsers = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -1025,7 +1034,7 @@ export const onCreateCoursesUsers = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
@@ -1055,10 +1064,10 @@ export const onUpdateCoursesUsers = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -1084,7 +1093,7 @@ export const onUpdateCoursesUsers = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
@@ -1114,10 +1123,10 @@ export const onDeleteCoursesUsers = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -1143,7 +1152,7 @@ export const onDeleteCoursesUsers = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt

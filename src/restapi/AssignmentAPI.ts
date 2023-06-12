@@ -1,7 +1,9 @@
 import { restApiAction } from './utils'
 import { graphQlQuery } from './utils';
 import { listTextAssignments } from '@/graphql/queries';
+import { getUserAssignments as getUserAssignmentsQuery } from '@/graphql/customQueries';
 import { Level } from '@/GraphQL';
+import { ModelTextAssignmentFilterInput } from '@/GraphQL';
 
 export class AssignmentAPI {
   async creatTextAssignment(name: string, courseLevel: Level, description: string, link: string, timeLimit: string) {
@@ -15,12 +17,18 @@ export class AssignmentAPI {
     return await restApiAction('/assignment/text-assignment', body, 'POST')
   }
 
-  async creatTextAssignmentCourse(courseId: string, textAssignmentId: string, dueDate: string) {
-    const body= {
+  async creatTextAssignmentCourse(courseId: string, textAssignmentId: string, timeLimit: string, dueDate?: string) {
+    
+    let body: any = {
       courseId,
       textAssignmentId,
-      dueDate,
+      timeLimit
     }
+
+    if (dueDate !== undefined) {
+      body["dueDate"] = dueDate
+    }
+
     return await restApiAction('/assignment/text-assignment-course', body, 'POST')
   }
 
@@ -32,8 +40,10 @@ export class AssignmentAPI {
     return await restApiAction('/assignment/text-assignment-user', body, 'POST')
   }
 
-  async getTextAssignments(){
-    const response = await graphQlQuery(listTextAssignments, {})
+  async getTextAssignments(filter?: ModelTextAssignmentFilterInput){
+    const variables = filter === undefined ? {} : { filter }
+
+    const response = await graphQlQuery(listTextAssignments, variables)
     return response.data.listTextAssignments.items
   }
 
@@ -42,6 +52,13 @@ export class AssignmentAPI {
       assignmentId,
     }
     return await restApiAction('/assignment/text-assignment', body, 'DELETE')
+  }
+
+  async deleteTextAssignmentCourse(assignmentId: string) {
+    const body = {
+      assignmentId,
+    }
+    return await restApiAction('/assignment/text-assignment-course', body, 'DELETE')
   }
 
   async updateTextAssignment(assignmentId: string, name: string, level: Level, description: string, link: string, timeLimit: string) {
@@ -54,5 +71,12 @@ export class AssignmentAPI {
       timeLimit,
     }
     return await restApiAction('/assignment/text-assignment', body, 'PUT')
+  }
+
+  async getUserWithAssignments(userId: string){
+    const variables = { id: userId }
+
+    const response = await graphQlQuery(getUserAssignmentsQuery, variables)
+    return response.data.getUser
   }
 }

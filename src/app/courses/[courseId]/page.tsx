@@ -14,6 +14,9 @@ import { withAuthenticator, WithAuthenticatorProps } from '@aws-amplify/ui-react
 
 import CourseAssignments from './components/CourseAssignments'
 import CourseActions from './components/CourseActions'
+import { GetCourseWithUsersQuery } from '@/GraphQL'
+
+type CourseModel = GetCourseWithUsersQuery['getCourse']
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -49,7 +52,7 @@ function a11yProps(index: number) {
 }
 
 const Course = ({params, signOut, user}: any) => {
-  const [courseModel, setCourseModel] = useState<any>(null)
+  const [courseModel, setCourseModel] = useState<CourseModel | null>(null)
   const [tabIndex, setTabIndex] = useState(0);  
   const [submitting, setSubmitting] = useState(false)
 
@@ -61,7 +64,7 @@ const Course = ({params, signOut, user}: any) => {
 
   const handleGetCourseModel = async (courseId: string) => {
     try {
-      const course = await RestAPI.course.getCourseWithUsers(courseId)
+      const course = await RestAPI.course.getCourseWithUsers(courseId) as CourseModel
       console.log("Kurs Model", course)
       setCourseModel(course)
     } catch (err) {
@@ -127,10 +130,10 @@ const Course = ({params, signOut, user}: any) => {
             {courseModel?.ownerName}
           </Typography>
           <Typography noWrap variant='body1'>
-            {dateToGermanString(new Date(courseModel?.startDate))}
+            {courseModel?.startDate ? dateToGermanString(new Date(courseModel?.startDate)) : 'None'}
           </Typography>
           <Typography noWrap variant='body1'>
-            {dateToGermanString(new Date(courseModel?.endDate))}
+            {courseModel?.endDate ? dateToGermanString(new Date(courseModel?.endDate)) : 'None'}
           </Typography>
           <Typography noWrap variant='body1'>
             {courseModel?.users?.items.length}
@@ -174,7 +177,7 @@ const Course = ({params, signOut, user}: any) => {
         </TabPanel>
         <TabPanel value={tabIndex} index={1}>
           <CourseActions 
-            courseModel={courseModel} 
+            courseModel={courseModel!} 
             user={user} 
             submitting={submitting} 
             setSubmitting={setSubmitting} 
@@ -182,7 +185,7 @@ const Course = ({params, signOut, user}: any) => {
           />
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
-          <CourseAssignments/>
+          <CourseAssignments refreshCourseModel={() => handleGetCourseModel(params.courseId)} courseModel={courseModel}/>
         </TabPanel>
         <TabPanel value={tabIndex} index={3}>
           Materialien

@@ -10,8 +10,8 @@ export type User = {
   userType: UserType,
   courses?: ModelCoursesUsersConnection | null,
   ownedCourses?: ModelCourseConnection | null,
-  TextAssignmentsUser?: ModelTextAssignmentUserConnection | null,
-  TextAssignments?: ModelTextAssignmentConnection | null,
+  textAssignmentsUser?: ModelTextAssignmentUserConnection | null,
+  ownedTextAssignments?: ModelTextAssignmentConnection | null,
   createdAt: string,
   updatedAt: string,
 };
@@ -51,7 +51,7 @@ export type Course = {
   startDate: string,
   endDate: string,
   users?: ModelCoursesUsersConnection | null,
-  TextAssignments?: ModelTextAssignmentCourseConnection | null,
+  textAssignments?: ModelTextAssignmentCourseConnection | null,
   createdAt: string,
   updatedAt: string,
 };
@@ -84,6 +84,7 @@ export type TextAssignmentCourse = {
   textAssignment: TextAssignment,
   textAssignmentUsers?: ModelTextAssignmentUserConnection | null,
   dueDate?: string | null,
+  timeLimit?: string | null,
   createdAt: string,
   updatedAt: string,
 };
@@ -310,12 +311,14 @@ export type CreateTextAssignmentCourseInput = {
   courseId: string,
   textAssignmentId: string,
   dueDate?: string | null,
+  timeLimit?: string | null,
 };
 
 export type ModelTextAssignmentCourseConditionInput = {
   courseId?: ModelIDInput | null,
   textAssignmentId?: ModelIDInput | null,
   dueDate?: ModelStringInput | null,
+  timeLimit?: ModelStringInput | null,
   and?: Array< ModelTextAssignmentCourseConditionInput | null > | null,
   or?: Array< ModelTextAssignmentCourseConditionInput | null > | null,
   not?: ModelTextAssignmentCourseConditionInput | null,
@@ -326,6 +329,7 @@ export type UpdateTextAssignmentCourseInput = {
   courseId?: string | null,
   textAssignmentId?: string | null,
   dueDate?: string | null,
+  timeLimit?: string | null,
 };
 
 export type DeleteTextAssignmentCourseInput = {
@@ -449,6 +453,7 @@ export type ModelTextAssignmentCourseFilterInput = {
   courseId?: ModelIDInput | null,
   textAssignmentId?: ModelIDInput | null,
   dueDate?: ModelStringInput | null,
+  timeLimit?: ModelStringInput | null,
   and?: Array< ModelTextAssignmentCourseFilterInput | null > | null,
   or?: Array< ModelTextAssignmentCourseFilterInput | null > | null,
   not?: ModelTextAssignmentCourseFilterInput | null,
@@ -546,6 +551,7 @@ export type ModelSubscriptionTextAssignmentCourseFilterInput = {
   courseId?: ModelSubscriptionIDInput | null,
   textAssignmentId?: ModelSubscriptionIDInput | null,
   dueDate?: ModelSubscriptionStringInput | null,
+  timeLimit?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionTextAssignmentCourseFilterInput | null > | null,
   or?: Array< ModelSubscriptionTextAssignmentCourseFilterInput | null > | null,
 };
@@ -602,6 +608,23 @@ export type GetUserWithCoursesQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    textAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -632,6 +655,56 @@ export type GetCourseWithUsersQuery = {
     inviteToken?: string | null,
     startDate: string,
     endDate: string,
+    textAssignments?:  {
+      __typename: "ModelTextAssignmentCourseConnection",
+      items:  Array< {
+        __typename: "TextAssignmentCourse",
+        id: string,
+        courseId: string,
+        textAssignmentId: string,
+        textAssignment:  {
+          __typename: "TextAssignment",
+          id: string,
+          name: string,
+          ownerId: string,
+          owner:  {
+            __typename: "User",
+            id: string,
+            name: string,
+            email: string,
+            userType: UserType,
+          },
+          description: string,
+          link: string,
+          level: Level,
+          timeLimit: string,
+          createdAt: string,
+          updatedAt: string,
+        },
+        textAssignmentUsers?:  {
+          __typename: "ModelTextAssignmentUserConnection",
+          items:  Array< {
+            __typename: "TextAssignmentUser",
+            id: string,
+            textAssignmentId: string,
+            userId: string,
+            textAssignmentCourseId?: string | null,
+            submission?: string | null,
+            startTime?: string | null,
+            endTime?: string | null,
+            submissionTime?: string | null,
+            createdAt: string,
+            updatedAt: string,
+          } | null >,
+          nextToken?: string | null,
+        } | null,
+        dueDate?: string | null,
+        timeLimit?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     users?:  {
       __typename: "ModelCoursesUsersConnection",
       items:  Array< {
@@ -651,6 +724,87 @@ export type GetCourseWithUsersQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+  } | null,
+};
+
+export type GetUserAssignmentsQueryVariables = {
+  id: string,
+};
+
+export type GetUserAssignmentsQuery = {
+  getUser?:  {
+    __typename: "User",
+    id: string,
+    name: string,
+    email: string,
+    userType: UserType,
+    courses?:  {
+      __typename: "ModelCoursesUsersConnection",
+      items:  Array< {
+        __typename: "CoursesUsers",
+        id: string,
+        userId: string,
+        courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    textAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        textAssignmentCourse?:  {
+          __typename: "TextAssignmentCourse",
+          id: string,
+          courseId: string,
+          dueDate?: string | null,
+          timeLimit?: string | null,
+          course:  {
+            __typename: "Course",
+            id: string,
+            name: string,
+            level: Level,
+            ownerId: string,
+            ownerName: string,
+          },
+          textAssignment:  {
+            __typename: "TextAssignment",
+            id: string,
+            ownerId: string,
+            owner:  {
+              __typename: "User",
+              id: string,
+              name: string,
+              email: string,
+              userType: UserType,
+              createdAt: string,
+              updatedAt: string,
+            },
+            name: string,
+            description: string,
+            link: string,
+            level: Level,
+            timeLimit: string,
+            createdAt: string,
+            updatedAt: string,
+          },
+        } | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
   } | null,
 };
 
@@ -695,7 +849,7 @@ export type CreateUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignmentsUser?:  {
+    textAssignmentsUser?:  {
       __typename: "ModelTextAssignmentUserConnection",
       items:  Array< {
         __typename: "TextAssignmentUser",
@@ -712,7 +866,7 @@ export type CreateUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    ownedTextAssignments?:  {
       __typename: "ModelTextAssignmentConnection",
       items:  Array< {
         __typename: "TextAssignment",
@@ -774,7 +928,7 @@ export type UpdateUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignmentsUser?:  {
+    textAssignmentsUser?:  {
       __typename: "ModelTextAssignmentUserConnection",
       items:  Array< {
         __typename: "TextAssignmentUser",
@@ -791,7 +945,7 @@ export type UpdateUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    ownedTextAssignments?:  {
       __typename: "ModelTextAssignmentConnection",
       items:  Array< {
         __typename: "TextAssignment",
@@ -853,7 +1007,7 @@ export type DeleteUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignmentsUser?:  {
+    textAssignmentsUser?:  {
       __typename: "ModelTextAssignmentUserConnection",
       items:  Array< {
         __typename: "TextAssignmentUser",
@@ -870,7 +1024,7 @@ export type DeleteUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    ownedTextAssignments?:  {
       __typename: "ModelTextAssignmentConnection",
       items:  Array< {
         __typename: "TextAssignment",
@@ -918,11 +1072,11 @@ export type CreateCourseMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -944,7 +1098,7 @@ export type CreateCourseMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    textAssignments?:  {
       __typename: "ModelTextAssignmentCourseConnection",
       items:  Array< {
         __typename: "TextAssignmentCourse",
@@ -952,6 +1106,7 @@ export type CreateCourseMutation = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -989,11 +1144,11 @@ export type UpdateCourseMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1015,7 +1170,7 @@ export type UpdateCourseMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    textAssignments?:  {
       __typename: "ModelTextAssignmentCourseConnection",
       items:  Array< {
         __typename: "TextAssignmentCourse",
@@ -1023,6 +1178,7 @@ export type UpdateCourseMutation = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1060,11 +1216,11 @@ export type DeleteCourseMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1086,7 +1242,7 @@ export type DeleteCourseMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    textAssignments?:  {
       __typename: "ModelTextAssignmentCourseConnection",
       items:  Array< {
         __typename: "TextAssignmentCourse",
@@ -1094,6 +1250,7 @@ export type DeleteCourseMutation = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1128,11 +1285,11 @@ export type CreateTextAssignmentMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1173,11 +1330,11 @@ export type UpdateTextAssignmentMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1218,11 +1375,11 @@ export type DeleteTextAssignmentMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1272,7 +1429,7 @@ export type CreateTextAssignmentCourseMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -1319,6 +1476,7 @@ export type CreateTextAssignmentCourseMutation = {
       nextToken?: string | null,
     } | null,
     dueDate?: string | null,
+    timeLimit?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1357,7 +1515,7 @@ export type UpdateTextAssignmentCourseMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -1404,6 +1562,7 @@ export type UpdateTextAssignmentCourseMutation = {
       nextToken?: string | null,
     } | null,
     dueDate?: string | null,
+    timeLimit?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1442,7 +1601,7 @@ export type DeleteTextAssignmentCourseMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -1489,6 +1648,7 @@ export type DeleteTextAssignmentCourseMutation = {
       nextToken?: string | null,
     } | null,
     dueDate?: string | null,
+    timeLimit?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1540,11 +1700,11 @@ export type CreateTextAssignmentUserMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1587,6 +1747,7 @@ export type CreateTextAssignmentUserMutation = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
@@ -1645,11 +1806,11 @@ export type UpdateTextAssignmentUserMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1692,6 +1853,7 @@ export type UpdateTextAssignmentUserMutation = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
@@ -1750,11 +1912,11 @@ export type DeleteTextAssignmentUserMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1797,6 +1959,7 @@ export type DeleteTextAssignmentUserMutation = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
@@ -1834,11 +1997,11 @@ export type CreateCoursesUsersMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1868,7 +2031,7 @@ export type CreateCoursesUsersMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -1905,11 +2068,11 @@ export type UpdateCoursesUsersMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -1939,7 +2102,7 @@ export type UpdateCoursesUsersMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -1976,11 +2139,11 @@ export type DeleteCoursesUsersMutation = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -2010,7 +2173,7 @@ export type DeleteCoursesUsersMutation = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -2062,7 +2225,7 @@ export type GetUserQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignmentsUser?:  {
+    textAssignmentsUser?:  {
       __typename: "ModelTextAssignmentUserConnection",
       items:  Array< {
         __typename: "TextAssignmentUser",
@@ -2079,7 +2242,7 @@ export type GetUserQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    ownedTextAssignments?:  {
       __typename: "ModelTextAssignmentConnection",
       items:  Array< {
         __typename: "TextAssignment",
@@ -2123,11 +2286,11 @@ export type ListUsersQuery = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -2164,11 +2327,11 @@ export type GetCourseQuery = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -2190,7 +2353,7 @@ export type GetCourseQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    textAssignments?:  {
       __typename: "ModelTextAssignmentCourseConnection",
       items:  Array< {
         __typename: "TextAssignmentCourse",
@@ -2198,6 +2361,7 @@ export type GetCourseQuery = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2240,7 +2404,7 @@ export type ListCoursesQuery = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -2285,7 +2449,7 @@ export type CoursesByOwnerIdQuery = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -2319,11 +2483,11 @@ export type GetTextAssignmentQuery = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -2442,7 +2606,7 @@ export type GetTextAssignmentCourseQuery = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -2489,6 +2653,7 @@ export type GetTextAssignmentCourseQuery = {
       nextToken?: string | null,
     } | null,
     dueDate?: string | null,
+    timeLimit?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -2538,6 +2703,7 @@ export type ListTextAssignmentCoursesQuery = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -2591,6 +2757,7 @@ export type TextAssignmentCoursesByCourseIdQuery = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -2643,11 +2810,11 @@ export type GetTextAssignmentUserQuery = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -2690,6 +2857,7 @@ export type GetTextAssignmentUserQuery = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
@@ -2744,6 +2912,7 @@ export type ListTextAssignmentUsersQuery = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null,
@@ -2802,6 +2971,7 @@ export type TextAssignmentUsersByUserIdQuery = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null,
@@ -2860,6 +3030,7 @@ export type TextAssignmentUsersByTextAssignmentCourseIdQuery = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null,
@@ -2898,11 +3069,11 @@ export type GetCoursesUsersQuery = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -2932,7 +3103,7 @@ export type GetCoursesUsersQuery = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -3117,7 +3288,7 @@ export type OnCreateUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignmentsUser?:  {
+    textAssignmentsUser?:  {
       __typename: "ModelTextAssignmentUserConnection",
       items:  Array< {
         __typename: "TextAssignmentUser",
@@ -3134,7 +3305,7 @@ export type OnCreateUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    ownedTextAssignments?:  {
       __typename: "ModelTextAssignmentConnection",
       items:  Array< {
         __typename: "TextAssignment",
@@ -3195,7 +3366,7 @@ export type OnUpdateUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignmentsUser?:  {
+    textAssignmentsUser?:  {
       __typename: "ModelTextAssignmentUserConnection",
       items:  Array< {
         __typename: "TextAssignmentUser",
@@ -3212,7 +3383,7 @@ export type OnUpdateUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    ownedTextAssignments?:  {
       __typename: "ModelTextAssignmentConnection",
       items:  Array< {
         __typename: "TextAssignment",
@@ -3273,7 +3444,7 @@ export type OnDeleteUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignmentsUser?:  {
+    textAssignmentsUser?:  {
       __typename: "ModelTextAssignmentUserConnection",
       items:  Array< {
         __typename: "TextAssignmentUser",
@@ -3290,7 +3461,7 @@ export type OnDeleteUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    ownedTextAssignments?:  {
       __typename: "ModelTextAssignmentConnection",
       items:  Array< {
         __typename: "TextAssignment",
@@ -3337,11 +3508,11 @@ export type OnCreateCourseSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -3363,7 +3534,7 @@ export type OnCreateCourseSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    textAssignments?:  {
       __typename: "ModelTextAssignmentCourseConnection",
       items:  Array< {
         __typename: "TextAssignmentCourse",
@@ -3371,6 +3542,7 @@ export type OnCreateCourseSubscription = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -3407,11 +3579,11 @@ export type OnUpdateCourseSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -3433,7 +3605,7 @@ export type OnUpdateCourseSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    textAssignments?:  {
       __typename: "ModelTextAssignmentCourseConnection",
       items:  Array< {
         __typename: "TextAssignmentCourse",
@@ -3441,6 +3613,7 @@ export type OnUpdateCourseSubscription = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -3477,11 +3650,11 @@ export type OnDeleteCourseSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -3503,7 +3676,7 @@ export type OnDeleteCourseSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
-    TextAssignments?:  {
+    textAssignments?:  {
       __typename: "ModelTextAssignmentCourseConnection",
       items:  Array< {
         __typename: "TextAssignmentCourse",
@@ -3511,6 +3684,7 @@ export type OnDeleteCourseSubscription = {
         courseId: string,
         textAssignmentId: string,
         dueDate?: string | null,
+        timeLimit?: string | null,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -3544,11 +3718,11 @@ export type OnCreateTextAssignmentSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -3588,11 +3762,11 @@ export type OnUpdateTextAssignmentSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -3632,11 +3806,11 @@ export type OnDeleteTextAssignmentSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -3685,7 +3859,7 @@ export type OnCreateTextAssignmentCourseSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -3732,6 +3906,7 @@ export type OnCreateTextAssignmentCourseSubscription = {
       nextToken?: string | null,
     } | null,
     dueDate?: string | null,
+    timeLimit?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -3769,7 +3944,7 @@ export type OnUpdateTextAssignmentCourseSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -3816,6 +3991,7 @@ export type OnUpdateTextAssignmentCourseSubscription = {
       nextToken?: string | null,
     } | null,
     dueDate?: string | null,
+    timeLimit?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -3853,7 +4029,7 @@ export type OnDeleteTextAssignmentCourseSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -3900,6 +4076,7 @@ export type OnDeleteTextAssignmentCourseSubscription = {
       nextToken?: string | null,
     } | null,
     dueDate?: string | null,
+    timeLimit?: string | null,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -3950,11 +4127,11 @@ export type OnCreateTextAssignmentUserSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -3997,6 +4174,7 @@ export type OnCreateTextAssignmentUserSubscription = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
@@ -4054,11 +4232,11 @@ export type OnUpdateTextAssignmentUserSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -4101,6 +4279,7 @@ export type OnUpdateTextAssignmentUserSubscription = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
@@ -4158,11 +4337,11 @@ export type OnDeleteTextAssignmentUserSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -4205,6 +4384,7 @@ export type OnDeleteTextAssignmentUserSubscription = {
         nextToken?: string | null,
       } | null,
       dueDate?: string | null,
+      timeLimit?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null,
@@ -4241,11 +4421,11 @@ export type OnCreateCoursesUsersSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -4275,7 +4455,7 @@ export type OnCreateCoursesUsersSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -4311,11 +4491,11 @@ export type OnUpdateCoursesUsersSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -4345,7 +4525,7 @@ export type OnUpdateCoursesUsersSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,
@@ -4381,11 +4561,11 @@ export type OnDeleteCoursesUsersSubscription = {
         __typename: "ModelCourseConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignmentsUser?:  {
+      textAssignmentsUser?:  {
         __typename: "ModelTextAssignmentUserConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      ownedTextAssignments?:  {
         __typename: "ModelTextAssignmentConnection",
         nextToken?: string | null,
       } | null,
@@ -4415,7 +4595,7 @@ export type OnDeleteCoursesUsersSubscription = {
         __typename: "ModelCoursesUsersConnection",
         nextToken?: string | null,
       } | null,
-      TextAssignments?:  {
+      textAssignments?:  {
         __typename: "ModelTextAssignmentCourseConnection",
         nextToken?: string | null,
       } | null,

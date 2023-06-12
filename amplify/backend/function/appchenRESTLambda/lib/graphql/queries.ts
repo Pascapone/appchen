@@ -34,7 +34,7 @@ export const getUser = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignmentsUser {
+      textAssignmentsUser {
         items {
           id
           textAssignmentId
@@ -49,7 +49,7 @@ export const getUser = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignments {
+      ownedTextAssignments {
         items {
           id
           ownerId
@@ -86,10 +86,10 @@ export const listUsers = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -118,10 +118,10 @@ export const getCourse = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -140,12 +140,13 @@ export const getCourse = /* GraphQL */ `
         }
         nextToken
       }
-      TextAssignments {
+      textAssignments {
         items {
           id
           courseId
           textAssignmentId
           dueDate
+          timeLimit
           createdAt
           updatedAt
         }
@@ -183,7 +184,7 @@ export const listCourses = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
@@ -228,7 +229,7 @@ export const coursesByOwnerId = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
@@ -254,10 +255,10 @@ export const getTextAssignment = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -366,7 +367,7 @@ export const getTextAssignmentCourse = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
@@ -408,6 +409,7 @@ export const getTextAssignmentCourse = /* GraphQL */ `
         nextToken
       }
       dueDate
+      timeLimit
       createdAt
       updatedAt
     }
@@ -455,6 +457,7 @@ export const listTextAssignmentCourses = /* GraphQL */ `
           nextToken
         }
         dueDate
+        timeLimit
         createdAt
         updatedAt
       }
@@ -508,6 +511,7 @@ export const textAssignmentCoursesByCourseId = /* GraphQL */ `
           nextToken
         }
         dueDate
+        timeLimit
         createdAt
         updatedAt
       }
@@ -551,10 +555,10 @@ export const getTextAssignmentUser = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -592,6 +596,7 @@ export const getTextAssignmentUser = /* GraphQL */ `
           nextToken
         }
         dueDate
+        timeLimit
         createdAt
         updatedAt
       }
@@ -644,6 +649,7 @@ export const listTextAssignmentUsers = /* GraphQL */ `
           courseId
           textAssignmentId
           dueDate
+          timeLimit
           createdAt
           updatedAt
         }
@@ -702,6 +708,7 @@ export const textAssignmentUsersByUserId = /* GraphQL */ `
           courseId
           textAssignmentId
           dueDate
+          timeLimit
           createdAt
           updatedAt
         }
@@ -760,6 +767,7 @@ export const textAssignmentUsersByTextAssignmentCourseId = /* GraphQL */ `
           courseId
           textAssignmentId
           dueDate
+          timeLimit
           createdAt
           updatedAt
         }
@@ -791,10 +799,10 @@ export const getCoursesUsers = /* GraphQL */ `
         ownedCourses {
           nextToken
         }
-        TextAssignmentsUser {
+        textAssignmentsUser {
           nextToken
         }
-        TextAssignments {
+        ownedTextAssignments {
           nextToken
         }
         createdAt
@@ -820,7 +828,7 @@ export const getCoursesUsers = /* GraphQL */ `
         users {
           nextToken
         }
-        TextAssignments {
+        textAssignments {
           nextToken
         }
         createdAt
