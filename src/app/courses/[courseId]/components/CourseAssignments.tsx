@@ -127,6 +127,8 @@ const CourseAssignmentsList = ({handleAddCourse, courseModel, refreshCourseModel
   
   const [ userId ] = useUserStore(state => [state.userId]) 
 
+  const router = useRouter()
+
   const getUserAssignments = async () => {
     const personalAssignments = courseModel?.textAssignments?.items.map((item: any) => {
       console.log(item)
@@ -232,10 +234,11 @@ const CourseAssignmentsList = ({handleAddCourse, courseModel, refreshCourseModel
                   submission: userAssignment!.submission,
                   timeLimit: assignment!.timeLimit,
                   dueDate: assignment!.dueDate,  
+                  userAssignmentId: userAssignment!.id,
                 }}
                 actions={[{
                   name: 'Teilnehmen',
-                  onClick: () => console.log('Teilnehmen'),
+                  onClick: () => router.push(`/assignment/${userAssignment!.id}`),
                   color: 'primary',
                   variant: 'contained'
                 }]}

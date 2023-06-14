@@ -19,7 +19,7 @@ import bodyParser from 'body-parser';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
 import { createCourse, joinUserToCourse, deleteCourse, leaveCourse, createInviteLink, joinCourseWithToken, invalidateInviteLink } from './course-actions';
-import { createTextAssignment, createTextAssignmentCourse, createTextAssignmentUser, deleteTextAssignment, updateTextAssignment, deleteTextAssignmentCourse } from './assignment-actions';
+import { createTextAssignment, createTextAssignmentCourse, createTextAssignmentUser, deleteTextAssignment, updateTextAssignment, deleteTextAssignmentCourse, startTextAssignmentUser, submitTextAssignmentUser } from './assignment-actions';
 import { Level } from './graphql/GraphQL';
 
 const GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
@@ -269,6 +269,31 @@ app.post('/assignment/text-assignment-user', groupPermissions(['admin', 'superAd
   try {
     const body = await createTextAssignmentUser(userId, textAssignmentCourseId, textAssignmentId)
     res.json({success: `User Assignment ID: ${body.data.createTextAssignmentUser.id}`, createTextAssignmentUser: body.data.createTextAssignmentUser})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.put('/assignment/start-assignment', groupPermissions(['default', 'admin', 'superAdmin']), async (req, res, next) => {
+  const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
+  const userAssignmentId = req.body.userAssignmentId  
+
+  try {
+    const body = await startTextAssignmentUser(userAssignmentId, userId)
+    res.json({success: `Started User Assignment ID: ${userAssignmentId}`, body})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.put('/assignment/submit', groupPermissions(['default', 'admin', 'superAdmin']), async (req, res, next) => {
+  const userId = req.apiGateway.event.requestContext.authorizer.claims.sub
+  const userAssignmentId = req.body.userAssignmentId  
+  const submission = req.body.submission  
+
+  try {
+    const body = await submitTextAssignmentUser(userAssignmentId, userId, submission)
+    res.json({success: `Submitted User Assignment ID: ${userAssignmentId}`, body})  
   } catch (err) {
     next(err)
   }  

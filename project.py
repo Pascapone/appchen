@@ -10,6 +10,16 @@ compile_typescript_command = r"pushd . && cd .\amplify\backend\function\{} && xc
 with open('package.json', 'r') as f:
   data = json.load(f)
 
+def generate_graphql_code():
+  # Generate the codegen files (should be done after the api is pushed, because it uses the graphql schema from the cloud)
+  returned_value = subprocess.call("amplify codegen types", shell=True)
+  returned_value = subprocess.call("amplify codegen statements", shell=True)
+
+  for functionName in data['graphqlFunctions']:
+    print(f"Copying GraphQL to {functionName}...")
+    subprocess.call(copy_graphql_command.format(functionName), shell=True)
+    subprocess.call("echo D|" + copy_graphql_types_command.format(functionName), shell=True)
+
 
 def push_function():  
   for functionName in data['typescriptFunctions']:
@@ -52,6 +62,8 @@ def execute_command(args):
     match args['command']:
       case 'push':
         push(args)
+      case 'codegen':
+        generate_graphql_code()
       case _:
           print('Not a valid command')
 

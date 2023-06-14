@@ -608,6 +608,23 @@ export type GetUserWithCoursesQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    textAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -706,6 +723,105 @@ export type GetCourseWithUsersQuery = {
         },
       } | null >,
       nextToken?: string | null,
+    } | null,
+  } | null,
+};
+
+export type GetUserAssignmentsQueryVariables = {
+  id: string,
+};
+
+export type GetUserAssignmentsQuery = {
+  getUser?:  {
+    __typename: "User",
+    id: string,
+    name: string,
+    email: string,
+    userType: UserType,
+    courses?:  {
+      __typename: "ModelCoursesUsersConnection",
+      items:  Array< {
+        __typename: "CoursesUsers",
+        id: string,
+        userId: string,
+        courseId: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    textAssignmentsUser?:  {
+      __typename: "ModelTextAssignmentUserConnection",
+      items:  Array< {
+        __typename: "TextAssignmentUser",
+        id: string,
+        textAssignmentId: string,
+        userId: string,
+        textAssignmentCourseId?: string | null,
+        submission?: string | null,
+        startTime?: string | null,
+        endTime?: string | null,
+        submissionTime?: string | null,
+        textAssignmentCourse?:  {
+          __typename: "TextAssignmentCourse",
+          id: string,
+          courseId: string,
+          dueDate?: string | null,
+          timeLimit?: string | null,
+          course:  {
+            __typename: "Course",
+            id: string,
+            name: string,
+            level: Level,
+            ownerId: string,
+            ownerName: string,
+          },
+          textAssignment:  {
+            __typename: "TextAssignment",
+            id: string,
+            ownerId: string,
+            owner:  {
+              __typename: "User",
+              id: string,
+              name: string,
+              email: string,
+              userType: UserType,
+              createdAt: string,
+              updatedAt: string,
+            },
+            name: string,
+            description: string,
+            link: string,
+            level: Level,
+            timeLimit: string,
+            createdAt: string,
+            updatedAt: string,
+          },
+        } | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type GetTextAssignmentUserTimeLimitsQueryVariables = {
+  id: string,
+};
+
+export type GetTextAssignmentUserTimeLimitsQuery = {
+  getTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    textAssignment:  {
+      __typename: "TextAssignment",
+      timeLimit: string,
+    },
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      timeLimit?: string | null,
     } | null,
   } | null,
 };

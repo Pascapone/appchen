@@ -49,3 +49,30 @@ export const graphQlRequest = async (query, variables) => {
 
   return body
 }
+
+export const awsTimeToMilliseconds = (timeString: string) : number => {
+  const strip = timeString.slice(0, -4)
+  const times = strip.split(':')
+
+  return times.reduce((accumulator, currentValue, index) => {    
+    let number = Number(currentValue)
+    switch (index) {
+      case 0:
+        number *= 60*60*1000
+        break
+      case 1:
+        number *= 60*1000
+        break
+      case 2:
+       number *= 1000
+        break
+    }
+    return accumulator + number
+  }, 0)
+}
+
+export const addAwsTimeToISODateString = (ISODateString: string, timeString: string) : string => {
+	const milliseconds = awsTimeToMilliseconds(timeString)
+    const date = new Date(ISODateString)
+    return new Date(date.getTime() + milliseconds).toISOString()
+}

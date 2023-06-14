@@ -13,7 +13,7 @@ function Test() {
   return (
     <div>
       <h1>Test</h1>
-      <button onClick={getCourseAssignment}>Get Course Assignment</button>
+      <iframe src="http://docs.google.com/gview?url=https://drive.google.com/uc?id=1ePh-ocUWPKvPdKvXKx2-mGsGa9nf5Fmn&embedded=true" style={{width: '100%', height: '700px'}}></iframe>
     </div>
   )
 }

@@ -272,30 +272,7 @@ export default function Editor() {
     nodes: [
       HeadingNode
     ]
-  };
-
-  // --- Debugging --- (Move to course page as admin feature)
-  const handleCreateTextAssignment = () => {
-    RestAPI.assignment.creatTextAssignment("First", Level.A12, "First course", "https://www.google.com", "02 :00:00.000")
-  }
-
-  const handleCreateTextAssignmentCourse = () => {
-    RestAPI.assignment.creatTextAssignmentCourse("8a2c01aa-63a2-4441-8bb9-6e717e424129", "d5271ebe-d9b9-4ef8-a14c-e015d70c3fcf", new Date().toISOString())
-  }
-
-  const handleGetCourse = async () => {
-    const respone = await RestAPI.course.getCourse("8a2c01aa-63a2-4441-8bb9-6e717e424129")
-    console.log(respone)
-  }
-
-  const handleCreateTextAssignmentUser = () => {
-    RestAPI.assignment.creatTextAssignmentUser("d5271ebe-d9b9-4ef8-a14c-e015d70c3fcf", "97affaf1-54b1-430c-ae3a-c0a8a7d40870")
-  }
-
-  const handleGetUser = async () => {
-    const respone = await RestAPI.user.getUser("4d8de7e8-f672-4fe4-b0ce-bf9fff1c21b7")
-    console.log(respone) 
-  }
+  }; 
 
   return (
     <div>
@@ -314,11 +291,6 @@ export default function Editor() {
         <RegisterCommandsPlugin />
         <ExportPlugin />
       </LexicalComposer>
-      <Button onClick={handleCreateTextAssignment}>Create Assignment</Button>
-      <Button onClick={handleCreateTextAssignmentCourse}>Create Course Assignment</Button>
-      <Button onClick={handleCreateTextAssignmentUser}>Create User Assignment</Button>
-      <Button onClick={handleGetCourse}>Get Course</Button>
-      <Button onClick={handleGetUser}>Get User</Button>
     </div>
   );
 }

@@ -808,6 +808,24 @@ export type GetUserAssignmentsQuery = {
   } | null,
 };
 
+export type GetTextAssignmentUserTimeLimitsQueryVariables = {
+  id: string,
+};
+
+export type GetTextAssignmentUserTimeLimitsQuery = {
+  getTextAssignmentUser?:  {
+    __typename: "TextAssignmentUser",
+    textAssignment:  {
+      __typename: "TextAssignment",
+      timeLimit: string,
+    },
+    textAssignmentCourse?:  {
+      __typename: "TextAssignmentCourse",
+      timeLimit?: string | null,
+    } | null,
+  } | null,
+};
+
 export type CreateUserMutationVariables = {
   input: CreateUserInput,
   condition?: ModelUserConditionInput | null,

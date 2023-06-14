@@ -452,6 +452,53 @@ app.post('/assignment/text-assignment-user', groupPermissions(['admin', 'superAd
         }
     });
 }); });
+app.put('/assignment/start-assignment', groupPermissions(['default', 'admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, userAssignmentId, body, err_16;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                userAssignmentId = req.body.userAssignmentId;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.startTextAssignmentUser)(userAssignmentId, userId)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Started User Assignment ID: ".concat(userAssignmentId), body: body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_16 = _a.sent();
+                next(err_16);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.put('/assignment/submit', groupPermissions(['default', 'admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userId, userAssignmentId, submission, body, err_17;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userId = req.apiGateway.event.requestContext.authorizer.claims.sub;
+                userAssignmentId = req.body.userAssignmentId;
+                submission = req.body.submission;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.submitTextAssignmentUser)(userAssignmentId, userId, submission)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Submitted User Assignment ID: ".concat(userAssignmentId), body: body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_17 = _a.sent();
+                next(err_17);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
 // Error middleware must be defined last
 app.use(function (err, req, res, next) {
     if (!err.statusCode)

@@ -2,8 +2,11 @@ import { restApiAction } from './utils'
 import { graphQlQuery } from './utils';
 import { listTextAssignments } from '@/graphql/queries';
 import { getUserAssignments as getUserAssignmentsQuery } from '@/graphql/customQueries';
+import { getTextAssignmentUser as getTextAssignmentUserQuery } from '@/graphql/queries';
 import { Level } from '@/GraphQL';
-import { ModelTextAssignmentFilterInput } from '@/GraphQL';
+import { ModelTextAssignmentFilterInput, GetTextAssignmentUserQuery } from '@/GraphQL';
+
+type TextAssignmentUserQuery = GetTextAssignmentUserQuery['getTextAssignmentUser']
 
 export class AssignmentAPI {
   async creatTextAssignment(name: string, courseLevel: Level, description: string, link: string, timeLimit: string) {
@@ -78,5 +81,27 @@ export class AssignmentAPI {
 
     const response = await graphQlQuery(getUserAssignmentsQuery, variables)
     return response.data.getUser
+  }
+
+  async getUserAssignment(userAssignmentId: string) : Promise<TextAssignmentUserQuery>{
+    const variables = { id: userAssignmentId }
+
+    const response = await graphQlQuery(getTextAssignmentUserQuery, variables)
+    return response.data.getTextAssignmentUser as TextAssignmentUserQuery
+  }
+
+  async startUserAssignment(assignmentId: string) {
+    const body = {
+      userAssignmentId: assignmentId
+    }
+    return await restApiAction('/assignment/start-assignment', body, 'PUT')
+  }
+
+  async submitUserAssignment(assignmentId: string, submission: string) {
+    const body = {
+      userAssignmentId: assignmentId,
+      submission: submission
+    }
+    return await restApiAction('/assignment/submit', body, 'PUT')
   }
 }

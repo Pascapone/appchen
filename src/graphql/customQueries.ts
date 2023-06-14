@@ -192,3 +192,17 @@ query GetUserAssignments($id: ID!) {
     }
   }
 `;
+
+// Project Compile and copy to functions
+export const getTextAssignmentUserTimeLimits = /* GraphQL */ `
+  query GetTextAssignmentUserTimeLimits($id: ID!) {
+    getTextAssignmentUser(id: $id) {   
+      textAssignment {   
+        timeLimit
+      }      
+      textAssignmentCourse {
+        timeLimit
+      }
+    }
+  }
+`;

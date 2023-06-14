@@ -25,6 +25,7 @@ const Courses = ({signOut, user}: WithAuthenticatorProps) => {
   const router = useRouter()
 
   const handleGetUserCourses = async () => {
+    console.log("USER ID:", userId)
     const courses = await RestAPI.course.getUserCourses(userId).catch(err => {
       console.log(err)
       return
@@ -72,7 +73,7 @@ const Courses = ({signOut, user}: WithAuthenticatorProps) => {
         Courses
       </Typography>            
       <Grid container spacing={2}>
-        {courses.map(course => {
+        {courses?.map(course => {
             return (
               <Grid item xs={12} md={6} lg={4} xl={3} key={course.id}>
                 <CourseCard course={course} handleOpenCourse={() => handleOpenCourse(course.id)}/>
@@ -80,7 +81,7 @@ const Courses = ({signOut, user}: WithAuthenticatorProps) => {
             )
           })
         }
-        { courses.length === 0 && (
+        { courses?.length === 0 && (
           <Grid item xs={12} key="no-courses">
             <Card>
               <CardHeader   

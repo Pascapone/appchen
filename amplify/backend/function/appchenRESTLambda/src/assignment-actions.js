@@ -36,15 +36,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTextAssignmentUser = exports.deleteTextAssignmentCourse = exports.createTextAssignmentCourse = exports.deleteTextAssignment = exports.updateTextAssignment = exports.createTextAssignment = void 0;
+exports.submitTextAssignmentUser = exports.startTextAssignmentUser = exports.createTextAssignmentUser = exports.deleteTextAssignmentCourse = exports.createTextAssignmentCourse = exports.deleteTextAssignment = exports.updateTextAssignment = exports.createTextAssignment = void 0;
 var mutations_1 = require("./graphql/mutations");
 var mutations_2 = require("./graphql/mutations");
 var mutations_3 = require("./graphql/mutations");
 var mutations_4 = require("./graphql/mutations");
 var mutations_5 = require("./graphql/mutations");
 var mutations_6 = require("./graphql/mutations");
+var mutations_7 = require("./graphql/mutations");
+var customQueries_1 = require("./graphql/customQueries");
 var utils_1 = require("./utils");
 var course_actions_1 = require("./course-actions");
+var utils_2 = require("./utils");
 var createTextAssignment = function (name, courseLevel, description, link, timeLimit, userId) { return __awaiter(void 0, void 0, void 0, function () {
     var input, variables, body;
     return __generator(this, function (_a) {
@@ -129,7 +132,7 @@ var deleteTextAssignment = function (assignmentId, userId) { return __awaiter(vo
 }); };
 exports.deleteTextAssignment = deleteTextAssignment;
 var createTextAssignmentCourse = function (courseId, textAssignmentId, timeLimit, dueDate) { return __awaiter(void 0, void 0, void 0, function () {
-    var input, variables, body, courseAssignment, course;
+    var input, variables, body, courseAssignment, course, response;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -170,7 +173,7 @@ var createTextAssignmentCourse = function (courseId, textAssignmentId, timeLimit
                         });
                     }); }))];
             case 3:
-                _a.sent();
+                response = _a.sent();
                 return [2 /*return*/, body];
         }
     });
@@ -200,7 +203,6 @@ var createTextAssignmentUser = function (userId, textAssignmentCourseId, textAss
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                console.log("Create Text Assignment User", userId, textAssignmentCourseId, textAssignmentId);
                 input = {
                     userId: userId,
                     textAssignmentCourseId: textAssignmentCourseId,
@@ -208,7 +210,6 @@ var createTextAssignmentUser = function (userId, textAssignmentCourseId, textAss
                 };
                 variables = { input: input };
                 return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_3.createTextAssignmentUser, variables).catch(function (error) {
-                        console.log("Error in Create Text User:", error);
                         throw error;
                     })];
             case 1:
@@ -218,3 +219,83 @@ var createTextAssignmentUser = function (userId, textAssignmentCourseId, textAss
     });
 }); };
 exports.createTextAssignmentUser = createTextAssignmentUser;
+var startTextAssignmentUser = function (userAssignmentId, userId) { return __awaiter(void 0, void 0, void 0, function () {
+    var response, data, timeLimit, now, endTimeString, input, condition, variables, body;
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                console.log(new Date().toISOString().slice(11, -1));
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(customQueries_1.getTextAssignmentUserTimeLimits, { id: userAssignmentId }).catch(function (error) {
+                        throw error;
+                    })];
+            case 1:
+                response = _c.sent();
+                data = response.data;
+                timeLimit = (_b = (_a = data === null || data === void 0 ? void 0 : data.getTextAssignmentUser) === null || _a === void 0 ? void 0 : _a.textAssignmentCourse) === null || _b === void 0 ? void 0 : _b.timeLimit;
+                if (timeLimit == null) {
+                    timeLimit = data === null || data === void 0 ? void 0 : data.getTextAssignmentUser.textAssignment.timeLimit;
+                }
+                now = new Date();
+                endTimeString = (0, utils_2.addAwsTimeToISODateString)(now.toISOString(), timeLimit);
+                input = {
+                    id: userAssignmentId,
+                    startTime: now.toISOString(),
+                    endTime: endTimeString
+                };
+                condition = {
+                    startTime: {
+                        attributeExists: false
+                    },
+                    userId: {
+                        eq: userId
+                    }
+                };
+                variables = { input: input, condition: condition };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_7.updateTextAssignmentUser, variables).catch(function (error) {
+                        throw error;
+                    })];
+            case 2:
+                body = _c.sent();
+                return [2 /*return*/, body];
+        }
+    });
+}); };
+exports.startTextAssignmentUser = startTextAssignmentUser;
+var submitTextAssignmentUser = function (userAssignmentId, userId, text) { return __awaiter(void 0, void 0, void 0, function () {
+    var ALLOWED_TIME_DELAY, input, nowTime, condition, variables, body;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                ALLOWED_TIME_DELAY = 60 * 1000;
+                input = {
+                    id: userAssignmentId,
+                    submission: text
+                };
+                nowTime = new Date(new Date().getTime() - ALLOWED_TIME_DELAY).toISOString();
+                console.log("Now Time:", nowTime);
+                condition = {
+                    and: [
+                        {
+                            endTime: {
+                                ge: nowTime
+                            }
+                        },
+                        {
+                            userId: {
+                                eq: userId
+                            },
+                        }
+                    ],
+                };
+                variables = { input: input, condition: condition };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_7.updateTextAssignmentUser, variables).catch(function (error) {
+                        throw error;
+                    })];
+            case 1:
+                body = _a.sent();
+                return [2 /*return*/, body];
+        }
+    });
+}); };
+exports.submitTextAssignmentUser = submitTextAssignmentUser;

@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.graphQlRequest = void 0;
+exports.addAwsTimeToISODateString = exports.awsTimeToMilliseconds = exports.graphQlRequest = void 0;
 var sha256_js_1 = require("@aws-crypto/sha256-js");
 var credential_provider_node_1 = require("@aws-sdk/credential-provider-node");
 var signature_v4_1 = require("@aws-sdk/signature-v4");
@@ -96,3 +96,29 @@ var graphQlRequest = function (query, variables) { return __awaiter(void 0, void
     });
 }); };
 exports.graphQlRequest = graphQlRequest;
+var awsTimeToMilliseconds = function (timeString) {
+    var strip = timeString.slice(0, -4);
+    var times = strip.split(':');
+    return times.reduce(function (accumulator, currentValue, index) {
+        var number = Number(currentValue);
+        switch (index) {
+            case 0:
+                number *= 60 * 60 * 1000;
+                break;
+            case 1:
+                number *= 60 * 1000;
+                break;
+            case 2:
+                number *= 1000;
+                break;
+        }
+        return accumulator + number;
+    }, 0);
+};
+exports.awsTimeToMilliseconds = awsTimeToMilliseconds;
+var addAwsTimeToISODateString = function (ISODateString, timeString) {
+    var milliseconds = (0, exports.awsTimeToMilliseconds)(timeString);
+    var date = new Date(ISODateString);
+    return new Date(date.getTime() + milliseconds).toISOString();
+};
+exports.addAwsTimeToISODateString = addAwsTimeToISODateString;

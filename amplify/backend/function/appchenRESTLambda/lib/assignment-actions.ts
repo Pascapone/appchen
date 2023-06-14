@@ -1,13 +1,17 @@
 import { createTextAssignment as createTextAssignmentQuery } from './graphql/mutations';
 import { createTextAssignmentCourse as createTextAssignmentCourseQuery } from './graphql/mutations';
 import { createTextAssignmentUser as createTextAssignmentUserQuery } from './graphql/mutations';
-import { CreateTextAssignmentInput, CreateTextAssignmentCourseInput, CreateTextAssignmentUserInput, UpdateTextAssignmentInput, Level } from './graphql/GraphQL'
+import { CreateTextAssignmentInput, CreateTextAssignmentCourseInput, CreateTextAssignmentUserInput, UpdateTextAssignmentInput, UpdateTextAssignmentUserInput, Level } from './graphql/GraphQL'
 import { deleteTextAssignment as deleteTextAssignmentQuery } from './graphql/mutations';
 import { deleteTextAssignmentCourse as deleteTextAssignmentQueryCourse } from './graphql/mutations';
 import { updateTextAssignment as updateTextAssignmentQuery } from './graphql/mutations';
-import { DeleteTextAssignmentInput, ModelTextAssignmentConditionInput, DeleteTextAssignmentCourseInput } from './graphql/GraphQL';
+import { updateTextAssignmentUser as updateTextAssignmentUserQuery } from './graphql/mutations';
+import { getTextAssignmentUserTimeLimits as getTextAssignmentUserTimeLimitsQuery } from './graphql/customQueries';
+import { DeleteTextAssignmentInput, ModelTextAssignmentConditionInput, DeleteTextAssignmentCourseInput, ModelTextAssignmentUserConditionInput } from './graphql/GraphQL';
+import { GetTextAssignmentUserTimeLimitsQuery } from './graphql/GraphQL';
 import { graphQlRequest } from './utils';
 import { getCourse } from './course-actions';
+import { addAwsTimeToISODateString, awsTimeToMilliseconds } from './utils'
 
 export const createTextAssignment = async (name: string, courseLevel: Level, description: string, link: string, timeLimit: string, userId: string) => {
 
@@ -145,7 +149,85 @@ export const createTextAssignmentUser = async (userId: string, textAssignmentCou
   const variables = { input };
 
 	const body = await graphQlRequest(createTextAssignmentUserQuery, variables).catch((error) => {
-    console.log("Error in Create Text User:", error)
+    throw error
+  });  
+
+  return body
+}
+
+export const startTextAssignmentUser = async (userAssignmentId: string, userId: string) => {
+  console.log(new Date().toISOString().slice(11, -1))  
+
+  const response = await graphQlRequest(getTextAssignmentUserTimeLimitsQuery, { id: userAssignmentId }).catch((error) => {
+    throw error
+  })
+
+  const data = response.data as GetTextAssignmentUserTimeLimitsQuery
+
+  let timeLimit = data?.getTextAssignmentUser?.textAssignmentCourse?.timeLimit
+
+  if(timeLimit == null) {
+    timeLimit = data?.getTextAssignmentUser.textAssignment.timeLimit
+  }
+
+  const now = new Date()
+
+  const endTimeString = addAwsTimeToISODateString(now.toISOString(), timeLimit)
+  
+  const input: UpdateTextAssignmentUserInput = {
+    id: userAssignmentId,
+    startTime: now.toISOString(),
+    endTime: endTimeString
+  }
+
+  const condition: ModelTextAssignmentUserConditionInput = {
+    startTime: {
+      attributeExists: false
+    },
+    userId: {
+      eq: userId
+    }
+  }
+
+  const variables = { input, condition };
+
+	const body = await graphQlRequest(updateTextAssignmentUserQuery, variables).catch((error) => {
+    throw error
+  });  
+
+  return body
+}
+
+export const submitTextAssignmentUser = async (userAssignmentId: string, userId: string, text: string) => {
+  const ALLOWED_TIME_DELAY = 60 * 1000
+  
+  const input: UpdateTextAssignmentUserInput = {
+    id: userAssignmentId,
+    submission: text
+  }
+
+  const nowTime = new Date(new Date().getTime() - ALLOWED_TIME_DELAY).toISOString()
+
+  console.log("Now Time:", nowTime)
+
+  const condition: ModelTextAssignmentUserConditionInput = {
+    and: [
+      {
+        endTime: {
+          ge: nowTime
+        }
+      },
+      {
+        userId: {
+          eq: userId
+        },
+      }
+    ],    
+  }
+
+  const variables = { input, condition };
+
+	const body = await graphQlRequest(updateTextAssignmentUserQuery, variables).catch((error) => {
     throw error
   });  
 

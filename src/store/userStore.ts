@@ -8,6 +8,7 @@ interface UserState {
   userTheme: UserTheme
   darkMode: boolean
   userGroups: string[]
+  
 }
 
 export type UserTheme = 'dark' | 'light' | 'system' | null

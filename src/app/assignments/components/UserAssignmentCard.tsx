@@ -6,13 +6,12 @@ import KeyValueList from '@/components/display/KeyValueList';
 import { dateToGermanString } from '@/utils/dateUtils';
 import { GetCourseWithUsersQuery } from '@/GraphQL'
 
-
 interface AssignmentCardProps {
   data: AssignmentData,
   actions: Array<CardAction>
 }
 
-interface AssignmentData {
+export interface AssignmentData {
   type: string,
   name: string,
   level: string,
@@ -21,6 +20,7 @@ interface AssignmentData {
   timeLimit: string  | null | undefined,
   courseName: string,
   courseLevel: string,
+  userAssignmentId: string,
   dueDate: string  | null | undefined,
   submission: string | null | undefined
 }
@@ -32,7 +32,7 @@ export interface CardAction {
   variant: "contained" | "outlined" | "text"
 }
 
-export default function UserAssignmentCard({data, actions}: AssignmentCardProps) {
+export default function UserAssignmentCard({data, actions}: AssignmentCardProps) { 
   console.log("User Assignment Card:", data)
   const theme = useTheme()
 
