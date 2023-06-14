@@ -88,6 +88,7 @@ export const getCourseWithUsersQuery = /* GraphQL */ `
               userId
               textAssignmentCourseId
               submission
+              revision
               startTime
               endTime
               submissionTime
@@ -147,6 +148,7 @@ query GetUserAssignments($id: ID!) {
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime

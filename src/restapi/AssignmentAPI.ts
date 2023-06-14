@@ -104,4 +104,21 @@ export class AssignmentAPI {
     }
     return await restApiAction('/assignment/submit', body, 'PUT')
   }
+
+  async submitUserAssignmentRevision(userAssignmentId: string, revision: string) {
+    const body = {
+      userAssignmentId,
+      revision
+    }
+    return await restApiAction('/assignment/submit-revision', body, 'PUT')
+
+  }
+
+  async resetUserAssignmentTime(userAssignmentId: string) {
+    const body = {
+      userAssignmentId,
+    }
+    return await restApiAction('/assignment/reset', body, 'PUT')
+
+  }
 }

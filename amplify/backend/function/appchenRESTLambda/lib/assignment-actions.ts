@@ -233,3 +233,37 @@ export const submitTextAssignmentUser = async (userAssignmentId: string, userId:
 
   return body
 }
+
+export const submitUserTextAssignmentRevision = async (userAssignmentId: string, revision: string) => { 
+  
+  const input: UpdateTextAssignmentUserInput = {
+    id: userAssignmentId,
+    revision: revision
+  } 
+
+  const variables = { input };
+
+	const body = await graphQlRequest(updateTextAssignmentUserQuery, variables).catch((error) => {
+    throw error
+  });  
+
+  return body
+}
+
+export const resetAssignment = async (userAssignmentId: string) => {
+  const input: UpdateTextAssignmentUserInput = {
+    id: userAssignmentId,
+    endTime: null,
+    startTime: null,
+    submission: null,
+    revision: null,
+  } 
+
+  const variables = { input };
+
+	const body = await graphQlRequest(updateTextAssignmentUserQuery, variables).catch((error) => {
+    throw error
+  });  
+
+  return body
+} 

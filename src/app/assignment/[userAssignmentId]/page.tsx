@@ -16,7 +16,7 @@ const WARNING_TIME = 1000 * 60 * 15
 
 function Assignment({params}: any) {
   const [ userId ] = useUserStore(state => [state.userId])
-  const [remainingTime, setRemainingTime] = useState(0)
+  const [remainingTime, setRemainingTime] = useState(999999999)
   const [assignment, setAssignment] = useState<TextAssignmentUserQuery>(null)
   const userAssignmentId = params.userAssignmentId
 
@@ -65,7 +65,7 @@ function Assignment({params}: any) {
         setRemainingTime(timeLeft)
       }
 
-    }, 5000)
+    }, 1000)
   }
 
   useEffect(() => {
@@ -94,11 +94,11 @@ function Assignment({params}: any) {
               <Typography variant='h5' color={timerColor(remainingTime)} fontWeight={700}>{msToAWSDateTime(remainingTime).slice(0, -4)}</Typography>
             </Paper>            
             <Box paddingBottom={2}>              
-              <iframe src="http://docs.google.com/gview?url=https://drive.google.com/uc?id=1ePh-ocUWPKvPdKvXKx2-mGsGa9nf5Fmn&embedded=true" style={{width: '100%', height: '700px'}}></iframe>
+              <iframe src={`http://docs.google.com/gview?url=${assignment.textAssignment.link}&embedded=true`} style={{width: '100%', height: '700px'}}></iframe>
             </Box>
             <Box>
               <Typography variant='h6' paddingBottom={2} fontWeight={700}>Deine Textproduktion</Typography>
-              <SubmissionEditor textAssignmentUserId={assignment.id}/>
+              <SubmissionEditor editable={true} timeLimitReached={remainingTime <= 0} textAssignmentUserId={assignment.id}/>
             </Box>
           </div>
         </div>
@@ -109,3 +109,6 @@ function Assignment({params}: any) {
 }
 
 export default Assignment
+
+// Google Pdf Viewer
+// "http://docs.google.com/gview?url=https://drive.google.com/uc?id=1ePh-ocUWPKvPdKvXKx2-mGsGa9nf5Fmn&embedded=true"

@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.submitTextAssignmentUser = exports.startTextAssignmentUser = exports.createTextAssignmentUser = exports.deleteTextAssignmentCourse = exports.createTextAssignmentCourse = exports.deleteTextAssignment = exports.updateTextAssignment = exports.createTextAssignment = void 0;
+exports.resetAssignment = exports.submitUserTextAssignmentRevision = exports.submitTextAssignmentUser = exports.startTextAssignmentUser = exports.createTextAssignmentUser = exports.deleteTextAssignmentCourse = exports.createTextAssignmentCourse = exports.deleteTextAssignment = exports.updateTextAssignment = exports.createTextAssignment = void 0;
 var mutations_1 = require("./graphql/mutations");
 var mutations_2 = require("./graphql/mutations");
 var mutations_3 = require("./graphql/mutations");
@@ -299,3 +299,46 @@ var submitTextAssignmentUser = function (userAssignmentId, userId, text) { retur
     });
 }); };
 exports.submitTextAssignmentUser = submitTextAssignmentUser;
+var submitUserTextAssignmentRevision = function (userAssignmentId, revision) { return __awaiter(void 0, void 0, void 0, function () {
+    var input, variables, body;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                input = {
+                    id: userAssignmentId,
+                    revision: revision
+                };
+                variables = { input: input };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_7.updateTextAssignmentUser, variables).catch(function (error) {
+                        throw error;
+                    })];
+            case 1:
+                body = _a.sent();
+                return [2 /*return*/, body];
+        }
+    });
+}); };
+exports.submitUserTextAssignmentRevision = submitUserTextAssignmentRevision;
+var resetAssignment = function (userAssignmentId) { return __awaiter(void 0, void 0, void 0, function () {
+    var input, variables, body;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                input = {
+                    id: userAssignmentId,
+                    endTime: null,
+                    startTime: null,
+                    submission: null,
+                    revision: null,
+                };
+                variables = { input: input };
+                return [4 /*yield*/, (0, utils_1.graphQlRequest)(mutations_7.updateTextAssignmentUser, variables).catch(function (error) {
+                        throw error;
+                    })];
+            case 1:
+                body = _a.sent();
+                return [2 /*return*/, body];
+        }
+    });
+}); };
+exports.resetAssignment = resetAssignment;

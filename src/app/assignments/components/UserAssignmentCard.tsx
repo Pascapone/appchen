@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import { Card, CardActions, CardContent, CardHeader, Typography, Button, Link, Divider } from '@mui/material'
+import { Card, CardActions, CardContent, CardHeader, Typography, Button, Link, Divider, Theme } from '@mui/material'
 import { useTheme } from '@mui/material'
 import KeyValueList from '@/components/display/KeyValueList'; 
 import { dateToGermanString } from '@/utils/dateUtils';
@@ -23,18 +23,36 @@ export interface AssignmentData {
   userAssignmentId: string,
   dueDate: string  | null | undefined,
   submission: string | null | undefined
+  revision: string | null | undefined
 }
 
 export interface CardAction {
   name: string,
   onClick: () => void,
   color: string,
-  variant: "contained" | "outlined" | "text"
+  variant: "contained" | "outlined" | "text",
+  hide?: boolean
+}
+
+type AssignmentStatus = "open" | "submitted" | "revisioned"
+
+interface AssignmentStatusProps {
+  color: string,
+  text: string
+  status: AssignmentStatus
+}
+
+const getAssignmentStatus = (submission: any, revision: any, theme: Theme ) : AssignmentStatusProps => {
+  if (submission === null) return {text: "Offen", color: theme.palette.error.main, status: "open"}
+  if (revision === null) return {text: "Abgegeben", color: theme.palette.success.main, status: "submitted"}
+  return {text: "Korrigiert", color: theme.palette.warning.main, status: "revisioned"}
 }
 
 export default function UserAssignmentCard({data, actions}: AssignmentCardProps) { 
   console.log("User Assignment Card:", data)
   const theme = useTheme()
+
+  const assignmentOpen = data.submission === null
 
   return (
     <Card sx={{height: "100%"}}>
@@ -50,12 +68,13 @@ export default function UserAssignmentCard({data, actions}: AssignmentCardProps)
           {key: 'Kursniveau:', component: <Typography variant="body1" color={theme.palette.info.main}>{data.courseLevel}</Typography>},
           {key: 'Aufgabenersteller', component: <Typography variant="body1" color={theme.palette.info.main}>{data.ownerName}</Typography>},
           {key: 'Fälligkeitsdatum', component: <Typography variant="body1" color={theme.palette.info.main}>{data.dueDate ? dateToGermanString(new Date(data.dueDate)) : 'Kein Limit'}</Typography>},
-          {key: 'Status', component: <Typography variant="body1" color={theme.palette.info.main}>{data.submission === null ? "Offen" : "Abgeschlossen"}</Typography>},
+          {key: 'Status', component: <Typography variant="body1" fontWeight={700} color={getAssignmentStatus(data.submission, data.revision, theme).color}>{getAssignmentStatus(data.submission, data.revision, theme).text}</Typography>},
           ]}
         />
       </CardContent>        
       <CardActions>        
         {actions.map((action: any) => {
+          if(action.hide) return null
           return (
             <Button key={action.name} onClick={action.onClick} size="small" color={action.color} variant={action.variant}>{action.name}</Button>
           )

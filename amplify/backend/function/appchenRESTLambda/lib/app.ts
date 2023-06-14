@@ -19,7 +19,7 @@ import bodyParser from 'body-parser';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
 import { createCourse, joinUserToCourse, deleteCourse, leaveCourse, createInviteLink, joinCourseWithToken, invalidateInviteLink } from './course-actions';
-import { createTextAssignment, createTextAssignmentCourse, createTextAssignmentUser, deleteTextAssignment, updateTextAssignment, deleteTextAssignmentCourse, startTextAssignmentUser, submitTextAssignmentUser } from './assignment-actions';
+import { createTextAssignment, createTextAssignmentCourse, createTextAssignmentUser, deleteTextAssignment, updateTextAssignment, deleteTextAssignmentCourse, startTextAssignmentUser, submitTextAssignmentUser, submitUserTextAssignmentRevision, resetAssignment } from './assignment-actions';
 import { Level } from './graphql/GraphQL';
 
 const GRAPHQL_ENDPOINT = process.env.API_APPCHENGRAPHQL_GRAPHQLAPIENDPOINTOUTPUT;
@@ -114,6 +114,7 @@ app.post('/course/join-link', async  (req, res, next) => {
   const courseId = req.body.courseId
 
   try {
+    console.log("Start join course with token")
     await joinCourseWithToken(userId, courseId, token)
     res.json({success: 'User joined course', url: req.url, body: req.body})     
   } catch (err) {
@@ -294,6 +295,29 @@ app.put('/assignment/submit', groupPermissions(['default', 'admin', 'superAdmin'
   try {
     const body = await submitTextAssignmentUser(userAssignmentId, userId, submission)
     res.json({success: `Submitted User Assignment ID: ${userAssignmentId}`, body})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.put('/assignment/submit-revision', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {  
+  const userAssignmentId = req.body.userAssignmentId  
+  const revision = req.body.revision  
+
+  try {
+    const body = await submitUserTextAssignmentRevision(userAssignmentId, revision)
+    res.json({success: `Submitted User Assignment Revsion ID: ${userAssignmentId}`, body})  
+  } catch (err) {
+    next(err)
+  }  
+});
+
+app.put('/assignment/reset', groupPermissions(['admin', 'superAdmin']), async (req, res, next) => {  
+  const userAssignmentId = req.body.userAssignmentId  
+
+  try {
+    const body = await resetAssignment(userAssignmentId)
+    res.json({success: `Reset User Assignment Time ID: ${userAssignmentId}`, body})  
   } catch (err) {
     next(err)
   }  

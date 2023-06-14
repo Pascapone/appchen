@@ -87,6 +87,8 @@ type TextAssignmentUser @model @auth(rules: [
   textAssignmentCourse: TextAssignmentCourse @belongsTo(fields: ["textAssignmentCourseId"])
 
   submission: String
+  revision: String
+  
   startTime: AWSDateTime
   endTime: AWSDateTime
   submissionTime: AWSDateTime

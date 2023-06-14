@@ -5,9 +5,9 @@ import { RestAPI } from '@/restapi/RestAPI'
 import { useEffect } from 'react'
 
 import { dateToGermanString } from '@/utils/dateUtils'
-import { Box, Typography, Divider, Tabs, Tab, Card, IconButton, Grid, Backdrop, CircularProgress } from '@mui/material'
+import { Box, Typography, Divider, Tabs, Tab, Card, IconButton, Grid, Backdrop, CircularProgress, Button, ButtonGroup } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter } from 'next/navigation'
 
 import { withAuthenticator, WithAuthenticatorProps } from '@aws-amplify/ui-react'
@@ -15,6 +15,8 @@ import { withAuthenticator, WithAuthenticatorProps } from '@aws-amplify/ui-react
 import CourseAssignments from './components/CourseAssignments'
 import CourseActions from './components/CourseActions'
 import { GetCourseWithUsersQuery } from '@/GraphQL'
+
+import { useOpenUserRevisionStore } from '@/store/routeStore'
 
 type CourseModel = GetCourseWithUsersQuery['getCourse']
 
@@ -56,6 +58,15 @@ const Course = ({params, signOut, user}: any) => {
   const [tabIndex, setTabIndex] = useState(0);  
   const [submitting, setSubmitting] = useState(false)
 
+  const [ consumeable ] = useOpenUserRevisionStore(state => [state.consumeable])
+
+
+  useEffect(() => {
+    if (consumeable) {
+      setTabIndex(2)
+    }
+  }, [])
+
   const router = useRouter()
 
   const handleChangeIndex = (event: React.SyntheticEvent, newValue: number) => {
@@ -70,9 +81,7 @@ const Course = ({params, signOut, user}: any) => {
     } catch (err) {
       console.log(err)
     }
-  }
-
-  
+  }  
 
   useEffect(() => {
     handleGetCourseModel(params.courseId)
@@ -91,9 +100,16 @@ const Course = ({params, signOut, user}: any) => {
       >
         <CircularProgress />        
       </Backdrop>
+      <Box>
+        <ButtonGroup sx={{paddingBottom: 2}}>          
+          <Button variant='outlined' onClick={() => router.push('/courses')}>
+            <ArrowBackIcon/>
+          </Button>
+        </ButtonGroup>
+      </Box>
       <Typography variant='h5'>
         Kurs: {courseModel?.name} - {courseModel?.level}
-      </Typography>
+      </Typography>      
       <Divider sx={{paddingBottom: 1}}/>
       <Box display='flex' flexDirection='row' paddingTop={1}>
         <Box paddingRight={2}>
@@ -185,7 +201,7 @@ const Course = ({params, signOut, user}: any) => {
           />
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
-          <CourseAssignments refreshCourseModel={() => handleGetCourseModel(params.courseId)} courseModel={courseModel}/>
+        <CourseAssignments refreshCourseModel={() => handleGetCourseModel(params.courseId)} courseModel={courseModel}/>
         </TabPanel>
         <TabPanel value={tabIndex} index={3}>
           Materialien

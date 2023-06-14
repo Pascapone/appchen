@@ -47,6 +47,7 @@ var queries_2 = require("./graphql/queries");
 var mutations_3 = require("./graphql/mutations");
 var mutations_4 = require("./graphql/mutations");
 var customQueries_1 = require("./graphql/customQueries");
+var assignment_actions_1 = require("./assignment-actions");
 var crypto_1 = __importDefault(require("crypto"));
 var utils_1 = require("./utils");
 var aws_sdk_1 = require("aws-sdk");
@@ -298,14 +299,16 @@ var invalidateInviteLink = function (courseId, userId) { return __awaiter(void 0
 }); };
 exports.invalidateInviteLink = invalidateInviteLink;
 var joinCourseWithToken = function (userId, courseId, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var course;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var course, response, promises;
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0: return [4 /*yield*/, (0, exports.getCourse)(courseId).catch(function (error) {
                     throw error;
                 })];
             case 1:
-                course = _a.sent();
+                course = _c.sent();
+                console.log("Get Course", course);
                 if (!course.inviteToken || course.inviteToken === "") {
                     throw new Error("Course does not have an invite token");
                 }
@@ -314,7 +317,25 @@ var joinCourseWithToken = function (userId, courseId, token) { return __awaiter(
                 }
                 return [4 /*yield*/, (0, exports.joinUserToCourse)(userId, courseId)];
             case 2:
-                _a.sent();
+                response = _c.sent();
+                console.log("Joining Course", response);
+                return [4 /*yield*/, Promise.all((_b = (_a = course.textAssignments) === null || _a === void 0 ? void 0 : _a.items) === null || _b === void 0 ? void 0 : _b.map(function (textAssignment) { return __awaiter(void 0, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    console.log("Text Assignment User", userId, textAssignment.id, textAssignment.textAssignmentId);
+                                    return [4 /*yield*/, (0, assignment_actions_1.createTextAssignmentUser)(userId, textAssignment.id, textAssignment.textAssignmentId)];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })).catch(function (error) {
+                        throw error;
+                    })];
+            case 3:
+                promises = _c.sent();
+                console.log("Text Assignment User", promises);
                 return [2 /*return*/];
         }
     });

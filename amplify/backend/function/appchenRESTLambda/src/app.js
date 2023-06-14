@@ -178,6 +178,7 @@ app.post('/course/join-link', function (req, res, next) { return __awaiter(void 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
+                console.log("Start join course with token");
                 return [4 /*yield*/, (0, course_actions_1.joinCourseWithToken)(userId, courseId, token)];
             case 2:
                 _a.sent();
@@ -494,6 +495,51 @@ app.put('/assignment/submit', groupPermissions(['default', 'admin', 'superAdmin'
             case 3:
                 err_17 = _a.sent();
                 next(err_17);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.put('/assignment/submit-revision', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userAssignmentId, revision, body, err_18;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userAssignmentId = req.body.userAssignmentId;
+                revision = req.body.revision;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.submitUserTextAssignmentRevision)(userAssignmentId, revision)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Submitted User Assignment Revsion ID: ".concat(userAssignmentId), body: body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_18 = _a.sent();
+                next(err_18);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.put('/assignment/reset', groupPermissions(['admin', 'superAdmin']), function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var userAssignmentId, body, err_19;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                userAssignmentId = req.body.userAssignmentId;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, (0, assignment_actions_1.resetAssignment)(userAssignmentId)];
+            case 2:
+                body = _a.sent();
+                res.json({ success: "Reset User Assignment Time ID: ".concat(userAssignmentId), body: body });
+                return [3 /*break*/, 4];
+            case 3:
+                err_19 = _a.sent();
+                next(err_19);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }

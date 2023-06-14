@@ -41,6 +41,7 @@ export const getUser = /* GraphQL */ `
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime
@@ -400,6 +401,7 @@ export const getTextAssignmentCourse = /* GraphQL */ `
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime
@@ -601,6 +603,7 @@ export const getTextAssignmentUser = /* GraphQL */ `
         updatedAt
       }
       submission
+      revision
       startTime
       endTime
       submissionTime
@@ -654,6 +657,7 @@ export const listTextAssignmentUsers = /* GraphQL */ `
           updatedAt
         }
         submission
+        revision
         startTime
         endTime
         submissionTime
@@ -713,6 +717,7 @@ export const textAssignmentUsersByUserId = /* GraphQL */ `
           updatedAt
         }
         submission
+        revision
         startTime
         endTime
         submissionTime
@@ -772,6 +777,7 @@ export const textAssignmentUsersByTextAssignmentCourseId = /* GraphQL */ `
           updatedAt
         }
         submission
+        revision
         startTime
         endTime
         submissionTime

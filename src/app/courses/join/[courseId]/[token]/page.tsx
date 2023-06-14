@@ -4,10 +4,11 @@ import { Box, Typography, Backdrop, Button, CircularProgress } from '@mui/materi
 import { dateToGermanString } from '@/utils/dateUtils'
 import { RestAPI } from '@/restapi/RestAPI'
 import { useRouter } from 'next/navigation'
+import { withAuthenticator, WithAuthenticatorProps } from '@aws-amplify/ui-react'
 
 import { toast } from 'react-toastify';
 
-export default function JoinCourse({params}: any) {
+function JoinCourse({params}: any) {
   const [courseName, setCourseName] = useState('')
   const [courseLevel, setCourseLevel] = useState('')
   const [ courseOwnerName, setCourseOwnerName] = useState('')
@@ -125,3 +126,5 @@ export default function JoinCourse({params}: any) {
     </Box>
   )
 }
+
+export default withAuthenticator(JoinCourse)

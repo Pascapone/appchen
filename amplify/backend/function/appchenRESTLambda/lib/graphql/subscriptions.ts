@@ -41,6 +41,7 @@ export const onCreateUser = /* GraphQL */ `
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime
@@ -107,6 +108,7 @@ export const onUpdateUser = /* GraphQL */ `
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime
@@ -173,6 +175,7 @@ export const onDeleteUser = /* GraphQL */ `
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime
@@ -545,6 +548,7 @@ export const onCreateTextAssignmentCourse = /* GraphQL */ `
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime
@@ -620,6 +624,7 @@ export const onUpdateTextAssignmentCourse = /* GraphQL */ `
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime
@@ -695,6 +700,7 @@ export const onDeleteTextAssignmentCourse = /* GraphQL */ `
           userId
           textAssignmentCourseId
           submission
+          revision
           startTime
           endTime
           submissionTime
@@ -794,6 +800,7 @@ export const onCreateTextAssignmentUser = /* GraphQL */ `
         updatedAt
       }
       submission
+      revision
       startTime
       endTime
       submissionTime
@@ -886,6 +893,7 @@ export const onUpdateTextAssignmentUser = /* GraphQL */ `
         updatedAt
       }
       submission
+      revision
       startTime
       endTime
       submissionTime
@@ -978,6 +986,7 @@ export const onDeleteTextAssignmentUser = /* GraphQL */ `
         updatedAt
       }
       submission
+      revision
       startTime
       endTime
       submissionTime

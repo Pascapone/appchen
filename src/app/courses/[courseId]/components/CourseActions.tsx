@@ -107,6 +107,7 @@ function CourseActions({user, courseModel, submitting, setSubmitting, handleGetC
         submitting={submitting} 
         handleCancel={() => {setOpenLeaveCourseDialog(false)}} 
         handleConfirm={submitLeaveCourse}
+        permanentWarning={true}
       /> 
       <InviteLinkDialog
         open={openInviteLinkDialog}

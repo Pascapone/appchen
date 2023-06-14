@@ -61,6 +61,7 @@ export default function CourseAssignmentCard({courseAssingnment, assignmentType,
       </CardContent>   
       <CardActions>        
         {actions.map((action: any) => {
+          console.log("ACTION", action)
           return (
             <Button key={action.name} onClick={action.onClick} size="small" color={action.color} variant={action.variant}>{action.name}</Button>
           )

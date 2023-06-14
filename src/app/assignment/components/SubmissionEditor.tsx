@@ -20,10 +20,14 @@ import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import { Box, Button, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
 
+import ConfirmDialog from '@/components/dialogs/ConfirmDialog';
+
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 
 import throttle  from 'lodash.throttle';
+
+import { useRouter } from 'next/navigation';
 
 import { useLocalStorage, useBeforeUnload } from 'react-use';
 
@@ -54,22 +58,27 @@ function MyCustomAutoFocusPlugin() {
   return null;
 }
 
-function ExportPlugin({userAssignmentId}: {userAssignmentId: string}) {
+function ExportPlugin({handleSubmit, timeLimitReached, handleAutoSubmit}: {handleSubmit: (htmlString: string) => void, timeLimitReached: boolean, handleAutoSubmit: (htmlString: string) => void}) {
   const [editor] = useLexicalComposerContext();  
 
-  const handleExport = async () => {
-    let htmlString = 'Check'
-    editor.update(() => {
-      htmlString = $generateHtmlFromNodes(editor, null); 
-      
-      console.log("HTML", htmlString)
-    })   
+  useEffect(() => {
+    if(timeLimitReached) {
+      let htmlString = getExportString()
+      handleAutoSubmit(htmlString)
+    }
+  }, [timeLimitReached])
 
-    console.log("HTML After Update", htmlString)
-    await RestAPI.assignment.submitUserAssignment(userAssignmentId, htmlString).catch(err => {
-      console.log('Error: submitUserAssignment')
-      console.log(err)
-    })
+  const getExportString = () => {
+    let htmlString = ''
+    editor.update(() => {
+      htmlString = $generateHtmlFromNodes(editor, null);       
+    })   
+    return htmlString
+  }
+
+  const handleExport = async () => {
+    let htmlString = getExportString()
+    handleSubmit(htmlString)    
   }   
 
   return (    
@@ -148,8 +157,7 @@ function LocalStoragePlugin({changed, textAssignmentUserId}: {changed: boolean, 
   }, [changed])
 
   useEffect(() => {    
-    if(!initialized) {
-      setInitialized(true)
+    if(!initialized) {      
       console.log("Chached Value:", value)
       console.log("Chached Value Type:", typeof(value))
       if (value != null) loadCachedEditor()      
@@ -165,6 +173,8 @@ function LocalStoragePlugin({changed, textAssignmentUserId}: {changed: boolean, 
     
       $getRoot().select();
       $insertNodes(nodes);
+
+      setInitialized(true)
     });
   }
 
@@ -175,20 +185,61 @@ function onChange(editorState: EditorState, setChanged: React.Dispatch<React.Set
   setChanged((prev) => !prev)
 }
 
-export default function SubmissionEditor({textAssignmentUserId}: {textAssignmentUserId: string}) {
+export default function SubmissionEditor({textAssignmentUserId, timeLimitReached, editable}: {textAssignmentUserId: string, timeLimitReached: boolean, editable: boolean}) {
   const [changed, setChanged] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [openApplyDialog, setOpenApplyDialog] = useState(false)
+  const [htmlSubmission, setHtmlSubmission] = useState('') 
    
+  const router = useRouter()
+
   const initialConfig = {
     namespace: 'MyEditor', 
-    theme,
+    theme, 
+    editable,  
     onError,
     nodes: [
       HeadingNode
     ]
   };   
 
+  const handleSubmitAssignment = (htmlString: string) => {
+    setHtmlSubmission(htmlString)
+    setOpenApplyDialog(true)
+  }
+
+  const handleAutoSubmit = async (htmlString: string) => {
+    setSubmitting(true) 
+    await RestAPI.assignment.submitUserAssignment(textAssignmentUserId, htmlString).catch(err => {
+      console.log('Error: submitUserAssignment')
+      console.log(err)
+    }) 
+    router.push(`/assignments`)
+  }
+
+  const confirmSubmitAssignment = async () => {  
+    setSubmitting(true) 
+    await RestAPI.assignment.submitUserAssignment(textAssignmentUserId, htmlSubmission).catch(err => {
+      console.log('Error: submitUserAssignment')
+      console.log(err)
+    })
+    setOpenApplyDialog(false)  
+    router.push(`/assignments`)
+  }
+
   return (
     <div style={{width: '100%'}}>
+      <ConfirmDialog
+        open={openApplyDialog}
+        dialogText='Bist du sicher, dass du diese Aufgabe abschicken möchtest? Du kannst die Aufgabe nicht mehr bearbeiten.'
+        handleCancel={() => setOpenApplyDialog(false)}
+        handleConfirm={confirmSubmitAssignment}
+        submitting={submitting}
+        confirmButtonText='Abschicken'
+        dialogStyle='success'
+        permanentWarning={true}
+        title='Aufgabe abschicken'
+      />
       <LexicalComposer initialConfig={initialConfig}>
         <ToolbarPlugin />
         <div style={{position: 'relative'}}>
@@ -200,7 +251,7 @@ export default function SubmissionEditor({textAssignmentUserId}: {textAssignment
         </div>
         <HistoryPlugin />
         <MyCustomAutoFocusPlugin />
-        <ExportPlugin userAssignmentId={textAssignmentUserId}/>
+        <ExportPlugin timeLimitReached={timeLimitReached} handleSubmit={handleSubmitAssignment} handleAutoSubmit={handleAutoSubmit}/>
         <OnChangePlugin onChange={(editorState: EditorState) => onChange(editorState, setChanged)} />
         <LocalStoragePlugin changed={changed} textAssignmentUserId={textAssignmentUserId}/>        
       </LexicalComposer>

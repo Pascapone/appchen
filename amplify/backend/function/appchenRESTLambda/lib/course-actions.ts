@@ -6,7 +6,9 @@ import { deleteCoursesUsers as deleteCoursesUsersQuery } from './graphql/mutatio
 import { updateCourse as updateCourseQuery } from './graphql/mutations';
 import { getCourseOwnerIdQuery } from './graphql/customQueries';
 
-import { ModelCourseConditionInput, UpdateCourseInput } from './graphql/GraphQL'
+import { ModelCourseConditionInput, UpdateCourseInput, GetCourseQuery } from './graphql/GraphQL'
+
+import { createTextAssignmentUser } from './assignment-actions';
 
 import crypto from 'crypto';
 
@@ -121,14 +123,14 @@ export const joinUserToCourse = async (userId: string, courseId: string) => {
   return body	
 }
 
-export const getCourse = async (courseId: string) => {
+export const getCourse = async (courseId: string): Promise<GetCourseQuery["getCourse"]> => {
   const courseQueryVariables = { id: courseId }
 	
   const getCourseBody = await graphQlRequest(getCourseQuery, courseQueryVariables).catch((error) => {
     throw error
   })
 
-  return getCourseBody.data.getCourse
+  return getCourseBody.data.getCourse as GetCourseQuery["getCourse"]
 }
 
 export const deleteCourse = async (courseId: string, userId: string) => {
@@ -202,13 +204,22 @@ export const joinCourseWithToken = async (userId: string, courseId: string, toke
   const course = await getCourse(courseId).catch((error) => {
     throw error
   })
+  console.log("Get Course", course)
   if(!course.inviteToken || course.inviteToken === "") {
     throw new Error("Course does not have an invite token")
   }
   if(course.inviteToken !== token) {
     throw new Error("Invalid Token")
   }
-  await joinUserToCourse(userId, courseId)
 
-  
+  const response = await joinUserToCourse(userId, courseId)
+  console.log("Joining Course", response)
+  const promises = await Promise.all(course.textAssignments?.items?.map(async (textAssignment) => {
+    console.log("Text Assignment User", userId, textAssignment.id, textAssignment.textAssignmentId)
+    await createTextAssignmentUser(userId, textAssignment.id, textAssignment.textAssignmentId)
+  })).catch((error) => {
+    throw error
+  })  
+
+  console.log("Text Assignment User", promises)
 }

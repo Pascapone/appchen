@@ -5,6 +5,7 @@ import { useUserStore } from '@/store/userStore';
 
 import { ExpandableSetting } from './ExpandableMenuItem'
 import { BasicSetting } from './BasicMenuItem'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import BaseMenu from './BaseMenu'
 
@@ -91,7 +92,8 @@ export default function UserMenu(){
   return(
     <>
       <IconButton onClick={handleOpenUserMenu}>
-        <Avatar src="path/to/avatar-image.jpg" alt="User Avatar" />
+        {/* <Avatar src="path/to/avatar-image.jpg" alt="User Avatar" /> */}
+        <AccountCircleIcon/>
       </IconButton>
       <Menu
         sx={{ mt: '45px' }}
